@@ -1,0 +1,2053 @@
+
+---
+title: "Prairie Analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#Close graphics and clear local memory
+graphics.off()
+rm(list=ls())
+
+#load libraries
+library(ggplot2)
+library(plyr)
+library(data.table)
+library(AER)
+library(sandwich)
+library(foreign)
+library(rmarkdown)
+
+#load data
+cover=as.data.table(read.csv("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis/Cover_data_V2.csv",header = T)) #use V2 after data issue
+
+transect.master=as.data.table(read.csv("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis/Transect_master_V2.csv",header = T)) #use V2 after data issue
+
+```
+
+Steps to complete first: 
+- (complete) and merge species level data
+
+
+#Species Richness Analysis
+Calculate total richness (sr), native (nr), and invasive (ir) for all transects, mgmt units, and sites.
+
+Visualize this variability spatially and temporally, as well as in respect to management actions.
+
+```{r Species Richness}
+#Compute native and non-native richness by transect, mgmt unit, site for each year
+cover[!(Cover==""), sr_tran:=length(unique(SpeciesID)), by = .(TransectID, Year)]
+cover[!(Cover==""), sr_mgmt:=length(unique(SpeciesID)), by = .(MGMTUNIT_I, Year)]
+cover[!(Cover==""), sr_site:=length(unique(SpeciesID)), by = .(SITE_ID, Year)]
+
+## do first differences for the marginal efcomb[order(year)
+change_sr_tran=unique(cover[Delta==1 & !is.na(sr_tran),.(Year,TransectID,sr_tran)])
+change_sr_mgmt=unique(cover[Delta==1 & !is.na(sr_mgmt),.(Year,MGMTUNIT_I,sr_mgmt)])
+change_sr_site=unique(cover[Delta==1& !is.na(sr_site),.(Year,SITE_ID,sr_site)])
+
+
+change_sr_tran[order(Year), change_sr_tran := sr_tran-shift(sr_tran), by =.(TransectID)]
+change_sr_mgmt[order(Year), change_sr_mgmt := sr_mgmt-shift(sr_mgmt), by =.(MGMTUNIT_I)]
+change_sr_site[order(Year), change_sr_site := sr_site-shift(sr_site), by =.(SITE_ID)]
+
+cover = merge(cover,change_sr_tran,by=c("Year","TransectID","sr_tran"),all = T)
+cover = merge(cover,change_sr_mgmt,by=c("Year","MGMTUNIT_I","sr_mgmt"),all=T)
+cover = merge(cover,change_sr_site,by=c("Year","SITE_ID","sr_site"),all=T)
+
+#cover[order(year), change_sr_INT := sr_INT-shift(sr_INT), by =.(plot, site_code)]
+#cover[order(year), change_sr_NAT := sr_NAT-shift(sr_NAT), by =.(plot, site_code)]
+#cover[order(year), change_sr_NULL := sr_NULL-shift(sr_NULL), by =.(plot, site_code)]
+#cover[order(year), change_sr_UNK := sr_NULL-shift(sr_UNK), by =.(plot, site_code)]
+
+# plot them
+hist(unique(cover[!(is.na(change_sr_tran))][,.(Year,TransectID,change_sr_tran)])[,change_sr_tran],freq = T,main = "SR First Diff - Transects",xlab = "Delta SR",ylab = "Number of Transects",breaks = 100)
+
+hist(unique(cover[!(is.na(change_sr_mgmt))][,.(Year,MGMTUNIT_I,change_sr_mgmt)])[,change_sr_mgmt],freq = T,main = "SR First Diff - MGMT Units",xlab = "Delta SR",ylab = "Number of MGMT Units",breaks = 100)
+
+hist(unique(cover[!(is.na(change_sr_site))][,.(Year,SITE_ID,change_sr_site)])[,change_sr_site],freq = T,main = "SR First Diff - Sites",xlab = "Delta SR",ylab = "Number of Sites",breaks = 100)
+     
+#Clearly there is some craziness going on for some years, e.g. Transect 555 in 2015 only has 1 species (Poa) which is only given 1-5% cover. In 2012 there were 27 species and in 2018 there were 36. Rhett Johnson was obs
+
+xx.1 = change_sr_tran[change_sr_tran>20,TransectID]
+unique(cover[TransectID %in% xx.1,.(TransectID,Year,ObsCode,change_sr_tran,sr_tran,SITE_ID)])[order(TransectID),][!(is.na(sr_tran)),] 
+
+
+xx.2 = change_sr_tran[change_sr_tran<(-20),TransectID]
+unique(cover[TransectID %in% xx.2,.(TransectID,Year,ObsCode,change_sr_tran,sr_tran,SITE_ID)])[order(TransectID),][!(is.na(sr_tran)),] 
+
+#make a table for Daren to correct these issues...just past in the two tables above
+
+
+#hist(cover$change_sr_INT)
+#hist(cover$change_sr_NAT)
+#hist(cover$change_sr_UNK)
+#hist(cover$change_sr_NULL)
+
+
+###############################################################################
+### Compute site-level richness variables  ##############################
+##########################################################################################
+
+# # average site richness over time
+# cover[, ave_siterich := mean(site_richness, na.rm = TRUE), by = site_code]
+# # average for the change year to year
+# cover[, ave_siterich_change := mean(changerich, na.rm = TRUE), by = site_code]
+# # initial site richness
+# cover[, init_siterich := site_richness[year_trt == 0] ,  by = site_code]
+
+####################################################################################################################
+### Dominance Variables ############################################################################################
+####################################################################################################################
+
+
+```
+
+```{r Richness - Action}
+#Plot hist of change in SR by Action and Year
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_sr_tran),change_sr_tran]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action=="")&!(is.na(change_sr_tran)),.(TransectID,Year,change_sr_tran,Action)]), aes(x = Action,y = change_sr_tran))+
+  geom_boxplot()+
+  stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") + 
+  facet_wrap(~Year,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Delta SR by Year and Action", 
+       x="Action",
+       y="Change in SR")
+
+#Plot hist of actual SR by Action and Year
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(sr_tran),sr_tran]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action==""),.(TransectID,Year,sr_tran,Action)]), aes(x = Action,y = sr_tran))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~Year,nrow = 3)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="SR by Year and Action", 
+       x="Action",
+       y="SR")
+
+```
+
+
+```{r Richness - Spatial}
+lat = (cover[,max(StartLat)]-cover[,min(StartLat)])-3
+long = (cover[,max(StartLong)]-cover[,min(StartLong)])-3
+
+#Create a test latitude category
+cover[,Lat.Cat:=ifelse(StartLat<cover[,min(StartLat)]+lat,yes = "South",no = ifelse(StartLat<cover[,min(StartLat)]+(2*lat),yes = "Middle",no = "North"))]
+
+#Create a test longitude category
+cover[,Long.Cat:=ifelse(StartLong<cover[,min(StartLong)]-long,yes = "West",no = ifelse(StartLong<cover[,min(StartLong)]-(2*long),yes = "Middle",no = "East"))]
+
+
+####Plot Latitude 
+
+#Plot hist of change in SR by Lat and Action
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_sr_tran),change_sr_tran]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action=="")&!(is.na(change_sr_tran)),.(TransectID,Year,change_sr_tran,Action,Lat.Cat,Long.Cat)]), aes(x = Lat.Cat,y = change_sr_tran))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~Action,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Delta SR by Latitude and Action", 
+       x="Latitude Category",
+       y="Change in SR")
+
+#Plot hist of actual SR by Lat and Action
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(sr_tran),sr_tran]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action=="")&!(is.na(sr_tran)),.(TransectID,Year,sr_tran,Action,Lat.Cat,Long.Cat)]), aes(x = Lat.Cat,y = sr_tran))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~Action,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="SR by Latitude and Action", 
+       x="Latitude Category",
+       y="SR")
+
+
+
+####Plot Longitude
+
+#Plot hist of change in SR by Long and Action
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_sr_tran),change_sr_tran]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action=="")&!(is.na(change_sr_tran)),.(TransectID,Year,change_sr_tran,Action,Lat.Cat,Long.Cat)]), aes(x = Long.Cat,y = change_sr_tran))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~Action,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Delta SR by Longitude and Action", 
+       x="Longitude Category",
+       y="Change in SR")
+
+#Plot hist of actual SR by Long and Action
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(sr_tran),sr_tran]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action=="")&!(is.na(sr_tran)),.(TransectID,Year,sr_tran,Action,Lat.Cat,Long.Cat)]), aes(x = Long.Cat,y = sr_tran))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~Action,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="SR by Longitude and Action", 
+       x="Longitude Category",
+       y="Ch SR")
+
+
+```
+
+
+Calculate SR by native/invasive/unknown status
+```{r Richness - Species Type}
+
+#Compute native and non-native richness by transect, mgmt unit, site for each year
+cover[Native.Status=="I" & !(Cover==""), ir_tran:=length(unique(SpeciesID)), by = .(TransectID, Year)]
+cover[Native.Status=="I" & !(Cover==""), ir_mgmt:=length(unique(SpeciesID)), by = .(MGMTUNIT_I, Year)]
+#cover[Native.Status=="I" & !(Cover==""), ir_site:=length(unique(SpeciesID)), by = .(SITE_ID, Year)]
+
+cover[Native.Status=="N" & !(Cover==""), nr_tran:=length(unique(SpeciesID)), by = .(TransectID, Year)]
+cover[Native.Status=="N" & !(Cover==""), nr_mgmt:=length(unique(SpeciesID)), by = .(MGMTUNIT_I, Year)]
+#cover[Native.Status=="N" & !(Cover==""), nr_site:=length(unique(SpeciesID)), by = .(SITE_ID, Year)]
+
+#cover[Native.Status=="U" & !(Cover==""), ur_tran:=length(unique(SpeciesID)), by = .(TransectID, Year)]
+#cover[Native.Status=="U" & !(Cover==""), ur_mgmt:=length(unique(SpeciesID)), by = .(MGMTUNIT_I, Year)]
+#cover[Native.Status=="U" & !(Cover==""), ur_site:=length(unique(SpeciesID)), by = .(SITE_ID, Year)]
+
+## do first differences for the marginal efcomb[order(year)
+change_ir_tran=unique(cover[Delta==1 & !(is.na(ir_tran)),.(Year,TransectID,ir_tran)])
+change_ir_mgmt=unique(cover[Delta==1 & !(is.na(ir_mgmt)),.(Year,MGMTUNIT_I,ir_mgmt)])
+#change_ir_site=unique(cover[Delta==1 & !(is.na(ir_site)),.(Year,SITE_ID,ir_site)])
+
+change_nr_tran=unique(cover[Delta==1 & !(is.na(nr_tran)),.(Year,TransectID,nr_tran)])
+change_nr_mgmt=unique(cover[Delta==1 & !(is.na(nr_mgmt)),.(Year,MGMTUNIT_I,nr_mgmt)])
+#change_nr_site=unique(cover[Delta==1 & !(is.na(nr_site)),.(Year,SITE_ID,nr_site)])
+
+#change_ur_tran=unique(cover[Delta==1 & !(is.na(ur_tran)),.(Year,TransectID,ur_tran)])
+#change_ur_mgmt=unique(cover[Delta==1 & !(is.na(ur_mgmt)),.(Year,MGMTUNIT_I,ur_mgmt)])
+#change_ur_site=unique(cover[Delta==1 & !(is.na(ur_site)),.(Year,SITE_ID,ur_site)])
+
+change_ir_tran[order(Year), change_ir_tran := ir_tran-shift(ir_tran), by =.(TransectID)]
+change_ir_mgmt[order(Year), change_ir_mgmt := ir_mgmt-shift(ir_mgmt), by =.(MGMTUNIT_I)]
+#change_ir_site[order(Year), change_ir_site := ir_site-shift(ir_site), by =.(SITE_ID)]
+
+change_nr_tran[order(Year), change_nr_tran := nr_tran-shift(nr_tran), by =.(TransectID)]
+change_nr_mgmt[order(Year), change_nr_mgmt := nr_mgmt-shift(nr_mgmt), by =.(MGMTUNIT_I)]
+#change_nr_site[order(Year), change_nr_site := nr_site-shift(nr_site), by =.(SITE_ID)]
+
+#change_ur_tran[order(Year), change_ur_tran := ur_tran-shift(ur_tran), by =.(TransectID)]
+#change_ur_mgmt[order(Year), change_ur_mgmt := ur_mgmt-shift(ur_mgmt), by =.(MGMTUNIT_I)]
+#change_ur_site[order(Year), change_ur_site := ur_site-shift(ur_site), by =.(SITE_ID)]
+
+#Merge back to cover data
+
+cover = merge(cover,change_ir_tran,by=c("Year","TransectID","ir_tran"),all = T)
+cover = merge(cover,change_ir_mgmt,by=c("Year","MGMTUNIT_I","ir_mgmt"),all=T)
+#cover = merge(cover,change_ir_site,by=c("Year","SITE_ID","ir_site"),all=T)
+
+cover = merge(cover,change_nr_tran,by=c("Year","TransectID","nr_tran"),all = T)
+cover = merge(cover,change_nr_mgmt,by=c("Year","MGMTUNIT_I","nr_mgmt"),all=T)
+#cover = merge(cover,change_nr_site,by=c("Year","SITE_ID","nr_site"),all=T)
+
+#cover = merge(cover,change_ur_tran,by=c("Year","TransectID","ur_tran"),all = T)
+#cover = merge(cover,change_ur_mgmt,by=c("Year","MGMTUNIT_I","ur_mgmt"),all=T)
+#cover = merge(cover,change_ur_site,by=c("Year","SITE_ID","ur_site"),all=T)
+
+###First plot native and invasive richness overall 
+#IR
+hist(unique(cover[!(is.na(ir_tran))][,.(Year,TransectID,ir_tran)])[,ir_tran],freq = T,main = "ir - Transects",xlab = "Total ir",ylab = "Number of Transects",breaks = length(unique(cover[!(is.na(ir_tran)),ir_tran]))) #all
+
+hist(unique(cover[!(is.na(change_ir_tran))][,.(Year,TransectID,change_ir_tran)])[,change_ir_tran],freq = T,main = "ir First Diff - Transects",xlab = "Delta ir",ylab = "Number of Transects",breaks = length(unique(cover[!(is.na(change_ir_tran)),change_ir_tran]))) #delta
+
+hist(unique(cover[!(is.na(ir_mgmt))][,.(Year,MGMTUNIT_I,ir_mgmt)])[,ir_mgmt],freq = T,main = "ir - MGMT Units",xlab = "Total ir",ylab = "Number of MGMT Units",breaks = length(unique(cover[!(is.na(ir_mgmt)),ir_mgmt]))) #all
+
+hist(unique(cover[!(is.na(change_ir_mgmt))][,.(Year,MGMTUNIT_I,change_ir_mgmt)])[,change_ir_mgmt],freq = T,main = "ir First Diff - MGMT Units",xlab = "Delta ir",ylab = "Number of MGMT Units",breaks = length(unique(cover[!(is.na(change_ir_mgmt)),change_ir_mgmt]))) #delta
+
+#hist(unique(cover[!(is.na(ir_site))][,.(Year,SITE_ID,ir_site)])[,ir_site],freq = T,main = "ir - Sites",xlab = "Total ir",ylab = "Number of Sites",breaks = length(unique(cover[!(is.na(ir_site)),ir_site]))) #all
+
+#hist(unique(cover[!(is.na(change_ir_site))][,.(Year,SITE_ID,change_ir_site)])[,change_ir_site],freq = T,main = "ir First Diff - Sites",xlab = "Delta ir",ylab = "Number of Sites",breaks = length(unique(cover[!(is.na(change_ir_site)),change_ir_site]))) #delta
+
+#NR
+hist(unique(cover[!(is.na(nr_tran))][,.(Year,TransectID,nr_tran)])[,nr_tran],freq = T,main = "nr - Transects",xlab = "Total nr",ylab = "Number of Transects",breaks = length(unique(cover[!(is.na(nr_tran)),nr_tran]))) #all
+
+hist(unique(cover[!(is.na(change_nr_tran))][,.(Year,TransectID,change_nr_tran)])[,change_nr_tran],freq = T,main = "nr First Diff - Transects",xlab = "Delta nr",ylab = "Number of Transects",breaks = length(unique(cover[!(is.na(change_nr_tran)),change_nr_tran]))) #delta
+
+hist(unique(cover[!(is.na(nr_mgmt))][,.(Year,MGMTUNIT_I,nr_mgmt)])[,nr_mgmt],freq = T,main = "nr - MGMT Units",xlab = "Total nr",ylab = "Number of MGMT Units",breaks = length(unique(cover[!(is.na(nr_mgmt)),nr_mgmt]))) #all
+
+hist(unique(cover[!(is.na(change_nr_mgmt))][,.(Year,MGMTUNIT_I,change_nr_mgmt)])[,change_nr_mgmt],freq = T,main = "nr First Diff - MGMT Units",xlab = "Delta nr",ylab = "Number of MGMT Units",breaks = length(unique(cover[!(is.na(change_nr_mgmt)),change_nr_mgmt]))) #delta
+
+#hist(unique(cover[!(is.na(nr_site))][,.(Year,SITE_ID,nr_site)])[,nr_site],freq = T,main = "nr - Sites",xlab = "Total nr",ylab = "Number of Sites",breaks = length(unique(cover[!(is.na(nr_site)),nr_site]))) #all
+
+#hist(unique(cover[!(is.na(change_nr_site))][,.(Year,SITE_ID,change_nr_site)])[,change_nr_site],freq = T,main = "nr First Diff - Sites",xlab = "Delta nr",ylab = "Number of Sites",breaks = length(unique(cover[!(is.na(change_nr_site)),change_nr_site]))) #delta
+     
+```
+
+Compare ir and nr relative to other factors
+```{r Richness - Species Type comparison}
+
+#######Plot ir and nr over time
+
+#Plot hist of total IR by Year - transects
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(ir_tran),ir_tran]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action==""),.(TransectID,Year,ir_tran)]), aes(x = Year,y = ir_tran,group=Year))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Transect IR by Year", 
+       x="Year",
+       y="IR")
+
+#Plot hist of change in IR by Year - transects
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_ir_tran),change_ir_tran]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action=="")&!(is.na(change_ir_tran)),.(TransectID,Year,change_ir_tran)]), aes(x = Year,y = change_ir_tran,group=Year))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Delta Transect IR by Year", 
+       x="Action",
+       y="Change in IR")
+
+#Plot hist of change in IR by Year - Mgmt units
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_ir_mgmt),change_ir_mgmt]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action=="")&!(is.na(change_ir_mgmt)),.(MGMTUNIT_I,Year,change_ir_mgmt)]), aes(x = Year,y = change_ir_mgmt,group=Year))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Delta MGMT UNIT IR by Year", 
+       x="Action",
+       y="Change in IR")
+
+#Plot hist of total NR by Year - transects
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(nr_tran),nr_tran]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action==""),.(TransectID,Year,nr_tran)]), aes(x = Year,y = nr_tran,group=Year))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Transect nr by Year", 
+       x="Year",
+       y="nr")
+
+#Plot hist of change in NR by Year - transects
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_nr_tran),change_nr_tran]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action=="")&!(is.na(change_nr_tran)),.(TransectID,Year,change_nr_tran)]), aes(x = Year,y = change_nr_tran,group=Year))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Delta Transect nr by Year", 
+       x="Action",
+       y="Change in nr")
+
+#Plot hist of change in NR by Year - Mgmt units
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_nr_mgmt),change_nr_mgmt]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action=="")&!(is.na(change_nr_mgmt)),.(MGMTUNIT_I,Year,change_nr_mgmt)]), aes(x = Year,y = change_nr_mgmt,group=Year))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Delta MGMT UNIT nr by Year", 
+       x="Action",
+       y="Change in nr")
+
+#######Plot ir and nr relative to management action
+
+#Plot hist of total IR by Action - transects
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(ir_tran),ir_tran]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action==""),.(TransectID,Action,ir_tran)]), aes(x = Action,y = ir_tran,group=Action))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Transect IR by Action", 
+       x="Action",
+       y="IR")
+
+#Plot hist of change in IR by Action - transects
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_ir_tran),change_ir_tran]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action=="")&!(is.na(change_ir_tran)),.(TransectID,Action,change_ir_tran)]), aes(x = Action,y = change_ir_tran,group=Action))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Delta Transect IR by Action", 
+       x="Action",
+       y="Change in IR")
+
+#Plot hist of change in IR by Action - Mgmt units
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_ir_mgmt),change_ir_mgmt]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action=="")&!(is.na(change_ir_mgmt)),.(MGMTUNIT_I,Action,change_ir_mgmt)]), aes(x = Action,y = change_ir_mgmt,group=Action))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Delta MGMT UNIT IR by Action", 
+       x="Action",
+       y="Change in IR")
+
+#Plot hist of total NR by Action - transects
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(nr_tran),nr_tran]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action==""),.(TransectID,Action,nr_tran)]), aes(x = Action,y = nr_tran,group=Action))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Transect nr by Action", 
+       x="Action",
+       y="nr")
+
+#Plot hist of change in NR by Action - transects
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_nr_tran),change_nr_tran]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action=="")&!(is.na(change_nr_tran)),.(TransectID,Action,change_nr_tran)]), aes(x = Action,y = change_nr_tran,group=Action))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Delta Transect nr by Action", 
+       x="Action",
+       y="Change in nr")
+
+#Plot hist of change in NR by Action - Mgmt units
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_nr_mgmt),change_nr_mgmt]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action=="")&!(is.na(change_nr_mgmt)),.(MGMTUNIT_I,Action,change_nr_mgmt)]), aes(x = Action,y = change_nr_mgmt,group=Action))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Delta MGMT UNIT nr by Action", 
+       x="Action",
+       y="Change in nr")
+
+
+#######Plot ir and nr over time * management action
+
+#Plot hist of total IR by Action and Year - transects
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(ir_tran),ir_tran]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action==""),.(TransectID,Action,Year,ir_tran)]), aes(x = Year,y = ir_tran,group=Year))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~Action,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Transect IR by Year and Action", 
+       x="Year",
+       y="IR")
+
+#Plot hist of change in IR by Action and Year - transects
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_ir_tran),change_ir_tran]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action=="")&!(is.na(change_ir_tran)),.(TransectID,Action,Year,change_ir_tran)]), aes(x = Year,y = change_ir_tran,group=Year))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~Action,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Delta Transect IR by Year and Action", 
+       x="Year",
+       y="Change in IR")
+
+#Plot hist of change in IR by Action and Year - Mgmt units
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_ir_mgmt),change_ir_mgmt]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action=="")&!(is.na(change_ir_mgmt)),.(MGMTUNIT_I,Action,Year,change_ir_mgmt)]), aes(x = Year,y = change_ir_mgmt,group=Year))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~Action,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Delta MGMT UNIT IR by Year and Action", 
+       x="Year",
+       y="Change in IR")
+
+#Plot hist of total NR by Action and Year - transects
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(nr_tran),nr_tran]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action==""),.(TransectID,Action,Year,nr_tran)]), aes(x = Year,y = nr_tran,group=Year))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~Action,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Transect nr by Year and Action", 
+       x="Year",
+       y="nr")
+
+#Plot hist of change in NR by Action and Year - transects
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_nr_tran),change_nr_tran]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action=="")&!(is.na(change_nr_tran)),.(TransectID,Action,Year,change_nr_tran)]), aes(x = Year,y = change_nr_tran,group=Year))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~Action,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Delta Transect nr by Year and Action", 
+       x="Year",
+       y="Change in nr")
+
+#Plot hist of change in NR by Action and Year - Mgmt units
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_nr_mgmt),change_nr_mgmt]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action=="")&!(is.na(change_nr_mgmt)),.(MGMTUNIT_I,Action,Year,change_nr_mgmt)]), aes(x = Year,y = change_nr_mgmt,group=Year))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~Action,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Delta MGMT UNIT nr by Year and Action", 
+       x="Year",
+       y="Change in nr")
+
+######Plot ir and nr by management action * lat 
+
+#Plot hist of total IR by Action and Lat - transects
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(ir_tran),ir_tran]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action==""),.(TransectID,Action,Year,ir_tran,Lat.Cat,Long.Cat)]), aes(x = Lat.Cat,y = ir_tran))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~Action,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Transect IR by Latitude and Action", 
+       x="Latitude Category",
+       y="IR")
+
+#Plot hist of change in IR by Action and Lat - transects
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_ir_tran),change_ir_tran]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action=="")&!(is.na(change_ir_tran)),.(TransectID,Action,Year,change_ir_tran,Lat.Cat,Long.Cat)]), aes(x = Lat.Cat,y = change_ir_tran))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~Action,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Delta Transect IR by Latitude and Action", 
+       x="Latitude Category",
+       y="Change in IR")
+
+#Plot hist of change in IR by Action and Lat - Mgmt units
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_ir_mgmt),change_ir_mgmt]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action=="")&!(is.na(change_ir_mgmt)),.(MGMTUNIT_I,Action,Year,change_ir_mgmt,Lat.Cat,Long.Cat)]), aes(x = Lat.Cat,y = change_ir_mgmt))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~Action,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Delta MGMT UNIT IR by Latitude and Action", 
+       x="Latitude Category",
+       y="Change in IR")
+
+#Plot hist of total NR by Action and Lat - transects
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(nr_tran),nr_tran]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action==""),.(TransectID,Action,Year,nr_tran,Lat.Cat,Long.Cat)]), aes(x = Lat.Cat,y = nr_tran))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~Action,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Transect nr by Latitude and Action", 
+       x="Latitude Category",
+       y="nr")
+
+#Plot hist of change in NR by Action and Lat - transects
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_nr_tran),change_nr_tran]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action=="")&!(is.na(change_nr_tran)),.(TransectID,Action,Year,change_nr_tran,Lat.Cat,Long.Cat)]), aes(x = Lat.Cat,y = change_nr_tran))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~Action,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Delta Transect nr by Latitude and Action", 
+       x="Latitude Category",
+       y="Change in nr")
+
+#Plot hist of change in NR by Action and Lat - Mgmt units
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_nr_mgmt),change_nr_mgmt]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action=="")&!(is.na(change_nr_mgmt)),.(MGMTUNIT_I,Action,Year,change_nr_mgmt,Lat.Cat,Long.Cat)]), aes(x = Lat.Cat,y = change_nr_mgmt))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~Action,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Delta MGMT UNIT nr by Latitude and Action", 
+       x="Latitude",
+       y="Change in nr")
+
+######Plot ir and nr by management action * lat 
+
+#Plot hist of total IR by Action and Lat - transects
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(ir_tran),ir_tran]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action==""),.(TransectID,Action,Year,ir_tran,Lat.Cat,Long.Cat)]), aes(x = Long.Cat,y = ir_tran))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~Action,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Transect IR by Longitude and Action", 
+       x="Longitude Category",
+       y="IR")
+
+#Plot hist of change in IR by Action and Lat - transects
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_ir_tran),change_ir_tran]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action=="")&!(is.na(change_ir_tran)),.(TransectID,Action,Year,change_ir_tran,Lat.Cat,Long.Cat)]), aes(x = Long.Cat,y = change_ir_tran))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~Action,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Delta Transect IR by Longitude and Action", 
+       x="Longitude Category",
+       y="Change in IR")
+
+#Plot hist of change in IR by Action and Lat - Mgmt units
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_ir_mgmt),change_ir_mgmt]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action=="")&!(is.na(change_ir_mgmt)),.(MGMTUNIT_I,Action,Year,change_ir_mgmt,Lat.Cat,Long.Cat)]), aes(x = Long.Cat,y = change_ir_mgmt))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~Action,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Delta MGMT UNIT IR by Longitude and Action", 
+       x="Longitude Category",
+       y="Change in IR")
+
+#Plot hist of total NR by Action and Lat - transects
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(nr_tran),nr_tran]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action==""),.(TransectID,Action,Year,nr_tran,Lat.Cat,Long.Cat)]), aes(x = Long.Cat,y = nr_tran))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~Action,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Transect nr by Longitude and Action", 
+       x="Longitude Category",
+       y="nr")
+
+#Plot hist of change in NR by Action and Lat - transects
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_nr_tran),change_nr_tran]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action=="")&!(is.na(change_nr_tran)),.(TransectID,Action,Year,change_nr_tran,Lat.Cat,Long.Cat)]), aes(x = Long.Cat,y = change_nr_tran))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~Action,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Delta Transect nr by Longitude and Action", 
+       x="Longitude Category",
+       y="Change in nr")
+
+#Plot hist of change in NR by Action and Lat - Mgmt units
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_nr_mgmt),change_nr_mgmt]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action=="")&!(is.na(change_nr_mgmt)),.(MGMTUNIT_I,Action,Year,change_nr_mgmt,Lat.Cat,Long.Cat)]), aes(x = Long.Cat,y = change_nr_mgmt))+
+  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~Action,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Delta MGMT UNIT nr by Longitude and Action", 
+       x="Longitude",
+       y="Change in nr")
+
+
+```
+
+
+```{r Richness - System Type}
+
+```
+
+
+
+```{r Demeaning}
+#average richness for all observations (at transect level)
+avg_sr=unique(cover[!(Action==""),.(Year,TransectID,sr_tran)])[,avg_sr:=sum(sr_tran)/length(unique(cover[!(Action==""),.(Year,TransectID)])[,Year])]
+avg_sr=avg_sr[,.(Year,TransectID,avg_sr)]
+avg_nr=unique(cover[!(Action=="") & !(is.na(nr_tran)),.(Year,TransectID,nr_tran)])[,avg_nr:=sum(nr_tran)/length(unique(cover[!(Action==""),.(Year,TransectID)])[,Year])]
+avg_nr=avg_nr[,.(Year,TransectID,avg_nr)]
+avg_ir=unique(cover[!(Action=="") & !(is.na(ir_tran)),.(Year,TransectID,ir_tran)])[,avg_ir:=sum(ir_tran)/length(unique(cover[!(Action==""),.(Year,TransectID)])[,Year])]
+avg_ir=avg_ir[,.(Year,TransectID,avg_ir)]
+
+cover = merge(cover,avg_sr,by=c("Year","TransectID"),all = T)
+cover = merge(cover,avg_nr,by=c("Year","TransectID"),all = T)
+cover = merge(cover,avg_ir,by=c("Year","TransectID"),all = T)
+
+#average frequency of each species for all observations
+
+
+#average frequency of each species for all observations
+
+```
+
+```{r Observer Sensitivity}
+#Visualize how SR varies with observer id
+stat_box_data <- function(y, upper_limit = max(cover[!is.na(sr_tran),sr_tran]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+ggplot(unique(cover[!(Action=="") & !(is.na(sr_tran)),.(TransectID,ObsCode,sr_tran)]), aes(x = ObsCode,y = sr_tran,group=ObsCode))+
+  geom_boxplot()+   
+  stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Richness Counts by Observer", 
+       x="Observer",
+       y="SR")
+
+#Lets look at a scatter plot
+
+
+```
+
+#Frequency Analysis
+Frequency can be a useful proxy for abundance. It has already been calculated at the transect level (plots present in / 25 total plots).
+Frequencies can't really be summed or averaged between species unless the species are grouped appropriately. Diversity and similarity metrics will do a better job of looking at aggregate frequency changes.
+
+Another potentially useful way to think about frequency data will be to look at species frequency averaged across SITES and MGMT Units (can then categorize by region as a possible site effect...or something else)...HUGH this will be tricky to determine the denominator.
+
+Visualize species frequency by: 
+Delta 
+- all species
+- all species averaged a
+- invasive vs. native
+- indicator status
+
+Average frequency for each transect & mgmt unit AND year by:
+- invasive vs. native
+- indicator status
+
+Calculate first difference changes for these catagories. 
+
+```{r Frequency All Species}
+
+# Calculate Species level frequency
+change_f.tran = unique(cover[!(Action=="") & Delta == 1, .(TransectID, SpeciesID, Freq.T,Year)])
+change_f.mgmt = unique(cover[!(Action=="") & Delta == 1, .(MGMTUNIT_I, SpeciesID, Freq.M,Year)])
+
+change_f.tran[order(Year), change_f.tran := Freq.T-shift(Freq.T), by =.(TransectID, SpeciesID)]
+change_f.mgmt[order(Year), change_f.mgmt := Freq.M-shift(Freq.M), by =.(MGMTUNIT_I, SpeciesID)]
+
+cover=merge(cover,change_f.tran,by=c("TransectID","SpeciesID","Freq.T","Year"),all = T)
+cover=merge(cover,change_f.mgmt,by=c("MGMTUNIT_I","SpeciesID","Freq.M","Year"),all = T)
+
+# also visualize changes in frequency for all species but maybe break out by these categories (full visualization not just an average)
+
+ggplot(unique(cover[!(Action==""),.(TransectID,Year, Freq.T,SpeciesID, Native.Status)]), aes(x = Year,y = Freq.T ,group = SpeciesID & TransectID))+
+  geom_line() +
+  geom_point() +
+   facet_wrap(~Native.Status,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title="Species Freqeuncy", 
+       x="Year",
+       y="Frequency")
+
+
+### Calculate yearly species-level frequency as an average across: everywhere, (sites & mgmt units already done). Then add delta values.
+
+#everywhere, requires considering transects where species is not present as an absence
+Freq.all =unique(cover[!(is.na(Freq.T)),.(Freq.T,Year,SpeciesID,TransectID)])
+Freq.all = merge(Freq.all,cover[,length(unique(TransectID)),by=Year],by="Year", all=T) #essentially a transects observed count for that year
+Freq.all[,Freq.all:=sum(Freq.T)/unique(V1), by = .(SpeciesID, Year)]
+Freq.all[,V1:=NULL]
+
+#delta all species frequesncy is a little different than the prior differences. I will average transect level differences rather than take the differences of Freq.all (which is already an average)
+change_f.all = unique(cover[!(is.na(change_f.tran)),.(change_f.tran,Year,SpeciesID,TransectID)])
+change_f.all[,change_f.all:=mean(change_f.tran),by=.(SpeciesID,Year)] #unlike Freq.all this does not use all transects observed that year as the denominator because change is dependent on prior years measured and NA values should not be assumed to be 0 (as they are with presence absence NA values for original frequency)
+
+#Merge back onto cover
+cover=merge(cover,Freq.all,by=c("Year","SpeciesID","Freq.T","TransectID"),all = T)
+cover=merge(cover,change_f.all,by=c("Year","SpeciesID","change_f.tran","TransectID"),all = T)
+
+
+
+#Quick visualize
+#ggplot(unique(cover[!(Action=="")&!(is.na(Freq.all)),.(Freq.all,Year,SpeciesID,Native.Status,Indicator)]), aes(x = Year,y = Freq.all,group = Year))+
+  geom_boxplot()+
+  #stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~Native.Status,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  coord_cartesian(ylim = c(0, 0.05))+
+  labs(title="Species Average frequency by Year", 
+       x="Year",
+       y="Species Frequency")
+
+
+ ggplot(unique(cover[!(Action=="")&!(is.na(change_f.all)),.(change_f.all,Year,SpeciesID,Native.Status,Indicator)]), aes(x = Year,y = change_f.all,group = Year))+
+  geom_boxplot()+
+  #stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~Native.Status,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  coord_cartesian(ylim = c((-0.2), 0.25))+
+  labs(title="Average change in species frequency by Year", 
+       x="Year",
+       y="Change in Species Frequency")
+  
+  ggplot(unique(cover[!(Action=="")&!(is.na(change_f.all)),.(change_f.all,Year,SpeciesID,Native.Status,Indicator)]), aes(x = Native.Status,y = change_f.all,group = Native.Status))+
+  geom_boxplot()+
+  #stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~Year,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  coord_cartesian(ylim = c((-0.2), 0.25))+
+  labs(title="Average change in species frequency by Status", 
+       x="Year",
+       y="Change in Species Frequency")
+
+  
+  stat_box_data <- function(y, upper_limit = 0.25) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+  
+  ggplot(unique(cover[!(Action=="")&!(is.na(change_f.all)) & !(Indicator==0), .(change_f.all,Year,SpeciesID,Native.Status,Indicator)]), aes(x = Indicator,y = change_f.all,group = Indicator))+
+  geom_boxplot()+
+  stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~Year,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  coord_cartesian(ylim = c((-0.2), 0.25))+
+  labs(title="Average change in species frequency by Status", 
+       x="Year",
+       y="Change in Species Frequency")
+  
+  
+```
+
+The above boxplots show frequency changes for each species averaged across sites. However this not only removes the ability to compare site effects but also treatment effects. Create new boxplots to examine impacts on species frequency without pre-averaging across sites. To avoid having to make a boxplot for each species, facet wrap by our categories. 
+
+Freq.T = species frequency at each transect for that year. Later I look at the mean of these values by species categories. 
+
+```{r Frequency Visualization - by species}
+
+#First create a matrix of the plot types to make, use for loop to create boxplots
+x.list = c("Year","Long.Cat","Lat.Cat")
+y.list = c("Freq.T","change_f.tran")
+Group = rep(c("Native.Status","Indicator"),each=length(x.list),times=length(y.list))
+Y = rep(y.list,each = (length(Group)/length(unique(Group))))
+X = c(rep(x.list,times = length(Y)/length(x.list)))
+Action = c(rep(c("Action"),times = length(Y))) 
+
+freq.vis = as.data.table(cbind(Y, X ,Group, Action))
+
+# First create boxplots - species freq x Year/Lat/Long * Species Group * Action
+
+for (i in 1:(freq.vis[,(length(Action)/2)])) {
+  
+  stat_box_data <- function(y, upper_limit = max (cover[!is.na(eval(parse(text=(as.character(freq.vis[i,Y]))))), eval(parse(text=(as.character(freq.vis[i,Y]))))]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+plot = ggplot(unique(cover[!(Action=="")&!(is.na(eval(parse(text=(as.character(freq.vis[i,Y])))))), 
+              .(TransectID, SpeciesID, Action, Year, eval(parse(text=(as.character(freq.vis[i,Y])))), Lat.Cat,Long.Cat,Native.Status,Indicator)]), 
+              aes(x = eval(parse(text = (as.character(freq.vis[i,X])))),  
+                  y= V5, fill= eval(parse(text=(as.character(freq.vis[i,Group])))))) +
+  geom_boxplot() +   
+  stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~ Action,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  coord_cartesian(ylim = c((-.02), 1))+
+  labs(title= paste("Frequency - ",as.character(freq.vis[i,Y]), "by", as.character(freq.vis[i,X]), sep = " "), 
+       x= as.character(freq.vis[i,X]),
+       y= as.character(freq.vis[i,Y]),
+       fill="Species Category")
+  print(plot)
+    }
+
+#Create boxplots - delta species freq x Year/Lat/Long * Species Group * Action
+for (i in (freq.vis[,length(Action)]/2):freq.vis[,length(Action)]) {
+  
+  stat_box_data <- function(y, upper_limit = max (cover[!is.na(eval(parse(text=(as.character(freq.vis[i,Y]))))), eval(parse(text=(as.character(freq.vis[i,Y]))))]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+plot = ggplot(unique(cover[!(Action=="")&!(is.na(eval(parse(text=(as.character(freq.vis[i,Y])))))), 
+              .(TransectID, SpeciesID, Action, Year, eval(parse(text=(as.character(freq.vis[i,Y])))), Lat.Cat,Long.Cat,Native.Status,Indicator)]), 
+              aes(x = eval(parse(text = (as.character(freq.vis[i,X])))),  
+                  y= V5, fill= eval(parse(text=(as.character(freq.vis[i,Group])))))) +
+  geom_boxplot() +   
+  stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~ Action,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  coord_cartesian(ylim = c((-0.5), 0.5))+
+  labs(title= paste("Frequency - ",as.character(freq.vis[i,Y]), "by", as.character(freq.vis[i,X]), sep = " "), 
+       x= as.character(freq.vis[i,X]),
+       y= as.character(freq.vis[i,Y]),
+       fill="Species Category")
+  print(plot)
+    }
+
+#Look at delta F with facet wrap Species Category rather than Action
+for (i in (freq.vis[,length(Action)]/2+1):freq.vis[,length(Action)]) {
+  
+  stat_box_data <- function(y, upper_limit = max (cover[!is.na(eval(parse(text=(as.character(freq.vis[i,Y]))))), eval(parse(text=(as.character(freq.vis[i,Y]))))]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+plot = ggplot(unique(cover[!(Action=="")&!(is.na(eval(parse(text=(as.character(freq.vis[i,Y])))))), 
+              .(TransectID, SpeciesID, Action, Year, eval(parse(text=(as.character(freq.vis[i,Y])))), Lat.Cat,Long.Cat,Native.Status,Indicator)]), 
+              aes(x = eval(parse(text = (as.character(freq.vis[i,X])))),  
+                  y= V5, fill= Action)) +
+  geom_boxplot() +   
+  stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~ eval(parse(text=(as.character(freq.vis[i,Group])))),nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  coord_cartesian(ylim = c((-0.5), 0.5))+
+  labs(title= paste("Frequency - ",as.character(freq.vis[i,Y]), "by", as.character(freq.vis[i,X]), sep = " "), 
+       x= as.character(freq.vis[i,X]),
+       y= as.character(freq.vis[i,Y]),
+       fill="Species Category")
+  print(plot)
+    }
+
+```
+
+```{r Frequency Categories}
+#Calculate mean frequencies 
+cover[!(is.na(Freq.T)), allf.tran:=mean(Freq.T), by = .(TransectID, Year)]
+cover[!(is.na(Freq.M)), allf.mgmt:=mean(Freq.M), by = .(MGMTUNIT_I, Year)]
+
+cover[!(is.na(Freq.T)) & Native.Status=="N", nf.tran:=mean(Freq.T), by = .(TransectID, Year)]
+cover[!(is.na(Freq.M)) & Native.Status=="N", nf.mgmt:=mean(Freq.M), by = .(MGMTUNIT_I, Year)]
+
+cover[!(is.na(Freq.T)) & Native.Status=="I", if.tran:=mean(Freq.T), by = .(TransectID, Year)]
+cover[!(is.na(Freq.M)) & Native.Status=="I", if.mgmt:=mean(Freq.M), by = .(MGMTUNIT_I, Year)]
+
+cover[!(is.na(Freq.T)) & (Indicator=="I1" | Indicator=="I2") , indf.i.tran:=mean(Freq.T), by = .(TransectID, Year)]
+cover[!(is.na(Freq.M)) & (Indicator=="I1" | Indicator=="I2") , indf.i.mgmt:=mean(Freq.M), by = .(MGMTUNIT_I, Year)]
+
+cover[!(is.na(Freq.T)) & Indicator=="I1" , indf.i1.tran:=mean(Freq.T), by = .(TransectID, Year)]
+cover[!(is.na(Freq.M)) & Indicator=="I1" , indf.i1.mgmt:=mean(Freq.M), by = .(MGMTUNIT_I, Year)]
+
+cover[!(is.na(Freq.T)) & Indicator=="I2" , indf.i2.tran:=mean(Freq.T), by = .(TransectID, Year)]
+cover[!(is.na(Freq.M)) & Indicator=="I2" , indf.i2.mgmt:=mean(Freq.M), by = .(MGMTUNIT_I, Year)]
+
+cover[!(is.na(Freq.T)) & (Indicator=="N1" | Indicator=="N2") , indf.n.tran:=mean(Freq.T), by = .(TransectID, Year)]
+cover[!(is.na(Freq.M)) & (Indicator=="N1" | Indicator=="N2") , indf.n.mgmt:=mean(Freq.M), by = .(MGMTUNIT_I, Year)]
+
+cover[!(is.na(Freq.T)) & Indicator=="N1" , indf.n1.tran:=mean(Freq.T), by = .(TransectID, Year)]
+cover[!(is.na(Freq.M)) & Indicator=="N1" , indf.n1.mgmt:=mean(Freq.M), by = .(MGMTUNIT_I, Year)]
+
+cover[!(is.na(Freq.T)) & Indicator=="N2" , indf.n2.tran:=mean(Freq.T), by = .(TransectID, Year)]
+cover[!(is.na(Freq.M)) & Indicator=="N2" , indf.n2.mgmt:=mean(Freq.M), by = .(MGMTUNIT_I, Year)]
+
+cover[!(is.na(Freq.T)) & Indicator=="D" , indf.d.tran:=mean(Freq.T), by = .(TransectID, Year)]
+cover[!(is.na(Freq.M)) & Indicator=="D" , indf.d.mgmt:=mean(Freq.M), by = .(MGMTUNIT_I, Year)]
+
+
+# Calc first differences in a loop (go back and turn prior code into loop formate to speed coding)
+
+#Create list of variables names for loop
+freq.list = data.frame(freq = c("allf.tran", "allf.mgmt","nf.tran","nf.mgmt","if.tran","if.mgmt","indf.i.tran","indf.i.mgmt","indf.i1.tran","indf.i1.mgmt","indf.i2.tran","indf.i2.mgmt","indf.n1.tran","indf.n1.mgmt","indf.n2.tran","indf.n2.mgmt","indf.d.tran","indf.d.mgmt"))
+
+freq.list$change = apply(freq.list,2,function(x) paste("change",freq.list$freq,sep = "_"))
+colnames(freq.list[2])
+
+for (i in 1:length(freq.list$freq)) {
+  z = cover[,freq.list[i,1],with=FALSE]
+  z = cbind(z,cover[,.(Year,TransectID,Delta)])[Delta==1,][!(is.na(eval(parse(text=(as.character(freq.list[i,1])))))),]
+  z=unique(z[order(Year),])
+  z[, paste(freq.list[i,2]) := eval(parse(text=(as.character(freq.list[i,1]))))-shift(eval(parse(text=(as.character(freq.list[i,1]))))),  
+    by = .(TransectID)]
+  z[,Delta:=NULL]
+  cover = merge(cover,z,by = c("Year","TransectID",as.character(freq.list[i,1])),all = T)
+}
+
+colnames(freq.list[2]) = "change"
+```
+
+Visualize Frequency 
+- create plots to examine frequency over time, latitude, longitude * action for transects and mgmt units
+
+```{r Frequency Visualization Setup}
+
+#First create a matrix of the plot types to make, use for loop to create boxplots
+x.list = c("Year","Long.Cat","Lat.Cat")
+y.list = rep(c(as.character(freq.list[,1]),freq.list[,2]),times = length(x.list))
+X = c(rep(x.list,each = length(y.list)/length(x.list)))
+Action = c(rep(c("Action"),times = length(y.list))) 
+Size = c(rep(c("TransectID","MGMTUNIT_I"),times = length(y.list)/2)) 
+
+freq.vis = as.data.table(cbind(Y= y.list, X , Action, Size))
+
+```
+
+```{r Frequency Visualization - no action}
+
+# First create boxplots to examing how varying levels of frequency changes over time and space
+
+for (i in 1:(freq.vis[,length(Action)]/2)) {
+  
+  stat_box_data <- function(y, upper_limit = max (cover[!is.na(eval(parse(text=(as.character(freq.vis[i,Y]))))), eval(parse(text=(as.character(freq.vis[i,Y]))))]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+plot = ggplot(unique(cover[!(Action=="")&!(is.na(eval(parse(text=(as.character(freq.vis[i,Y])))))),.(MGMTUNIT_I,TransectID,Action,Year,eval(parse(text=(as.character(freq.vis[i,Y])))),Lat.Cat,Long.Cat)]), aes(x = eval(parse(text=(as.character(freq.vis[i,X])))),y = V5, group= eval(parse(text=(as.character(freq.vis[i,X])))))) +
+  geom_boxplot() +   
+  stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  #facet_wrap(~Action,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title= paste("Frequency - ",as.character(freq.vis[i,Y]), "by", as.character(freq.vis[i,X]), sep = " "), 
+       x= as.character(freq.vis[i,X]),
+       y= as.character(freq.vis[i,Y]))
+  print(plot)
+  
+    }
+
+```
+
+```{r Frequency Visualization - action}
+
+# Create boxplots showing frequency variation over time and space as a product of action
+
+for (i in 1:(freq.vis[,length(Action)]/2)) {
+  
+  stat_box_data <- function(y, upper_limit = max (cover[!is.na(eval(parse(text=(as.character(freq.vis[i,Y]))))), eval(parse(text=(as.character(freq.vis[i,Y]))))]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+plot = ggplot(unique(cover[!(Action=="")&!(is.na(eval(parse(text=(as.character(freq.vis[i,Y])))))),.(MGMTUNIT_I,TransectID,Action,Year,eval(parse(text=(as.character(freq.vis[i,Y])))),Lat.Cat,Long.Cat)]), aes(x = eval(parse(text=(as.character(freq.vis[i,X])))),y = V5, group= eval(parse(text=(as.character(freq.vis[i,X])))))) +
+  geom_boxplot() +   
+  stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~Action,nrow = 2)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title= paste("Frequency - ",as.character(freq.vis[i,Y]), "by", as.character(freq.vis[i,X]), sep = " "), 
+       x= as.character(freq.vis[i,X]),
+       y= as.character(freq.vis[i,Y]))
+  print(plot)
+
+    }
+ 
+```
+
+#Cover Analysis
+Because of the binning methodology, this will be tricky. 
+
+Binning reminder: 
+Method 1 - Average bin values, to be compared between like years (2008-2012, 2015-2018)  
+Method 2 - All years comparison (3 bins - <10, 11-50, 51-100) 
+Method 3 - Compare 2013 or 2014 to 2015-2018  (11 bins - 1-5, 6-10, 11-20, 21-30, etc.)  
+Method 4 - Compare 2013 and 2014 (13 bins - 1-3, 4-5, 6-10, 11-20, 21-30, etc..., 100%) UNLESS using Minneopa site (use wrong bins) 
+
+Start with the most inclusive binning method... 2
+
+Compare transect & Mgmt level coverage for: 
+- each species relative to year, action, location
+- Invasive and Native species - individual and mean coverage
+- Indicator species -  individual and mean coverage
+
+Then analyze change in coverage.
+
+```{r Cover Analysis - Setup}
+
+```
+
+
+###First plot native and invasive richness overall 
+#IR
+hist(unique(cover[!(is.na(ir_tran))][,.(Year,TransectID,ir_tran)])[,ir_tran],freq = T,main = "ir - Transects",xlab = "Total ir",ylab = "Number of Transects",breaks = length(unique(cover[!(is.na(ir_tran)),ir_tran]))) #all
+
+hist(unique(cover[!(is.na(change_ir_tran))][,.(Year,TransectID,change_ir_tran)])[,change_ir_tran],freq = T,main = "ir First Diff - Transects",xlab = "Delta ir",ylab = "Number of Transects",breaks = length(unique(cover[!(is.na(change_ir_tran)),change_ir_tran]))) #delta
+
+hist(unique(cover[!(is.na(ir_mgmt))][,.(Year,MGMTUNIT_I,ir_mgmt)])[,ir_mgmt],freq = T,main = "ir - MGMT Units",xlab = "Total ir",ylab = "Number of MGMT Units",breaks = length(unique(cover[!(is.na(ir_mgmt)),ir_mgmt]))) #all
+
+hist(unique(cover[!(is.na(change_ir_mgmt))][,.(Year,MGMTUNIT_I,change_ir_mgmt)])[,change_ir_mgmt],freq = T,main = "ir First Diff - MGMT Units",xlab = "Delta ir",ylab = "Number of MGMT Units",breaks = length(unique(cover[!(is.na(change_ir_mgmt)),change_ir_mgmt]))) #delta
+
+hist(unique(cover[!(is.na(ir_site))][,.(Year,SITE_ID,ir_site)])[,ir_site],freq = T,main = "ir - Sites",xlab = "Total ir",ylab = "Number of Sites",breaks = length(unique(cover[!(is.na(ir_site)),ir_site]))) #all
+
+hist(unique(cover[!(is.na(change_ir_site))][,.(Year,SITE_ID,change_ir_site)])[,change_ir_site],freq = T,main = "ir First Diff - Sites",xlab = "Delta ir",ylab = "Number of Sites",breaks = length(unique(cover[!(is.na(change_ir_site)),change_ir_site]))) #delta
+
+#NR
+hist(unique(cover[!(is.na(nr_tran))][,.(Year,TransectID,nr_tran)])[,nr_tran],freq = T,main = "nr - Transects",xlab = "Total nr",ylab = "Number of Transects",breaks = length(unique(cover[!(is.na(nr_tran)),nr_tran]))) #all
+
+hist(unique(cover[!(is.na(change_nr_tran))][,.(Year,TransectID,change_nr_tran)])[,change_nr_tran],freq = T,main = "nr First Diff - Transects",xlab = "Delta nr",ylab = "Number of Transects",breaks = length(unique(cover[!(is.na(change_nr_tran)),change_nr_tran]))) #delta
+
+hist(unique(cover[!(is.na(nr_mgmt))][,.(Year,MGMTUNIT_I,nr_mgmt)])[,nr_mgmt],freq = T,main = "nr - MGMT Units",xlab = "Total nr",ylab = "Number of MGMT Units",breaks = length(unique(cover[!(is.na(nr_mgmt)),nr_mgmt]))) #all
+
+hist(unique(cover[!(is.na(change_nr_mgmt))][,.(Year,MGMTUNIT_I,change_nr_mgmt)])[,change_nr_mgmt],freq = T,main = "nr First Diff - MGMT Units",xlab = "Delta nr",ylab = "Number of MGMT Units",breaks = length(unique(cover[!(is.na(change_nr_mgmt)),change_nr_mgmt]))) #delta
+
+hist(unique(cover[!(is.na(nr_site))][,.(Year,SITE_ID,nr_site)])[,nr_site],freq = T,main = "nr - Sites",xlab = "Total nr",ylab = "Number of Sites",breaks = length(unique(cover[!(is.na(nr_site)),nr_site]))) #all
+
+hist(unique(cover[!(is.na(change_nr_site))][,.(Year,SITE_ID,change_nr_site)])[,change_nr_site],freq = T,main = "nr First Diff - Sites",xlab = "Delta nr",ylab = "Number of Sites",breaks = length(unique(cover[!(is.na(change_nr_site)),change_nr_site]))) #delta
+
+
+```{r Native vs Invasive Cover}
+## Percent cover of introduced species (non-native to the site) per plot and year  ## 
+## compute total cover of non-natives # local_provenance == INT
+#cover[, NonNative_cover.yr := sum(relative_sp_cover.yr[local_provenance=="INT"]), by = .(plot, site_code, year)]
+#head(cover)
+
+  #spot check with example
+    #arch.nonnativecover = cover[site_code == "arch.us", .(year, plot, NonNative_cover.yr),]
+  # sites we know have a lot of invasives    
+    #cover[site_code == "ping.au", .(year, plot, NonNative_cover.yr),]
+    #cover[site_code == "pinj.au", .(year, plot, NonNative_cover.yr),]
+    #over[site_code == "smith.us", .(year, plot, NonNative_cover.yr),]
+
+## Compute Native species cover 
+#cover[, Native_cover.yr := sum(relative_sp_cover.yr[local_provenance=="NAT"]), by = .(plot, site_code, year)]
+
+##########################################################################################################
+### Annual vs Perennial Variables ########################################################################
+###########################################################################################################
+
+### Now do for an annual and perennial cover
+# Compute richness in annuals and perennials
+#cover[, sr_annual := length(unique(Taxon[local_lifespan=="ANNUAL"])), by = .(plot, site_code, year)]
+#cover[, sr_peren := length(unique(Taxon[local_lifespan=="PERENNIAL"])), by = .(plot, site_code, year)]
+#cover[, sr_null.lspan := length(unique(Taxon[local_lifespan=="NULL"])), by = .(plot, site_code, year)]  # this includes a lot non-live. 
+#cover[, sr_biennial := length(unique(Taxon[local_lifespan=="BIENNIAL"])), by = .(plot, site_code, year)]
+#cover[, sr_indeter := length(unique(Taxon[local_lifespan=="INDETERMINATE"])), by = .(plot, site_code, year)]
+
+# plot 
+#hist(cover$sr_annual)
+#summary(cover$sr_annual)
+#summary(cover$sr_annual)
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+# 0.00    0.00    1.00    3.13    4.00   23.00 
+#hist(cover$sr_peren)
+#summary(cover$sr_peren)
+#Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#0.00    4.00    8.00   10.21   14.00   41.00 
+
+# Compute first differences 
+#cover[order(year), change_sr_annual := sr_annual-shift(sr_annual), by =.(plot, site_code)]
+#cover[order(year), change_sr_peren := sr_peren-shift(sr_peren), by =.(plot, site_code)]
+
+
+
+
+
+#######################################################################################################
+### Functional Group variables (e.g., Grass vs Forbs) ####################################################
+#######################################################################################################
+
+## Combine Graminoid and Grass into a single category 
+# Graminoid + Grass = Graminoids
+cover[functional_group == "GRASS" , functional_group:= "GRAMINOID"]
+
+### Richness of grasses, woody, forbs  from the "functional_group" column
+# Grasses & Graminoids
+cover[, sr_graminoid := length(unique(Taxon[functional_group=="GRAMINOID"])), by = .(plot, site_code, year)]
+# forbs
+cover[, sr_forbs := length(unique(Taxon[functional_group=="FORB"])), by = .(plot, site_code, year)]
+# woody
+cover[, sr_woody := length(unique(Taxon[functional_group=="WOODY"])), by = .(plot, site_code, year)]
+# legumes
+cover[, sr_legume := length(unique(Taxon[functional_group=="LEGUME"])), by = .(plot, site_code, year)]
+# Bryophyte
+cover[, sr_bryophyte := length(unique(Taxon[functional_group=="BRYOPHYTE"])), by = .(plot, site_code, year)]
+# Cactus
+cover[, sr_cactus := length(unique(Taxon[functional_group=="CACTUS"])), by = .(plot, site_code, year)]
+# Null
+cover[, sr_null.fctgroup := length(unique(Taxon[functional_group=="NULL"])), by = .(plot, site_code, year)]
+# Non-live
+cover[, sr_non.live := length(unique(Taxon[functional_group=="NON-LIVE"])), by = .(plot, site_code, year)]
+
+## Compute first differences ###
+cover[order(year), change_sr_graminoid := sr_graminoid - shift(sr_graminoid), by =.(plot, site_code)]
+cover[order(year), change_sr_woody := sr_woody - shift(sr_woody), by =.(plot, site_code)]
+#summary(cover$change_sr_woody)
+cover[order(year), change_sr_forbs := sr_forbs -shift(sr_forbs), by =.(plot, site_code)]
+#summary(cover$change_sr_forbs)
+cover[order(year), change_sr_legume := sr_legume -shift(sr_legume), by =.(plot, site_code)]
+cover[order(year), change_sr_bryophyte := sr_bryophyte -shift(sr_bryophyte), by =.(plot, site_code)]
+cover[order(year), change_sr_cactus := sr_cactus  -shift(sr_cactus), by =.(plot, site_code)]
+cover[order(year), change_sr_null.fctgroup := sr_null.fctgroup - shift(sr_null.fctgroup), by =.(plot, site_code)]
+cover[order(year), change_sr_non.live := sr_non.live - shift(sr_non.live), by =.(plot, site_code)]
+
+### Compute over by Functional groups - grasses, woody, forbs, legumes, etc -- per plot and year
+cover[, GrassPercentcover.yr := sum(relative_sp_cover.yr[functional_group=="GRASS"]), by = .(plot, site_code, year)]
+cover[, ForbPercentcover.yr := sum(relative_sp_cover.yr[functional_group=="FORB"]), by = .(plot, site_code, year)]
+cover[, WoodyPercentcover.yr := sum(relative_sp_cover.yr[functional_group=="WOODY"]), by = .(plot, site_code, year)]
+cover[, LegumePercentcover.yr := sum(relative_sp_cover.yr[functional_group=="LEGUME"]), by = .(plot, site_code, year)]
+
+hist(cover$LegumePercentcover.yr)
+plot(cover$LegumePercentcover.yr ~ cover$year)
+lm(cover$LegumePercentcover.yr ~ as.numeric(cover$year))
+# Coefficients:
+#   (Intercept)  as.numeric(cover$year)  
+# 2.107210               -0.001027 
+abline(lm(cover$LegumePercentcover.yr ~ as.numeric(cover$year)))
+
+
+# Lagged Legume cover per year
+cover[order(year), lagged_LegumePercentCover.yr := shift(LegumePercentcover.yr), by =.(plot, site_code)]
+
+##############################################################################################################################
+### N-Fixing Species Variables ##############################################################################################
+##############################################################################################################################
+
+### Number of N-fixer in a plot over time
+cover[, sr_Nfixer := length(unique(Taxon[N_fixer==1])), by = .(plot, site_code, year)]
+cover[, sr_non.Nfixer := length(unique(Taxon[N_fixer==0])), by = .(plot, site_code, year)]
+# what are the plots where there are 0 species that are NOT n-fixers?
+  hist(cover$sr_non.Nfixer)
+  table(cover$sr_non.Nfixer)
+  
+# change in N-fixers in a plot
+cover[order(year), change_sr_Nfixer := sr_Nfixer-shift(sr_Nfixer), by =.(plot, site_code)]
+hist(cover$change_sr_Nfixer)
+summary(cover$change_sr_Nfixer)
+
+# lagged N-fixer richness
+cover[order(year), lagged_sr_Nfixer := shift(sr_Nfixer), by =.(plot, site_code)]
+
+### Percent cover of N-fixers ###
+cover[, N_fixer_cover.yr := sum(relative_sp_cover.yr[N_fixer==1]), by = .(plot, site_code, year)]
+# change in N-fixer cover
+cover[order(year), change_N_fixer_cover := N_fixer_cover.yr - shift(N_fixer_cover.yr), by = .(plot, site_code, year)]
+
+# Lagged N_fixer cover
+cover[order(year), lagged_N_fixer_cover.yr := shift(N_fixer_cover.yr), by =.(plot, site_code)]
+
+plot(cover$lagged_N_fixer_cover.yr ~ cover$year)
+abline(lm(cover$lagged_N_fixer_cover.yr ~ as.numeric(cover$year)))
+lm(cover$lagged_N_fixer_cover.yr ~ as.numeric(cover$year))
+#   Coefficients:
+#     (Intercept)  as.numeric(cover$year)  
+#   2.612394               -0.001279
+
+summary(cover$change_N_fixer_cover)
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+# 0       0       0       0       0       0   14822 
+
+
+
+
+### Do relative abundance of live cover only. 
+# Do SR of live only, throughout?
+### do this for live cover only (discussed w Kim in June)
+
+### Dominance indicator calculation ###
+# Use the dominance indicator metric from Avoilio et al (seperates dominance indication from impact)
+  # DI = (average relative abundance + relative frequency)/2
+    #Relative abundance = abundance of a species a in sampling unit / total abundance of all species in a sampling unit
+    #Relative frequency = number of sampling units a species occurred / total number of sampling units
+# note: ranges from 0-1; Relative abundance can be any measure of abundance. Does not incorporate a measure of impact.
+# There is not a cutoff for "which range from 0-1 = dominant species versus subordinate or rare, in the Avolio et al paper # 
+# so if we want to group species in these groups, we will need to make one (then also should test robustness to that decision)
+
+#for LIVE cover
+cover[, ave_rel_abundance_over_time.live := ave(relative_sp_cover.yr.live), by = .(Taxon, plot, site_code)]
+hist(cover$ave_rel_abundance_over_time.live)
+summary(cover$ave_rel_abundance_over_time.live) 
+
+# relative abundance per species and plot in pre-treatment year (year_trt == 0)
+cover[, rel_abundance_year0 := relative_sp_cover.yr.live[year_trt == 0], by = .(Taxon, plot, site_code)]
+hist(cover$rel_abundance_year0, xlab = "Average relative abundance at a site", main ="")
+summary(cover$rel_abundance_year0)
+
+## Compute Relative Frequency per spp AT THE SITE (defining dominance in space, not time/across years)
+# "Relative frequency = number of sampling units a species occurred / total number of sampling units" 
+# this should be # of plots within a site that the species occured in / total # of plots within a site, for pre-treatment year 
+
+#total # of plots within a site, for pre-treatment year 
+# & to filter to do just on the live species:
+cover[, tot.num.plots := length(unique(plot[year_trt == 0])), by =.(site_code)]
+
+#number of plots within a site, in the pre-treatment year, a species occurred in:
+# & to filter to do just on the live species:
+cover[, tot.num.plots.with.spp := length(unique(plot[year_trt == 0 & live==1])), by =.(site_code, Taxon)]
+
+# test to see if it works
+  abisko.test = cover[site_code == "abisko.se" , ]
+
+#Compute Relative Frequency
+# " Relative frequency = number of sampling units a species occurred / total number of sampling units" 
+cover[, rel_freq.space :=  tot.num.plots.with.spp/tot.num.plots, by = .(plot, site_code)]
+#check to make sure we took out duplicates, max should be 1
+hist(cover$rel_freq.space, xlab = "Frequency at the site in pre-treatment year", main = "Frequency of occurrence")
+summary(cover$rel_freq.space)
+
+## Compute the DI per species 
+# DI = (average relative abundance + relative frequency)/2
+
+#FOR LIVE COVER -- the dead cover will be 0.
+cover[, DI := (rel_abundance_year0 + rel_freq.space)/2 , by =.(Taxon, plot, site_code)]
+
+summary(cover$DI)
+
+## filter to only the live (the dead cover will be 0, which inflates the 0, bc of how we computed stuff above)
+hist(cover[live == 1,DI], xlab = "Dominance indicator (DI)", main = "Dominance indicator metric")
+summary(cover[live == 1,DI])
+
+####### Make Categorical Variables of Dominance too ########
+
+# then given them a ranking into different categories? 
+# to look at changes in those types of species and the impact on productivity?
+## sub-ordinate and rare -- how can I compute this? ###########
+cover[, DIgroup:=cut(DI, breaks=c(0.0,0.2,0.8,1.0), labels=c("Rare","Subordinate","Dominant"))]
+
+#richness in each group 
+#*MAKE SURE ONLY TO DO FOR LIVE 
+cover[, sr_domspp := length(unique(Taxon[DIgroup == "Dominant"])), by = .(plot, site_code, year)]
+cover[, sr_rarespp := length(unique(Taxon[DIgroup == "Rare"])), by = .(plot, site_code, year)]
+cover[, sr_subordspp := length(unique(Taxon[DIgroup == "Subordinate"])), by = .(plot, site_code, year)]
+
+summary(cover$sr_domspp) # max is 2 species that are dominant 
+summary(cover$sr_subordspp) 
+summary(cover$sr_rare) 
+
+# compute change in richness in each group 
+cover[order(year), change_sr_domspp := sr_domspp -shift(sr_domspp), by =.(plot, site_code)]
+cover[order(year), change_sr_rarespp := sr_rarespp -shift(sr_rarespp), by =.(plot, site_code)]
+cover[order(year), change_sr_subordspp := sr_subordspp -shift(sr_subordspp), by =.(plot, site_code)]
+
+summary(cover$change_sr_domspp) 
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+# -1.0000  0.0000  0.0000  0.0012  0.0000  1.0000    3005 
+summary(cover$change_sr_subordspp) 
+# > summary(cover$change_sr_subordspp) 
+# Min.  1st Qu.   Median     Mean  3rd Qu.     Max.     NA's 
+# -13.0000   0.0000   0.0000  -0.0327   0.0000  10.0000     3005 
+
+summary(cover$change_sr_rare) 
+# Min.  1st Qu.   Median     Mean  3rd Qu.     Max.     NA's 
+# -13.0000   0.0000   0.0000  -0.0199   0.0000   7.0000     3005 
+
+# lagged effects of sr in these groups
+cover[order(year), lagged_sr_rarespp := shift(sr_rarespp), by =.(plot, site_code)]
+cover[order(year), lagged_sr_domspp := shift(sr_domspp), by =.(plot, site_code)]
+cover[order(year), lagged_sr_subordspp := shift(sr_subordspp), by =.(plot, site_code)]
+
+
+plot(ave_rel_abundance_over_time.live ~ DI, data= cover)
+abline(lm(ave_rel_abundance_over_time.live ~ DI, data= cover), col = "yellow")
+plot(relative_sp_cover.yr.live ~ DI, data = cover)
+
+
+## Make a variable that captures changes in *cover* of species classified as dominance, rare, subordinate each year 
+# (so we can look at variations from year to year)
+cover[, Dom_cover.yr := sum(relative_sp_cover.yr[DIgroup=="Dominant"]), by = .(plot, site_code, year)]
+cover[, Subord_cover.yr := sum(relative_sp_cover.yr[DIgroup=="Subordinate"]), by = .(plot, site_code, year)]
+cover[, Rare_cover.yr := sum(relative_sp_cover.yr[DIgroup=="Rare"]), by = .(plot, site_code, year)]
+
+hist(cover$Dom_cover.yr)
+hist(cover$Rare_cover.yr)
+hist(cover$Subord_cover.yr)
+plot(cover$Rare_cover.yr, cover$sr_rarespp)
+plot(cover$Dom_cover.yr, cover$sr_rarespp)
+
+# make a change in the relative_sp_cover.yr.live and then look at relationship with DI?
+cover[order(year), change_rel_abundance_time.live := relative_sp_cover.yr.live - shift(relative_sp_cover.yr.live), by =.(plot, site_code)]
+
+plot(change_rel_abundance_time.live ~ DI, data= cover)
+
+#plot this change_rel_abundance_time.live by each DI grouping category
+# need to label each spp as rare, dominate or subordinate to do this, and then put in facet r
+
+#maybe should do this as average change per spp?
+ggplot(data = cover, aes(x = change_rel_abundance_time.live)) + geom_histogram()+ facet_wrap(~site_code) + theme_bw() +
+  geom_vline(xintercept=c(0,0), color = "blue", linetype="dashed") +
+  labs(x = "Plot-level change in relative abundance yr-to-yr") +  theme_bw() +
+  theme(axis.title.y= element_text(size=14)) + theme(axis.title.x= element_text(size=12)) +
+  theme(axis.text.y = element_text(size = 14)) + 
+  #theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  theme(axis.text.x = element_text(size=14)) 
+
+
+# look at N-fixer cover over time
+# change_N_fixer_cover -- not much at all.
+ggplot(data = cover, aes(x = change_N_fixer_cover)) + geom_histogram()+ facet_wrap(~site_code) + theme_bw() +
+  geom_vline(xintercept=c(0,0), color = "blue", linetype="dashed") +
+  labs(x = "Plot-level change in relative abundance yr-to-yr") +  theme_bw() +
+  theme(axis.title.y= element_text(size=14)) + theme(axis.title.x= element_text(size=12)) +
+  theme(axis.text.y = element_text(size = 14)) + 
+  #theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  theme(axis.text.x = element_text(size=14)) 
+
+ggplot(data = cover, aes(x = N_fixer_cover.yr)) + geom_histogram()+ facet_wrap(~site_code) + theme_bw() +
+  +   geom_vline(xintercept=c(0,0), color = "blue", linetype="dashed") +
+  +   labs(x = "Plot-level change in relative abundance yr-to-yr") +  theme_bw() +
+  +   theme(axis.title.y= element_text(size=14)) + theme(axis.title.x= element_text(size=12)) +
+  +   theme(axis.text.y = element_text(size = 14)) + 
+  +   #theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  +   theme(axis.text.x = element_text(size=14))
+
+##### This computes dominance over time, which is not what we want: 
+
+## compute average relative abundance (averaged across years.)
+# Relative abundance = abundance of a species in a sampling unit / total abundance of all species in a sampling unit
+# here we need to average across the years.
+
+#I did the following based on plot-years as sampling unit, but we decided it should be defined spatially.
+
+# for TOTAL cover
+# cover[, ave_rel_abundance_over_time := ave(relative_sp_cover.yr), by = .(Taxon, plot, site_code)]
+# hist(cover$ave_rel_abundance_over_time)
+# summary(cover$ave_rel_abundance_over_time) 
+
+#for LIVE cover
+cover[, ave_rel_abundance_over_time.live := ave(relative_sp_cover.yr.live), by = .(Taxon, plot, site_code)]
+hist(cover$ave_rel_abundance_over_time.live)
+summary(cover$ave_rel_abundance_over_time.live) 
+
+## Compute Relative Frequency per spp per plot.
+# "Relative frequency = number of sampling units a species occurred / total number of sampling units" 
+# first calculate the total number of years for a given plot in a site "total # of sampling units"
+cover[, tot.yr := length(unique(year)), by =.(plot, site_code)]
+# to determine which is the most recent year: 
+  # cover[, max.yr := max(year), by =.(plot, site_code)]
+
+# spot check
+cover[site_code == "abisko.se", .(year, plot, tot.yr),]
+cover[site_code == "barta.us", .(year, plot, tot.yr),]
+cover[site_code == "smith.us", .(year, plot, tot.yr),]
+
+#then calculate number of sampling units (years) a species occurred
+# with a list of taxa per plot and year, count the number of records per (species, plot) pair. 
+# so for ex., if the datatable is called dt  
+# dt[,.N, by=.(plot, species)] 
+#will count the records per plot x species and if they only record a species in a plot and year if it's there
+# cover[, .N , by =.(plot, site_code, Taxon)]
+
+# to store this count as part of the cover datatable:
+cover[, Num_year_spp_occur := length(unique(year)), by = .(plot, site_code, Taxon)]
+cover[, Num_recs_spp_plot_site := .N, by = .(plot, site_code, Taxon)]
+#***send this to Ashley to find duplicates
+  # cover[Num_year_spp_occur!=Num_recs_spp_plot_site, ] #812 records with duplicates? 
+   #585 from site_name=="Antisana" & year==2013:
+      # cover[Num_year_spp_occur!=Num_recs_spp_plot_site & site_name=="Antisana" & year==2013,]
+# table(cover[Num_year_spp_occur!=Num_recs_spp_plot_site & site_name=="Antisana" & year==2013, .(site_code, plot, Taxon)])
+# cover[Num_year_spp_occur!=Num_recs_spp_plot_site & site_name=="Antisana" & year==2013 & Taxon=="WERNERIA PUMILA", ]
+# looks like this is repeated bc multiple subplots
+#how many sites have multiple subplots and taxa recorded by it???? anything that would be recorded at the subplot level?
+# the max cover for cover[Num_year_spp_occur!=Num_recs_spp_plot_site & site_name=="Antisana" & year==2013 & Taxon=="WERNERIA PUMILA", ] 
+# is the same
+cover[,Num_subplots:=length(unique(subplot)),.(site_code,plot, Taxon)]
+cover[Num_subplots>1,length(unique(site_code))]
+unique(cover[Num_subplots>1,.(site_code, year)])
+#  site_code year
+#    anti.ec 2013
+#    elkh.us 2007
+#    sgs.us  2007
+#    ucsc.us 2007
+
+#compute relative frequency
+# " Relative frequency = number of sampling units a species occurred / total number of sampling units" 
+cover[, rel_freq.time :=  Num_year_spp_occur/tot.yr, by = .(plot, site_code)]
+#check to make sure we took out duplicates, max should be 1
+hist(cover$rel_freq)
+summary(cover$rel_freq)
+
+## Compute the DI per species <-- at what scale does this apply? the plot over all years? 
+# DI = (average relative abundance + relative frequency)/2
+#FOR LIVE COVER
+cover[, DI.time := (ave_rel_abundance_over_time.live + rel_freq)/2 , by =.(Taxon, plot, site_code)]
+hist(cover$DI.time)
+summary(cover$DI.time)
+
+# # then given them a ranking into different categories? 
+# # to look at changes in those types of species and the impact on productivity?
+# ## sub-ordinate and rare -- how can I compute this? ###########
+# cover[, DIgroup:=cut(DI, breaks=c(0.0,0.2,0.8,1.0), labels=c("Rare","Subordinate","Dominant"))]
+# 
+# #richness in each group
+# cover[, sr_domspp := length(unique(Taxon[DIgroup == "Dominant"])), by = .(plot, site_code, year)]
+# cover[, sr_rarespp := length(unique(Taxon[DIgroup == "Rare"])), by = .(plot, site_code, year)]
+# cover[, sr_subordspp := length(unique(Taxon[DIgroup == "Subordinate"])), by = .(plot, site_code, year)]
+# 
+# summary(cover$sr_domspp)
+# summary(cover$sr_subordspp)
+# summary(cover$sr_rarespp)
+
+# compute change in richness in each group 
+cover[order(year), change_sr_domspp := sr_domspp -shift(sr_domspp), by =.(plot, site_code)]
+cover[order(year), change_sr_rarespp := sr_rarespp -shift(sr_rarespp), by =.(plot, site_code)]
+cover[order(year), change_sr_subordspp := sr_subordspp -shift(sr_subordspp), by =.(plot, site_code)]
+
+#?? compute cover in each group, or is that circular???? compute *CHANGE* in cover from year-to-year 
+
+
+## Do a different cut off for dominance, subordinate and rare:
+cover[, DIgroup2:=cut(DI, breaks=c(0.0,0.2,0.7,1.0), labels=c("Rare","Subordinate","Dominant"))]
+#richness in each group with different cutoff
+cover[, sr_domspp2 := length(unique(Taxon[DIgroup2 == "Dominant"])), by = .(plot, site_code, year)]
+cover[, sr_rarespp2 := length(unique(Taxon[DIgroup2 == "Rare"])), by = .(plot, site_code, year)]
+cover[, sr_subordspp2 := length(unique(Taxon[DIgroup2 == "Subordinate"])), by = .(plot, site_code, year)]
+summary(cover$sr_domspp2)
+
+# compute change in richness in each group for this diff cutoff (though only the dominance one should change)
+cover[order(year), change_sr_domspp2 := sr_domspp2 -shift(sr_domspp2), by =.(plot, site_code)]
+cover[order(year), change_sr_rarespp2 := sr_rarespp2 -shift(sr_rarespp2), by =.(plot, site_code)]
+cover[order(year), change_sr_subordspp2 := sr_subordspp2 -shift(sr_subordspp2), by =.(plot, site_code)]
+
+## [ Do this for Tim too, plot by treatment and site over time? ###
+# see how -- for rare species -- if their DI score is more driven by the relative abundance or the low frequency #
+# those might be different types of rare spp so it seems like we should not obscure them into one ## ] 
+
+#####################################################################################################################
+### Need to do something to determine, year-to-year, if species are gained or lost or zero change, and if so who. 
+# instead do this in the comb file ##################
+#####################################################################################################################
+
+# df1[, z := y > 0]
+# or DT[, flag := 6500<=to & 6500>=from]
+    # table(DT$flag)
+    # FALSE  TRUE 
+    # 5567  4433 
+
+comb[, rich_increase := changerich>0]
+comb[, rich_decrease := changerich<0]
+
+barplot(prop.table(table(comb$rich_decrease)), main = "richness decrease")
+barplot(prop.table(table(comb$rich_increase)), main = "richness increase")
+
+
+#**** NEED SOMETHING TO DO WITH THE CHANGES FROM YEAR TO YEAR AND HOW TO CHARACTERIZE THEM BY % of DIFFERENT GROUPS?**** 
+# WHATS A 1% richness change and how does that map onto the proportion of spp in these different categories? esp bc 
+# the mechanisms are not mutually exclusive.
+
+
+```
+
+#Laura Code
+
+Hugh - remove whole  chunk after pulling relevant code
+
+```{r Laura Setup Code}
+
+#Close graphics and clear local memory
+graphics.off()
+#rm(list=ls())
+
+#load libraries
+require(ggplot2)
+library(plyr)
+library(data.table)
+library(AER)
+library(sandwich)
+library(foreign)
+library(rmarkdown)
+
+
+#setwd("~/Documents/Grad School/Thesis/Prairies/Data And Analysis/Prairie Analysis")
+cover <- fread('full-cover-09-April-2018.csv',na.strings= 'NA')
+
+##CUT
+
+## need to make max_cover NOT a character
+#cover$max_cover <- as.numeric(cover$max_cover)
+
+#########################################################################################
+## Compare Taxon in Live (live==1) or non-live (live == 0) ################################
+##########################################################################################
+## determine how many Taxon are listed as live==0 ##
+table(cover$live==1)
+a <- table(cover$Taxon, cover$live==0)
+head(a)
+# write.csv(a, "live_v_dead_spplist_NutNet.csv")
+
+# It looks like these categories are primarily the "live == 0 " ones;
+# seems like I should NOT include them inthe SR counts?
+        # OTHER ANIMAL DIGGING                            0   47
+        # OTHER ANIMAL DIGGINGS                           0   68
+        # OTHER ANIMAL DROPPINGS                          0   75
+        # OTHER ANT NEST                                  0    1
+        # OTHER CRUST                                     0   13
+        # OTHER DISTURBED SOIL                            0   16
+        # OTHER LIGNOTUBER                                0   11
+        # OTHER LITTER                                    0 1542
+        # OTHER ROCK                                      0  175
+        # OTHER SOIL BIOCRUST                             0    5
+        # OTHER STANDING DEAD                             0    2
+        # OTHER TRIODIA BASEDOWII (DEAD)                  0    5
+        # OTHER UNKNOWN SOIL_CRUST                        0     17
+        # OTHER WOOD                                      0     27
+        #       FUNGI                                       	0   	2
+        #       FUNGI SP.                                   	0	    2
+        #       GROUND                                      	0	   1039
+        #       OTHER WOODY OVERSTORY                       	0	    4
+        
+
+##### TOTAL & TOTAL LIVE COVER MEASURES ########################################
+
+# make a total cover in a plot, site, year
+cover[,totplotcover.yr := sum(max_cover, na.rm=T), by=.(plot, site_code, year)]
+# same for live species only
+cover[,totplotcover.yr.live := sum(max_cover[live=="1"], na.rm=T), by=.(plot, site_code, year)]
+
+
+#Make a relative cover for each species in each plot, site, year
+# based on TOTAL cover (including dead cover)
+cover[,relative_sp_cover.yr := max_cover/totplotcover.yr]
+# same for live species only
+cover[,relative_sp_cover.yr.live := (max_cover*(live=="1"))/totplotcover.yr.live]
+# in some cases, no live species in plot and year, so getting NA since totplotcover.yr.live is zero. Set these to zero.
+cover[is.na(relative_sp_cover.yr.live),relative_sp_cover.yr.live:=0]
+
+
+## FILTER TO LIVE TO COMPUTE SR MEASURES???? ********
+
+######################################################################################################
+### Native vs Non-Native Variables ###################################################################
+#######################################################################################################
+
+# covert Naturalised to INT (This use of Naturalised as a category is from one site)
+cover[local_provenance=="Naturalised", local_provenance:="INT"]
+# convert blank entries to NULL
+cover[local_provenance=="", local_provenance:="NULL"]
+
+# Compute native and non-native richness by plot, site, year
+cover[, sr_INT := length(unique(Taxon[local_provenance=="INT"])), by = .(plot, site_code, year)]
+cover[, sr_NAT := length(unique(Taxon[local_provenance=="NAT"])), by = .(plot, site_code, year)]
+cover[, sr_NULL := length(unique(Taxon[local_provenance=="NULL"])), by = .(plot, site_code, year)]
+cover[, sr_UNK := length(unique(Taxon[local_provenance=="UNK"])), by = .(plot, site_code, year)]
+
+## do first differences (for the marginal efcomb[order(year), changeGround_PAR := Ground_PAR -shift(Ground_PAR), by =.(plot, site_code)]
+cover[order(year), change_sr_INT := sr_INT-shift(sr_INT), by =.(plot, site_code)]
+cover[order(year), change_sr_NAT := sr_NAT-shift(sr_NAT), by =.(plot, site_code)]
+
+cover[order(year), change_sr_NULL := sr_NULL-shift(sr_NULL), by =.(plot, site_code)]
+cover[order(year), change_sr_UNK := sr_NULL-shift(sr_UNK), by =.(plot, site_code)]
+
+# plot them
+hist(cover$change_sr_INT)
+hist(cover$change_sr_NAT)
+hist(cover$change_sr_UNK)
+hist(cover$change_sr_NULL)
+
+## Percent cover of introduced species (non-native to the site) per plot and year  ## 
+## compute total cover of non-natives # local_provenance == INT
+cover[, NonNative_cover.yr := sum(relative_sp_cover.yr[local_provenance=="INT"]), by = .(plot, site_code, year)]
+head(cover)
+
+  #spot check with example
+    arch.nonnativecover = cover[site_code == "arch.us", .(year, plot, NonNative_cover.yr),]
+  # sites we know have a lot of invasives    
+    cover[site_code == "ping.au", .(year, plot, NonNative_cover.yr),]
+    cover[site_code == "pinj.au", .(year, plot, NonNative_cover.yr),]
+    cover[site_code == "smith.us", .(year, plot, NonNative_cover.yr),]
+
+## Compute Native species cover 
+cover[, Native_cover.yr := sum(relative_sp_cover.yr[local_provenance=="NAT"]), by = .(plot, site_code, year)]
+
+##########################################################################################################
+### Annual vs Perennial Variables ########################################################################
+###########################################################################################################
+
+### Now do for an annual and perennial cover
+# Compute richness in annuals and perennials
+cover[, sr_annual := length(unique(Taxon[local_lifespan=="ANNUAL"])), by = .(plot, site_code, year)]
+cover[, sr_peren := length(unique(Taxon[local_lifespan=="PERENNIAL"])), by = .(plot, site_code, year)]
+cover[, sr_null.lspan := length(unique(Taxon[local_lifespan=="NULL"])), by = .(plot, site_code, year)]  # this includes a lot non-live. 
+cover[, sr_biennial := length(unique(Taxon[local_lifespan=="BIENNIAL"])), by = .(plot, site_code, year)]
+cover[, sr_indeter := length(unique(Taxon[local_lifespan=="INDETERMINATE"])), by = .(plot, site_code, year)]
+
+# plot 
+hist(cover$sr_annual)
+summary(cover$sr_annual)
+summary(cover$sr_annual)
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+# 0.00    0.00    1.00    3.13    4.00   23.00 
+hist(cover$sr_peren)
+summary(cover$sr_peren)
+#Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#0.00    4.00    8.00   10.21   14.00   41.00 
+
+# Compute first differences 
+cover[order(year), change_sr_annual := sr_annual-shift(sr_annual), by =.(plot, site_code)]
+cover[order(year), change_sr_peren := sr_peren-shift(sr_peren), by =.(plot, site_code)]
+
+# Plot first differences
+hist(cover$change_sr_annual)
+summary(cover$change_sr_annual)
+hist(cover$change_sr_peren)
+summary(cover$change_sr_peren)
+
+# compute cover by annuals per plot and year
+cover[, AnnualPercentcover.yr := sum(relative_sp_cover.yr[local_lifespan=="ANNUAL"]), by = .(plot, site_code, year)]
+# compute cover by perennial per plot and year
+cover[, PerenPercentcover.yr := sum(relative_sp_cover.yr[local_lifespan=="PERENNIAL"]), by = .(plot, site_code, year)]
+
+hist(cover$PerenPercentcover.yr)
+hist(cover$AnnualPercentcover.yr)
+#######################################################################################################
+### Functional Group variables (e.g., Grass vs Forbs) ####################################################
+#######################################################################################################
+
+## Combine Graminoid and Grass into a single category 
+# Graminoid + Grass = Graminoids
+cover[functional_group == "GRASS" , functional_group:= "GRAMINOID"]
+
+### Richness of grasses, woody, forbs  from the "functional_group" column
+# Grasses & Graminoids
+cover[, sr_graminoid := length(unique(Taxon[functional_group=="GRAMINOID"])), by = .(plot, site_code, year)]
+# forbs
+cover[, sr_forbs := length(unique(Taxon[functional_group=="FORB"])), by = .(plot, site_code, year)]
+# woody
+cover[, sr_woody := length(unique(Taxon[functional_group=="WOODY"])), by = .(plot, site_code, year)]
+# legumes
+cover[, sr_legume := length(unique(Taxon[functional_group=="LEGUME"])), by = .(plot, site_code, year)]
+# Bryophyte
+cover[, sr_bryophyte := length(unique(Taxon[functional_group=="BRYOPHYTE"])), by = .(plot, site_code, year)]
+# Cactus
+cover[, sr_cactus := length(unique(Taxon[functional_group=="CACTUS"])), by = .(plot, site_code, year)]
+# Null
+cover[, sr_null.fctgroup := length(unique(Taxon[functional_group=="NULL"])), by = .(plot, site_code, year)]
+# Non-live
+cover[, sr_non.live := length(unique(Taxon[functional_group=="NON-LIVE"])), by = .(plot, site_code, year)]
+
+## Compute first differences ###
+cover[order(year), change_sr_graminoid := sr_graminoid - shift(sr_graminoid), by =.(plot, site_code)]
+cover[order(year), change_sr_woody := sr_woody - shift(sr_woody), by =.(plot, site_code)]
+#summary(cover$change_sr_woody)
+cover[order(year), change_sr_forbs := sr_forbs -shift(sr_forbs), by =.(plot, site_code)]
+#summary(cover$change_sr_forbs)
+cover[order(year), change_sr_legume := sr_legume -shift(sr_legume), by =.(plot, site_code)]
+cover[order(year), change_sr_bryophyte := sr_bryophyte -shift(sr_bryophyte), by =.(plot, site_code)]
+cover[order(year), change_sr_cactus := sr_cactus  -shift(sr_cactus), by =.(plot, site_code)]
+cover[order(year), change_sr_null.fctgroup := sr_null.fctgroup - shift(sr_null.fctgroup), by =.(plot, site_code)]
+cover[order(year), change_sr_non.live := sr_non.live - shift(sr_non.live), by =.(plot, site_code)]
+
+### Compute over by Functional groups - grasses, woody, forbs, legumes, etc -- per plot and year
+cover[, GrassPercentcover.yr := sum(relative_sp_cover.yr[functional_group=="GRASS"]), by = .(plot, site_code, year)]
+cover[, ForbPercentcover.yr := sum(relative_sp_cover.yr[functional_group=="FORB"]), by = .(plot, site_code, year)]
+cover[, WoodyPercentcover.yr := sum(relative_sp_cover.yr[functional_group=="WOODY"]), by = .(plot, site_code, year)]
+cover[, LegumePercentcover.yr := sum(relative_sp_cover.yr[functional_group=="LEGUME"]), by = .(plot, site_code, year)]
+
+hist(cover$LegumePercentcover.yr)
+plot(cover$LegumePercentcover.yr ~ cover$year)
+lm(cover$LegumePercentcover.yr ~ as.numeric(cover$year))
+# Coefficients:
+#   (Intercept)  as.numeric(cover$year)  
+# 2.107210               -0.001027 
+abline(lm(cover$LegumePercentcover.yr ~ as.numeric(cover$year)))
+
+
+# Lagged Legume cover per year
+cover[order(year), lagged_LegumePercentCover.yr := shift(LegumePercentcover.yr), by =.(plot, site_code)]
+
+##############################################################################################################################
+### N-Fixing Species Variables ##############################################################################################
+##############################################################################################################################
+
+### Number of N-fixer in a plot over time
+cover[, sr_Nfixer := length(unique(Taxon[N_fixer==1])), by = .(plot, site_code, year)]
+cover[, sr_non.Nfixer := length(unique(Taxon[N_fixer==0])), by = .(plot, site_code, year)]
+# what are the plots where there are 0 species that are NOT n-fixers?
+  hist(cover$sr_non.Nfixer)
+  table(cover$sr_non.Nfixer)
+  
+# change in N-fixers in a plot
+cover[order(year), change_sr_Nfixer := sr_Nfixer-shift(sr_Nfixer), by =.(plot, site_code)]
+hist(cover$change_sr_Nfixer)
+summary(cover$change_sr_Nfixer)
+
+# lagged N-fixer richness
+cover[order(year), lagged_sr_Nfixer := shift(sr_Nfixer), by =.(plot, site_code)]
+
+### Percent cover of N-fixers ###
+cover[, N_fixer_cover.yr := sum(relative_sp_cover.yr[N_fixer==1]), by = .(plot, site_code, year)]
+# change in N-fixer cover
+cover[order(year), change_N_fixer_cover := N_fixer_cover.yr - shift(N_fixer_cover.yr), by = .(plot, site_code, year)]
+
+# Lagged N_fixer cover
+cover[order(year), lagged_N_fixer_cover.yr := shift(N_fixer_cover.yr), by =.(plot, site_code)]
+
+plot(cover$lagged_N_fixer_cover.yr ~ cover$year)
+abline(lm(cover$lagged_N_fixer_cover.yr ~ as.numeric(cover$year)))
+lm(cover$lagged_N_fixer_cover.yr ~ as.numeric(cover$year))
+#   Coefficients:
+#     (Intercept)  as.numeric(cover$year)  
+#   2.612394               -0.001279
+
+summary(cover$change_N_fixer_cover)
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+# 0       0       0       0       0       0   14822 
+
+
+###############################################################################
+### Compute site-level richness variables  ##############################
+##########################################################################################
+
+# # average site richness over time
+# cover[, ave_siterich := mean(site_richness, na.rm = TRUE), by = site_code]
+# # average for the change year to year
+# cover[, ave_siterich_change := mean(changerich, na.rm = TRUE), by = site_code]
+# # initial site richness
+# cover[, init_siterich := site_richness[year_trt == 0] ,  by = site_code]
+
+####################################################################################################################
+### Dominance Variables ############################################################################################
+####################################################################################################################
+
+### Do relative abundance of live cover only. 
+# Do SR of live only, throughout?
+### do this for live cover only (discussed w Kim in June)
+
+### Dominance indicator calculation ###
+# Use the dominance indicator metric from Avoilio et al (seperates dominance indication from impact)
+  # DI = (average relative abundance + relative frequency)/2
+    #Relative abundance = abundance of a species a in sampling unit / total abundance of all species in a sampling unit
+    #Relative frequency = number of sampling units a species occurred / total number of sampling units
+# note: ranges from 0-1; Relative abundance can be any measure of abundance. Does not incorporate a measure of impact.
+# There is not a cutoff for "which range from 0-1 = dominant species versus subordinate or rare, in the Avolio et al paper # 
+# so if we want to group species in these groups, we will need to make one (then also should test robustness to that decision)
+
+#for LIVE cover
+cover[, ave_rel_abundance_over_time.live := ave(relative_sp_cover.yr.live), by = .(Taxon, plot, site_code)]
+hist(cover$ave_rel_abundance_over_time.live)
+summary(cover$ave_rel_abundance_over_time.live) 
+
+# relative abundance per species and plot in pre-treatment year (year_trt == 0)
+cover[, rel_abundance_year0 := relative_sp_cover.yr.live[year_trt == 0], by = .(Taxon, plot, site_code)]
+hist(cover$rel_abundance_year0, xlab = "Average relative abundance at a site", main ="")
+summary(cover$rel_abundance_year0)
+
+## Compute Relative Frequency per spp AT THE SITE (defining dominance in space, not time/across years)
+# "Relative frequency = number of sampling units a species occurred / total number of sampling units" 
+# this should be # of plots within a site that the species occured in / total # of plots within a site, for pre-treatment year 
+
+#total # of plots within a site, for pre-treatment year 
+# & to filter to do just on the live species:
+cover[, tot.num.plots := length(unique(plot[year_trt == 0])), by =.(site_code)]
+
+#number of plots within a site, in the pre-treatment year, a species occurred in:
+# & to filter to do just on the live species:
+cover[, tot.num.plots.with.spp := length(unique(plot[year_trt == 0 & live==1])), by =.(site_code, Taxon)]
+
+# test to see if it works
+  abisko.test = cover[site_code == "abisko.se" , ]
+
+#Compute Relative Frequency
+# " Relative frequency = number of sampling units a species occurred / total number of sampling units" 
+cover[, rel_freq.space :=  tot.num.plots.with.spp/tot.num.plots, by = .(plot, site_code)]
+#check to make sure we took out duplicates, max should be 1
+hist(cover$rel_freq.space, xlab = "Frequency at the site in pre-treatment year", main = "Frequency of occurrence")
+summary(cover$rel_freq.space)
+
+## Compute the DI per species 
+# DI = (average relative abundance + relative frequency)/2
+
+#FOR LIVE COVER -- the dead cover will be 0.
+cover[, DI := (rel_abundance_year0 + rel_freq.space)/2 , by =.(Taxon, plot, site_code)]
+
+summary(cover$DI)
+
+## filter to only the live (the dead cover will be 0, which inflates the 0, bc of how we computed stuff above)
+hist(cover[live == 1,DI], xlab = "Dominance indicator (DI)", main = "Dominance indicator metric")
+summary(cover[live == 1,DI])
+
+####### Make Categorical Variables of Dominance too ########
+
+# then given them a ranking into different categories? 
+# to look at changes in those types of species and the impact on productivity?
+## sub-ordinate and rare -- how can I compute this? ###########
+cover[, DIgroup:=cut(DI, breaks=c(0.0,0.2,0.8,1.0), labels=c("Rare","Subordinate","Dominant"))]
+
+#richness in each group 
+#*MAKE SURE ONLY TO DO FOR LIVE 
+cover[, sr_domspp := length(unique(Taxon[DIgroup == "Dominant"])), by = .(plot, site_code, year)]
+cover[, sr_rarespp := length(unique(Taxon[DIgroup == "Rare"])), by = .(plot, site_code, year)]
+cover[, sr_subordspp := length(unique(Taxon[DIgroup == "Subordinate"])), by = .(plot, site_code, year)]
+
+summary(cover$sr_domspp) # max is 2 species that are dominant 
+summary(cover$sr_subordspp) 
+summary(cover$sr_rare) 
+
+# compute change in richness in each group 
+cover[order(year), change_sr_domspp := sr_domspp -shift(sr_domspp), by =.(plot, site_code)]
+cover[order(year), change_sr_rarespp := sr_rarespp -shift(sr_rarespp), by =.(plot, site_code)]
+cover[order(year), change_sr_subordspp := sr_subordspp -shift(sr_subordspp), by =.(plot, site_code)]
+
+summary(cover$change_sr_domspp) 
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+# -1.0000  0.0000  0.0000  0.0012  0.0000  1.0000    3005 
+summary(cover$change_sr_subordspp) 
+# > summary(cover$change_sr_subordspp) 
+# Min.  1st Qu.   Median     Mean  3rd Qu.     Max.     NA's 
+# -13.0000   0.0000   0.0000  -0.0327   0.0000  10.0000     3005 
+
+summary(cover$change_sr_rare) 
+# Min.  1st Qu.   Median     Mean  3rd Qu.     Max.     NA's 
+# -13.0000   0.0000   0.0000  -0.0199   0.0000   7.0000     3005 
+
+# lagged effects of sr in these groups
+cover[order(year), lagged_sr_rarespp := shift(sr_rarespp), by =.(plot, site_code)]
+cover[order(year), lagged_sr_domspp := shift(sr_domspp), by =.(plot, site_code)]
+cover[order(year), lagged_sr_subordspp := shift(sr_subordspp), by =.(plot, site_code)]
+
+
+plot(ave_rel_abundance_over_time.live ~ DI, data= cover)
+abline(lm(ave_rel_abundance_over_time.live ~ DI, data= cover), col = "yellow")
+plot(relative_sp_cover.yr.live ~ DI, data = cover)
+
+
+## Make a variable that captures changes in *cover* of species classified as dominance, rare, subordinate each year 
+# (so we can look at variations from year to year)
+cover[, Dom_cover.yr := sum(relative_sp_cover.yr[DIgroup=="Dominant"]), by = .(plot, site_code, year)]
+cover[, Subord_cover.yr := sum(relative_sp_cover.yr[DIgroup=="Subordinate"]), by = .(plot, site_code, year)]
+cover[, Rare_cover.yr := sum(relative_sp_cover.yr[DIgroup=="Rare"]), by = .(plot, site_code, year)]
+
+hist(cover$Dom_cover.yr)
+hist(cover$Rare_cover.yr)
+hist(cover$Subord_cover.yr)
+plot(cover$Rare_cover.yr, cover$sr_rarespp)
+plot(cover$Dom_cover.yr, cover$sr_rarespp)
+
+# make a change in the relative_sp_cover.yr.live and then look at relationship with DI?
+cover[order(year), change_rel_abundance_time.live := relative_sp_cover.yr.live - shift(relative_sp_cover.yr.live), by =.(plot, site_code)]
+
+plot(change_rel_abundance_time.live ~ DI, data= cover)
+
+#plot this change_rel_abundance_time.live by each DI grouping category
+# need to label each spp as rare, dominate or subordinate to do this, and then put in facet r
+
+#maybe should do this as average change per spp?
+ggplot(data = cover, aes(x = change_rel_abundance_time.live)) + geom_histogram()+ facet_wrap(~site_code) + theme_bw() +
+  geom_vline(xintercept=c(0,0), color = "blue", linetype="dashed") +
+  labs(x = "Plot-level change in relative abundance yr-to-yr") +  theme_bw() +
+  theme(axis.title.y= element_text(size=14)) + theme(axis.title.x= element_text(size=12)) +
+  theme(axis.text.y = element_text(size = 14)) + 
+  #theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  theme(axis.text.x = element_text(size=14)) 
+
+
+# look at N-fixer cover over time
+# change_N_fixer_cover -- not much at all.
+ggplot(data = cover, aes(x = change_N_fixer_cover)) + geom_histogram()+ facet_wrap(~site_code) + theme_bw() +
+  geom_vline(xintercept=c(0,0), color = "blue", linetype="dashed") +
+  labs(x = "Plot-level change in relative abundance yr-to-yr") +  theme_bw() +
+  theme(axis.title.y= element_text(size=14)) + theme(axis.title.x= element_text(size=12)) +
+  theme(axis.text.y = element_text(size = 14)) + 
+  #theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  theme(axis.text.x = element_text(size=14)) 
+
+ggplot(data = cover, aes(x = N_fixer_cover.yr)) + geom_histogram()+ facet_wrap(~site_code) + theme_bw() +
+  +   geom_vline(xintercept=c(0,0), color = "blue", linetype="dashed") +
+  +   labs(x = "Plot-level change in relative abundance yr-to-yr") +  theme_bw() +
+  +   theme(axis.title.y= element_text(size=14)) + theme(axis.title.x= element_text(size=12)) +
+  +   theme(axis.text.y = element_text(size = 14)) + 
+  +   #theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  +   theme(axis.text.x = element_text(size=14))
+
+##### This computes dominance over time, which is not what we want: 
+
+## compute average relative abundance (averaged across years.)
+# Relative abundance = abundance of a species in a sampling unit / total abundance of all species in a sampling unit
+# here we need to average across the years.
+
+#I did the following based on plot-years as sampling unit, but we decided it should be defined spatially.
+
+# for TOTAL cover
+# cover[, ave_rel_abundance_over_time := ave(relative_sp_cover.yr), by = .(Taxon, plot, site_code)]
+# hist(cover$ave_rel_abundance_over_time)
+# summary(cover$ave_rel_abundance_over_time) 
+
+#for LIVE cover
+cover[, ave_rel_abundance_over_time.live := ave(relative_sp_cover.yr.live), by = .(Taxon, plot, site_code)]
+hist(cover$ave_rel_abundance_over_time.live)
+summary(cover$ave_rel_abundance_over_time.live) 
+
+## Compute Relative Frequency per spp per plot.
+# "Relative frequency = number of sampling units a species occurred / total number of sampling units" 
+# first calculate the total number of years for a given plot in a site "total # of sampling units"
+cover[, tot.yr := length(unique(year)), by =.(plot, site_code)]
+# to determine which is the most recent year: 
+  # cover[, max.yr := max(year), by =.(plot, site_code)]
+
+# spot check
+cover[site_code == "abisko.se", .(year, plot, tot.yr),]
+cover[site_code == "barta.us", .(year, plot, tot.yr),]
+cover[site_code == "smith.us", .(year, plot, tot.yr),]
+
+#then calculate number of sampling units (years) a species occurred
+# with a list of taxa per plot and year, count the number of records per (species, plot) pair. 
+# so for ex., if the datatable is called dt  
+# dt[,.N, by=.(plot, species)] 
+#will count the records per plot x species and if they only record a species in a plot and year if it's there
+# cover[, .N , by =.(plot, site_code, Taxon)]
+
+# to store this count as part of the cover datatable:
+cover[, Num_year_spp_occur := length(unique(year)), by = .(plot, site_code, Taxon)]
+cover[, Num_recs_spp_plot_site := .N, by = .(plot, site_code, Taxon)]
+#***send this to Ashley to find duplicates
+  # cover[Num_year_spp_occur!=Num_recs_spp_plot_site, ] #812 records with duplicates? 
+   #585 from site_name=="Antisana" & year==2013:
+      # cover[Num_year_spp_occur!=Num_recs_spp_plot_site & site_name=="Antisana" & year==2013,]
+# table(cover[Num_year_spp_occur!=Num_recs_spp_plot_site & site_name=="Antisana" & year==2013, .(site_code, plot, Taxon)])
+# cover[Num_year_spp_occur!=Num_recs_spp_plot_site & site_name=="Antisana" & year==2013 & Taxon=="WERNERIA PUMILA", ]
+# looks like this is repeated bc multiple subplots
+#how many sites have multiple subplots and taxa recorded by it???? anything that would be recorded at the subplot level?
+# the max cover for cover[Num_year_spp_occur!=Num_recs_spp_plot_site & site_name=="Antisana" & year==2013 & Taxon=="WERNERIA PUMILA", ] 
+# is the same
+cover[,Num_subplots:=length(unique(subplot)),.(site_code,plot, Taxon)]
+cover[Num_subplots>1,length(unique(site_code))]
+unique(cover[Num_subplots>1,.(site_code, year)])
+#  site_code year
+#    anti.ec 2013
+#    elkh.us 2007
+#    sgs.us  2007
+#    ucsc.us 2007
+
+#compute relative frequency
+# " Relative frequency = number of sampling units a species occurred / total number of sampling units" 
+cover[, rel_freq.time :=  Num_year_spp_occur/tot.yr, by = .(plot, site_code)]
+#check to make sure we took out duplicates, max should be 1
+hist(cover$rel_freq)
+summary(cover$rel_freq)
+
+## Compute the DI per species <-- at what scale does this apply? the plot over all years? 
+# DI = (average relative abundance + relative frequency)/2
+#FOR LIVE COVER
+cover[, DI.time := (ave_rel_abundance_over_time.live + rel_freq)/2 , by =.(Taxon, plot, site_code)]
+hist(cover$DI.time)
+summary(cover$DI.time)
+
+# # then given them a ranking into different categories? 
+# # to look at changes in those types of species and the impact on productivity?
+# ## sub-ordinate and rare -- how can I compute this? ###########
+# cover[, DIgroup:=cut(DI, breaks=c(0.0,0.2,0.8,1.0), labels=c("Rare","Subordinate","Dominant"))]
+# 
+# #richness in each group
+# cover[, sr_domspp := length(unique(Taxon[DIgroup == "Dominant"])), by = .(plot, site_code, year)]
+# cover[, sr_rarespp := length(unique(Taxon[DIgroup == "Rare"])), by = .(plot, site_code, year)]
+# cover[, sr_subordspp := length(unique(Taxon[DIgroup == "Subordinate"])), by = .(plot, site_code, year)]
+# 
+# summary(cover$sr_domspp)
+# summary(cover$sr_subordspp)
+# summary(cover$sr_rarespp)
+
+# compute change in richness in each group 
+cover[order(year), change_sr_domspp := sr_domspp -shift(sr_domspp), by =.(plot, site_code)]
+cover[order(year), change_sr_rarespp := sr_rarespp -shift(sr_rarespp), by =.(plot, site_code)]
+cover[order(year), change_sr_subordspp := sr_subordspp -shift(sr_subordspp), by =.(plot, site_code)]
+
+#?? compute cover in each group, or is that circular???? compute *CHANGE* in cover from year-to-year 
+
+
+## Do a different cut off for dominance, subordinate and rare:
+cover[, DIgroup2:=cut(DI, breaks=c(0.0,0.2,0.7,1.0), labels=c("Rare","Subordinate","Dominant"))]
+#richness in each group with different cutoff
+cover[, sr_domspp2 := length(unique(Taxon[DIgroup2 == "Dominant"])), by = .(plot, site_code, year)]
+cover[, sr_rarespp2 := length(unique(Taxon[DIgroup2 == "Rare"])), by = .(plot, site_code, year)]
+cover[, sr_subordspp2 := length(unique(Taxon[DIgroup2 == "Subordinate"])), by = .(plot, site_code, year)]
+summary(cover$sr_domspp2)
+
+# compute change in richness in each group for this diff cutoff (though only the dominance one should change)
+cover[order(year), change_sr_domspp2 := sr_domspp2 -shift(sr_domspp2), by =.(plot, site_code)]
+cover[order(year), change_sr_rarespp2 := sr_rarespp2 -shift(sr_rarespp2), by =.(plot, site_code)]
+cover[order(year), change_sr_subordspp2 := sr_subordspp2 -shift(sr_subordspp2), by =.(plot, site_code)]
+
+## [ Do this for Tim too, plot by treatment and site over time? ###
+# see how -- for rare species -- if their DI score is more driven by the relative abundance or the low frequency #
+# those might be different types of rare spp so it seems like we should not obscure them into one ## ] 
+
+#####################################################################################################################
+### Need to do something to determine, year-to-year, if species are gained or lost or zero change, and if so who. 
+# instead do this in the comb file ##################
+#####################################################################################################################
+
+# df1[, z := y > 0]
+# or DT[, flag := 6500<=to & 6500>=from]
+    # table(DT$flag)
+    # FALSE  TRUE 
+    # 5567  4433 
+
+comb[, rich_increase := changerich>0]
+comb[, rich_decrease := changerich<0]
+
+barplot(prop.table(table(comb$rich_decrease)), main = "richness decrease")
+barplot(prop.table(table(comb$rich_increase)), main = "richness increase")
+
+
+#**** NEED SOMETHING TO DO WITH THE CHANGES FROM YEAR TO YEAR AND HOW TO CHARACTERIZE THEM BY % of DIFFERENT GROUPS?**** 
+# WHATS A 1% richness change and how does that map onto the proportion of spp in these different categories? esp bc 
+# the mechanisms are not mutually exclusive.
+
+
+
+
+
+
+```
+

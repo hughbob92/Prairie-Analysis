@@ -1,0 +1,1063 @@
+---
+title: "Cover File Setup"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,warning = FALSE,error = FALSE,results = "hold")
+library(knitr)
+```
+
+##Overview 
+This RMarkdown file creates 3 primary data.tables for the prairie analysis:  
+
+* __Cover Data - Long Format__ - long format version of the 50 plot cover file, organized by transect, date, protocol, species id. Original bin categories are retained 
+* __Protocol Binning Reference__ - adjusted binning categories for analysis, discreet integer value. Each original bin is converted based on methodology mapping 
+  + __Method Key__ - maps the binning methodology to years of comparison; e.g. when comparing 2013 to 2015 use Methodology 3. Logic explained below 
+* __Master Transect__ - Compilation of all transect/site level data and attributes including: system type, years observed, location, observer code, management action and date. Organized at the transect level for matching with Cover Data.  
+  + __Observer Code__ - Observer data is concatenated and matched with a unique code depending on Primary and Secondary observers 
+  
+Finally, all of the tables are combined into one long format data.table...Cover  
+  
+Files used in this project:  
+* Transect System Type - SysType_protC_transects_20190325.xlsx 
+* Cover Data for DNR plots (protocol A and C) - Plot_protC_Species_50plots_20190313  
+* Management Data - MGMT_Action_Site_MU_20190311.xlsx  
+* Transect coordinates - GMT Transects.csv  
+  
+
+## R Markdown
+```{r file load}
+setwd("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data/Original Data")
+library(data.table)
+library(stringr)
+data.raw = data.table(read.csv("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data/Original Data/Plot_protC_Species_50plots_20190313.csv",header = T))
+```
+
+
+```{r Data Manipulation}
+class(data.raw)
+data.raw
+
+#First create a single identifier for the observer combinations
+data.raw[,unique(PrimObs)] #Checking primary observers for spelling errors, none
+data.raw[,unique(SecObs)] #''
+#obs.com = data.frame(UniqueObs=paste(data.raw[,PrimObs],data.raw[,SecObs]),RowOrder = 1:length(data.raw[,PrimObs])) #concatenate, choosing to only use the primary observer
+obs.code = data.frame(UniqueObs = data.raw[,unique(PrimObs)], ObsCode = 1:length(data.raw[,unique(PrimObs)]))
+#Observers = merge(obs.com,obs.code,by="UniqueObs", all=FALSE)
+#Observers = as.data.table(Observers[order(Observers$RowOrder),])
+
+#I don't need all of these columns. I can match transects with management actions by year using the Master Transect file
+cover.data = data.raw
+cover.data = cover.data[,obs.com := paste(PrimObs)]
+cover.data = merge(cover.data,obs.code,by.x = "obs.com",by.y = "UniqueObs")
+cover.data = cover.data[,!(73:123)] 
+cover.data =cover.data[,!(c(1:6,8,9,11,12))]
+cover.data[,Year:=as.numeric(str_sub(MonDate,-2,-1))+2000]
+cover.data[,VOR:=rowMeans(.SD,na.rm = T),.SDcols =c('VOR_E','VOR_N','VOR_S','VOR_W')]
+cover.data[,Litter:=rowMeans(.SD,na.rm = T),.SDcols =c('Litter5','Litter10','Litter15','Litter20','Litter25')]
+      
+cover.data.long= data.table(melt(cover.data,id=c("TransectID","MonDate","Year","ObsCode","SpeciesID","VOR","Litter"),measure=4:(ncol(cover.data)-13),variable.name="Plot",value.name="Cover"))
+cover.data.long
+
+#Plots here are redundant because there are two types of Protocol measurements included. Make this into two distinct id variables
+
+all.plots =data.frame(Plot = unique(cover.data.long[,Plot]),PlotID = c(0,rep(1:24,each=2),25),Protocol=rep(c("A","C"),times=25))
+cover.data.long= merge(cover.data.long,all.plots,by="Plot", all=FALSE)
+cover.data.long=cover.data.long[,.(TransectID,MonDate,Year,PlotID,Protocol,ObsCode,VOR,Litter,SpeciesID,Cover)]
+
+cover.data.long 
+#In the following section I noticed a few errors in the binning - fixing there
+##RUN FOLLOWING CODE CHUNK TOO
+
+## If a species does not occur in any plots in a transect for a year it will not show up in the data. When I am calculating changes in frequency or cover between years I need these values to be included as zeros. The following code creates a list of all species found in a transect per year and then isolates species which are not found in particular years but are found in others...Because I am not doing plot level analysis, I will add one plots worth of each species for each transect and year with a blank cover value, which will translate to a 0
+
+library(plyr)
+
+Year = c()
+TransectID = c()
+SpeciesID= c()
+
+for (i in cover.data.long[,unique(TransectID)]) {
+  species.list=list()
+  miss.sp=list()
+  z = cover.data.long[TransectID==i,unique(Year)]
+  for (k in z) {
+   x = c(cover.data.long[TransectID==i & Year==k,unique(SpeciesID)])
+   species.list[[match(k,z)]]=x
+      }
+   species.list[[length(species.list)+1]] = unique(Reduce(c,species.list))
+   for (l in 1:length(z)) {
+     miss.sp[[l]] = c(setdiff(species.list[[length(species.list)]],species.list[[l]]))
+     Year = c(Year,rep(c(z[l]),times = length(miss.sp[[l]])))
+     TransectID = c(TransectID,rep(i,times = length(miss.sp[[l]])))
+     SpeciesID = c(SpeciesID,miss.sp[[l]])
+   }
+  }
+  
+cover.new = as.data.table(cbind(TransectID,Year,SpeciesID))
+cover.new.merge.1 = unique(cover.data.long[Protocol=="C",.(TransectID,Year,ObsCode,MonDate,VOR,Litter)])
+cover.new = merge(cover.new, cover.new.merge.1, by = c("TransectID","Year"))
+cover.new[,Cover:=""]
+cover.new[,Protocol:="C"]
+cover.new[,PlotID:=0]
+cover.new=cover.new[,.(TransectID,MonDate,Year,PlotID,Protocol,ObsCode,VOR,Litter,SpeciesID,Cover)]
+
+#Now add "new" blanks species data on to the cover.data.long file
+cover.data.long=rbind(cover.data.long,cover.new)
+```
+
+
+#Binning Guide
+Because protocols/binning sizes changed by year for the cover data, we need a map for relate binning style to year. The following methods all reflect the goal of maintaining the highest level of data resolution possible. Following DNR strategy of assigning the median value from the bin range as the discreet integer for the bin. When comparing years with different bin ranges, we have to adjust the finer bin size to the larger in order to compare like to like. 
+
+The mapping of methodologies to years of comparison is included below. The following graphic of bin categories by year also helps to show the logic (some rows are hidden to fit the image). 
+
+```{r Bining Visualization, results='asis'}
+#include_graphics("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Bin Visualization.png")
+```
+
+Creating multiple methods for each analysis:  
+Method 1 - Average bin values, to be compared between like years (2008-2012, 2015-2018)  
+Method 2 - All years comparison (3 bins - <10, 11-50, 51-100) 
+Method 3 - Compare 2013 or 2014 to 2015-2018  (11 bins - 1-5, 6-10, 11-20, 21-30, etc.)  
+Method 4 - Compare 2013 and 2014 (13 bins - 1-3, 4-5, 6-10, 11-20, 21-30, etc..., 100%) UNLESS using Minneopa site (use wrong bins)
+
+```{r Protocol Binning Reference}
+#Constructed from Table 4 in MN T-15-R-2 2017_Final_report_SWAP_monitoring
+
+#Setting this up I noticed there are several errors in the data, making a table to show. Unmark # to run
+
+#2008 - what is going on with 1-50%  - remind Daren give him a couple of transects and species
+#table(cover.data.long[Year=="2008"&Protocol=="C",Cover])
+
+#2009 - much better than 2008
+#table(cover.data.long[Year=="2009"&Protocol=="C",Cover])
+
+#2010
+#table(cover.data.long[Year=="2010"&Protocol=="C",Cover])
+
+#2011
+#table(cover.data.long[Year=="2011"&Protocol=="C",Cover])
+
+#2012
+#table(cover.data.long[Year=="2012"&Protocol=="C",Cover])
+
+#2013 - similar to 2008, why is there a 1-5% bucket? 
+#table(cover.data.long[Year=="2013"&Protocol=="C",Cover])
+
+#2014 - 1-3 and 3-5, where is 3...Daren - should be 4 - 5
+#table(cover.data.long[Year=="2014"&Protocol=="C",Cover])
+
+#2015
+#table(cover.data.long[Year=="2015"&Protocol=="C",Cover])
+
+#2016 - includes 1 text bin
+#table(cover.data.long[Year=="2016"&Protocol=="C",Cover])
+
+#2017 - few random text bins
+#table(cover.data.long[Year=="2017"&Protocol=="C",Cover])
+
+#2018 - includes 1 text bin
+#table(cover.data.long[Year=="2018"&Protocol=="C",Cover])
+
+
+##Fixing these binning errors
+#2008 1-50% should be... see below for how 2008 data is handled
+
+#2013  1-5%  - all belong to Minneopa SP. Cannot use these for Binning Method 4. 
+
+#2014 3-5% should be 4-5%
+cover.data.long[Year=="2014"&Protocol=="C"&Cover=="3-5%",Cover :="4-5%"]
+
+#2016 - 2018, remove text bins
+cover.data.long[Year=="2016"&Protocol=="C"&Cover=="hel",Cover :=""]
+cover.data.long[Year=="2017"&Protocol=="C"&Cover=="ii",Cover :=""]
+cover.data.long[Year=="2017"&Protocol=="C"&Cover=="io",Cover :=""]
+cover.data.long[Year=="2017"&Protocol=="C"&Cover=="pat",Cover :=""]
+cover.data.long[Year=="2017"&Protocol=="C"&Cover=="rr",Cover :=""]
+cover.data.long[Year=="2018"&Protocol=="C"&Cover=="q",Cover :=""]
+
+
+###Now creating a binning reference
+dat.year = c("2008","2009", "2010", '2011',"2012","2013","2014","2015","2016","2017","2018")
+Prot.C = data.table()
+
+for (i in dat.year){
+  iteration = data.table(Year=c(rep(i,each=length(cover.data.long[Year==i&Protocol=="C",unique(Cover)]))),
+                       OriginalBin=c(cover.data.long[Year==i&Protocol=="C",unique(Cover)]))
+  Prot.C = rbind(Prot.C,iteration)
+}
+
+##Import binning key file
+setwd("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data")
+key.dat = as.data.table(readxl::read_xlsx("Bin visualization.xlsx",sheet = "Bin Key"))
+
+#Map methodology to years
+Start = c()
+End = c()
+for (i in 2008:2018) {
+  Start = c(Start,rep(i,times=(2019-i)))
+  End = c(End,c(i:2018))
+}
+
+method.key = data.table(Start = Start, End = End, Method = 
+                          ifelse((Start==2008|Start==2009|Start==2010|Start==2011|Start==2012)&(End==2008|End==2009|End==2010|End==2011|End==2012)|
+                                  (Start==2013 & End==2013)|
+                                  (Start==2014 & End==2014)|
+                                  (Start==2015|Start==2016|Start==2017|Start==2018)&(End==2015|End==2016|End==2017|End==2018),
+                                  "Method 1",
+                                 ifelse((Start==2008|Start==2009|Start==2010|Start==2011|Start==2012)&(End==2013|End==2014|End==2015|End==2016|End==2017|
+                                                                                                         End==2018),
+                                    'Method 2',
+                                    ifelse((Start==2013|Start==2014)&(End==2015|End==2016|End==2017|End==2018),
+                                           'Method 3', 'Method 4'))))
+
+Prot.C = merge(Prot.C,key.dat,by.x = "OriginalBin",by.y = "Bin")
+Prot.C = Prot.C[,.(OriginalBin,`Method 1`,`Method 2`, `Method 3`, `Method 4`)]
+Prot.C = melt(Prot.C,id.vars = 'OriginalBin',variable.name="Method",value.name="Bin")
+Prot.C = unique(Prot.C)
+
+Prot.C
+
+```
+
+Recreate Master Transect File in R
+- Combine multiple raw data files to match all information at the transect level
+
+```{r Master Transect}
+setwd("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data/Original Data")
+
+#First load in all necessary datasets
+management.data =data.table(readxl::read_xlsx("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data/Original Data/MGMT_Action_Site_MU_20190311.xlsx"))
+
+GMT.transects.data=fread("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data/GMT Transects.csv")
+
+C.transects.data =data.table(readxl::read_xlsx("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data/Original Data/SysType_protC_transects_20190325.xlsx"))
+
+obs.crosstab.data =data.table(readxl::read_xlsx("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data/Original Data/Transect_Site_MonYear_20190321.xlsx"))
+
+system.crosstab.data =data.table(readxl::read_xlsx("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data/Original Data/SysType_ProtC_transects_crosstab_byYear_20190325.xlsx"))
+
+#Prepare each file for merging. 
+GMT.transects.merge = GMT.transects.data[,.(Transect_I,TransectNa,SITE_ID,MGMTUNIT,MGMTUNIT_I,StartLat,StartLong)]
+
+management.data = management.data[,.(SiteID,SiteName,ManUnitID,ManUnitAcres,StartDate,EndDate,MgmYr,Action)]
+
+                
+C.transects.merge = C.transects.data[,.(Transect,tblSITE_Site,ManUnit,PrimObs,SecObs,MonDate,Year,SysCode)]
+C.transects.merge[,Transect := as.numeric(Transect)]
+#This file needs to be in wide format. Originally there are duplicate rows for transect ID because of observation years
+C.transects.merge.1 = dcast(C.transects.merge,Transect ~ Year, drop = FALSE )
+colnames(C.transects.merge.1) = c("Transects","Obs.2008","Obs.2009","Obs.2010","Obs.2011","Obs.2012","Obs.2013","Obs.2014","Obs.2015","Obs.2016","Obs.2017","Obs.2018")
+
+#Cross-tab system type by year
+systems = c()
+b <- character(0)
+Transects = c()
+for (i in C.transects.merge[,unique(Transect)]) {
+   Transects = c(Transects,i)
+  for(t in 2008:2018){
+  transect.type = ifelse(identical(C.transects.merge[Transect==i & Year==t ,SysCode],b),"",C.transects.merge[Transect==i & Year==t ,SysCode])
+  systems= c(systems,transect.type)
+}
+}
+
+C.transects.merge.2 = matrix(systems,ncol = 11,byrow = T)
+     colnames(C.transects.merge.2)=c("Sys.2008","Sys.2009","Sys.2010","Sys.2011","Sys.2012","Sys.2013","Sys.2014","Sys.2015","Sys.2016","Sys.2017","Sys.2018")
+C.transects.merge.2 = as.data.table(cbind(Transects,C.transects.merge.2))
+
+#System type is not filled in for each year, ASSUME that system type remains the same until marked otherwise
+
+#system.yrs = colnames(C.transects.merge.2)[2:length(colnames(C.transects.merge.2))]
+#for (z in length(system.yrs):1) {
+  
+C.transects.merge.2[,Sys.2018:=
+                              ifelse(C.transects.merge.2[,Sys.2018]=="",
+                                ifelse(C.transects.merge.2[,Sys.2017]=="",
+                                  ifelse(C.transects.merge.2[,Sys.2016]=="",
+                                    ifelse(C.transects.merge.2[,Sys.2015]=="",
+                                      ifelse(C.transects.merge.2[,Sys.2014]=="",
+                                        ifelse(C.transects.merge.2[,Sys.2013]=="",
+                                          ifelse(C.transects.merge.2[,Sys.2012]=="",
+                                            ifelse(C.transects.merge.2[,Sys.2011]=="",
+                                              ifelse(C.transects.merge.2[,Sys.2010]=="",
+                                                ifelse(C.transects.merge.2[,Sys.2009]=="",
+                                                  ifelse(C.transects.merge.2[,Sys.2008]=="",
+                                                         "",C.transects.merge.2[,Sys.2008])
+                                                  ,C.transects.merge.2[,Sys.2009])
+                                                ,C.transects.merge.2[,Sys.2010])
+                                              ,C.transects.merge.2[,Sys.2011])
+                                            ,C.transects.merge.2[,Sys.2012])
+                                          ,C.transects.merge.2[,Sys.2013])
+                                        ,C.transects.merge.2[,Sys.2014])
+                                      ,C.transects.merge.2[,Sys.2015])
+                                    ,C.transects.merge.2[,Sys.2016])
+                                  ,C.transects.merge.2[,Sys.2017])
+                                ,C.transects.merge.2[,Sys.2018])]
+
+C.transects.merge.2[,Sys.2017:=
+                                ifelse(C.transects.merge.2[,Sys.2017]=="",
+                                  ifelse(C.transects.merge.2[,Sys.2016]=="",
+                                    ifelse(C.transects.merge.2[,Sys.2015]=="",
+                                      ifelse(C.transects.merge.2[,Sys.2014]=="",
+                                        ifelse(C.transects.merge.2[,Sys.2013]=="",
+                                          ifelse(C.transects.merge.2[,Sys.2012]=="",
+                                            ifelse(C.transects.merge.2[,Sys.2011]=="",
+                                              ifelse(C.transects.merge.2[,Sys.2010]=="",
+                                                ifelse(C.transects.merge.2[,Sys.2009]=="",
+                                                  ifelse(C.transects.merge.2[,Sys.2008]=="",
+                                                         "",C.transects.merge.2[,Sys.2008])
+                                                  ,C.transects.merge.2[,Sys.2009])
+                                                ,C.transects.merge.2[,Sys.2010])
+                                              ,C.transects.merge.2[,Sys.2011])
+                                            ,C.transects.merge.2[,Sys.2012])
+                                          ,C.transects.merge.2[,Sys.2013])
+                                        ,C.transects.merge.2[,Sys.2014])
+                                      ,C.transects.merge.2[,Sys.2015])
+                                    ,C.transects.merge.2[,Sys.2016])
+                                  ,C.transects.merge.2[,Sys.2017])]
+
+C.transects.merge.2[,Sys.2016:=
+                              ifelse(C.transects.merge.2[,Sys.2016]=="",
+                                    ifelse(C.transects.merge.2[,Sys.2015]=="",
+                                      ifelse(C.transects.merge.2[,Sys.2014]=="",
+                                        ifelse(C.transects.merge.2[,Sys.2013]=="",
+                                          ifelse(C.transects.merge.2[,Sys.2012]=="",
+                                            ifelse(C.transects.merge.2[,Sys.2011]=="",
+                                              ifelse(C.transects.merge.2[,Sys.2010]=="",
+                                                ifelse(C.transects.merge.2[,Sys.2009]=="",
+                                                  ifelse(C.transects.merge.2[,Sys.2008]=="",
+                                                         "",C.transects.merge.2[,Sys.2009])
+                                                  ,C.transects.merge.2[,Sys.2009])
+                                                ,C.transects.merge.2[,Sys.2010])
+                                              ,C.transects.merge.2[,Sys.2011])
+                                            ,C.transects.merge.2[,Sys.2012])
+                                          ,C.transects.merge.2[,Sys.2013])
+                                        ,C.transects.merge.2[,Sys.2014])
+                                      ,C.transects.merge.2[,Sys.2015])
+                                    ,C.transects.merge.2[,Sys.2016])]
+
+C.transects.merge.2[,Sys.2015:=
+                              ifelse(C.transects.merge.2[,Sys.2015]=="",
+                                      ifelse(C.transects.merge.2[,Sys.2014]=="",
+                                        ifelse(C.transects.merge.2[,Sys.2013]=="",
+                                          ifelse(C.transects.merge.2[,Sys.2012]=="",
+                                            ifelse(C.transects.merge.2[,Sys.2011]=="",
+                                              ifelse(C.transects.merge.2[,Sys.2010]=="",
+                                                ifelse(C.transects.merge.2[,Sys.2009]=="",
+                                                  ifelse(C.transects.merge.2[,Sys.2008]=="",
+                                                         "",C.transects.merge.2[,Sys.2008])
+                                                  ,C.transects.merge.2[,Sys.2009])
+                                                ,C.transects.merge.2[,Sys.2010])
+                                              ,C.transects.merge.2[,Sys.2011])
+                                            ,C.transects.merge.2[,Sys.2012])
+                                          ,C.transects.merge.2[,Sys.2013])
+                                        ,C.transects.merge.2[,Sys.2014])
+                                      ,C.transects.merge.2[,Sys.2015])]
+
+C.transects.merge.2[,Sys.2014:=
+                              ifelse(C.transects.merge.2[,Sys.2014]=="",
+                                        ifelse(C.transects.merge.2[,Sys.2013]=="",
+                                          ifelse(C.transects.merge.2[,Sys.2012]=="",
+                                            ifelse(C.transects.merge.2[,Sys.2011]=="",
+                                              ifelse(C.transects.merge.2[,Sys.2010]=="",
+                                                ifelse(C.transects.merge.2[,Sys.2009]=="",
+                                                  ifelse(C.transects.merge.2[,Sys.2008]=="",
+                                                         "",C.transects.merge.2[,Sys.2008])
+                                                  ,C.transects.merge.2[,Sys.2009])
+                                                ,C.transects.merge.2[,Sys.2010])
+                                              ,C.transects.merge.2[,Sys.2011])
+                                            ,C.transects.merge.2[,Sys.2012])
+                                          ,C.transects.merge.2[,Sys.2013])
+                                        ,C.transects.merge.2[,Sys.2014])]
+
+C.transects.merge.2[,Sys.2013:=
+                              ifelse(C.transects.merge.2[,Sys.2013]=="",
+                                          ifelse(C.transects.merge.2[,Sys.2012]=="",
+                                            ifelse(C.transects.merge.2[,Sys.2011]=="",
+                                              ifelse(C.transects.merge.2[,Sys.2010]=="",
+                                                ifelse(C.transects.merge.2[,Sys.2009]=="",
+                                                  ifelse(C.transects.merge.2[,Sys.2008]=="",
+                                                         "",C.transects.merge.2[,Sys.2008])
+                                                  ,C.transects.merge.2[,Sys.2009])
+                                                ,C.transects.merge.2[,Sys.2010])
+                                              ,C.transects.merge.2[,Sys.2011])
+                                            ,C.transects.merge.2[,Sys.2012])
+                                          ,C.transects.merge.2[,Sys.2013])]
+
+C.transects.merge.2[,Sys.2012:=
+                              ifelse(C.transects.merge.2[,Sys.2012]=="",
+                                            ifelse(C.transects.merge.2[,Sys.2011]=="",
+                                              ifelse(C.transects.merge.2[,Sys.2010]=="",
+                                                ifelse(C.transects.merge.2[,Sys.2009]=="",
+                                                  ifelse(C.transects.merge.2[,Sys.2008]=="",
+                                                         "",C.transects.merge.2[,Sys.2008])
+                                                  ,C.transects.merge.2[,Sys.2009])
+                                                ,C.transects.merge.2[,Sys.2010])
+                                              ,C.transects.merge.2[,Sys.2011])
+                                            ,C.transects.merge.2[,Sys.2012])]
+
+C.transects.merge.2[,Sys.2011:=
+                              ifelse(C.transects.merge.2[,Sys.2011]=="",
+                                              ifelse(C.transects.merge.2[,Sys.2010]=="",
+                                                ifelse(C.transects.merge.2[,Sys.2009]=="",
+                                                  ifelse(C.transects.merge.2[,Sys.2008]=="",
+                                                         "",C.transects.merge.2[,Sys.2008])
+                                                  ,C.transects.merge.2[,Sys.2009])
+                                                ,C.transects.merge.2[,Sys.2010])
+                                              ,C.transects.merge.2[,Sys.2011])]
+
+C.transects.merge.2[,Sys.2010:=
+                              ifelse(C.transects.merge.2[,Sys.2010]=="",
+                                                ifelse(C.transects.merge.2[,Sys.2009]=="",
+                                                  ifelse(C.transects.merge.2[,Sys.2008]=="",
+                                                         "",C.transects.merge.2[,Sys.2008])
+                                                  ,C.transects.merge.2[,Sys.2009])
+                                                ,C.transects.merge.2[,Sys.2010])]
+
+C.transects.merge.2[,Sys.2009:=
+                              ifelse(C.transects.merge.2[,Sys.2009]=="",
+                                                  ifelse(C.transects.merge.2[,Sys.2008]=="",
+                                                         "",C.transects.merge.2[,Sys.2008])
+                                                  ,C.transects.merge.2[,Sys.2009])]
+
+
+C.transects.merge.2
+                    
+#Merge non-year-specific transect info
+C.transects.merge.3 = unique(C.transects.merge[,.(Transect,tblSITE_Site)])
+merge.1 = merge(GMT.transects.merge,C.transects.merge.3,by.x = "Transect_I",by.y = "Transect",all = TRUE)
+
+#Two sites have incorrectly entered management UnitIds: Butternut Valley and Strandness (from Daren, see OneNote documentation)
+#Butternut valley - transects 745 and 747
+merge.1[Transect_I==745,] #correct value
+merge.1[Transect_I==747,]  #correct value
+
+#Butternut valley - transects 1486 and 1487
+merge.1[Transect_I==1486,] #incorrect value
+merge.1[Transect_I==1486,MGMTUNIT := "SR-S"]
+merge.1[Transect_I==1486,MGMTUNIT_I := 189] 
+merge.1[Transect_I==1487,] #incorrect value
+merge.1[Transect_I==1487,MGMTUNIT := "SR-S"]
+merge.1[Transect_I==1487,MGMTUNIT_I := 189] 
+
+#Create a secondary matching file for observer code ~ transect ~ year
+C.transects.merge[,Obs:=PrimObs]
+obs.merge = merge(C.transects.merge,obs.code,by.x = "Obs",by.y = "UniqueObs")
+obs.merge = obs.merge[,.(Transect,Year,ObsCode)]
+obs.merge
+
+#Create cross-tabuted (wide format) management for data merger
+management.data
+manage.merge = management.data[,.(ManUnitID,ManUnitAcres,StartDate,EndDate,MgmYr,Action)]
+manage.merge.long.1 = dcast(manage.merge,ManUnitID ~Action+MgmYr )
+
+table(management.data$ManUnitID,management.data$Action)
+
+manage.acre = unique(management.data[,.(ManUnitID,ManUnitAcres)])
+
+actions = c()
+a <- character(0)
+UnitIds = c()
+for (i in management.data[,unique(ManUnitID)]) {
+   UnitIds = c(UnitIds,i)
+  for(t in 2008:2018){
+  transect.action = ifelse(identical(management.data[ManUnitID==i & MgmYr==t ,Action],a),"",management.data[ManUnitID==i & MgmYr==t ,Action])
+  actions = c(actions,transect.action)
+}
+}
+
+manage.merge.long.2 = matrix(actions,ncol = 11,byrow = T)
+     colnames(manage.merge.long.2)=c("Mgmt.2008","Mgmt.2009","Mgmt.2010","Mgmt.2011","Mgmt.2012","Mgmt.2013","Mgmt.2014","Mgmt.2015","Mgmt.2016","Mgmt.2017","Mgmt.2018")
+manage.merge.long.2 = as.data.table(cbind(UnitIds,manage.merge.long.2))
+manage.merge.long.2 = merge(manage.merge.long.2,manage.acre,by.x = "UnitIds",by.y = "ManUnitID")
+
+#Now merge it all together
+
+###Make sure I'm not losing transects in earlier merging
+transect.master.1 = merge(merge.1,C.transects.merge.1,by.x = "Transect_I",by.y = "Transects",all = TRUE)
+C.transects.merge.2$Transects=as.numeric(C.transects.merge.2$Transects) #make same class to match
+transect.master.2 = merge(transect.master.1,C.transects.merge.2,by.x = "Transect_I",by.y = "Transects",all = TRUE)
+manage.merge.long.2$UnitIds=as.numeric(manage.merge.long.2$UnitIds) #make same class to match
+transect.master.2$MGMTUNIT_I=as.numeric(transect.master.2$MGMTUNIT_I) #make same class to match
+transect.master.3 = merge(transect.master.2,manage.merge.long.2,by.x = "MGMTUNIT_I",by.y = "UnitIds",all = TRUE)
+
+transect.master.3[duplicated(transect.master.3[,.(Transect_I)]),] # some of the management units are not associated with a transect (mostly chippewa prairie issue)
+
+transect.master=transect.master.3[,.(Transect_I,TransectNa,StartLat,StartLong,SITE_ID,tblSITE_Site,MGMTUNIT_I,ManUnitAcres,Obs.2008, Obs.2009, Obs.2010, Obs.2011, Obs.2012, Obs.2013, Obs.2014, Obs.2015, Obs.2016, Obs.2017,Obs.2018, Sys.2008, Sys.2009, Sys.2010, Sys.2011, Sys.2012, Sys.2013, Sys.2014, Sys.2015, Sys.2016, Sys.2017, Sys.2018, Mgmt.2008, Mgmt.2009, Mgmt.2010, Mgmt.2011, Mgmt.2012, Mgmt.2013,Mgmt.2014, Mgmt.2015, Mgmt.2016, Mgmt.2017, Mgmt.2018)]
+
+transect.master
+```
+
+##Data Cleaning / Modification
+Following conversations with data arbiters, the data will be cleaned to fix entry and collection errors. 
+
+- See OneNote page for data modification details/reasoning
+
+```{r Cleaning}
+
+####Drop Sites from all data: 
+#Kloos WPA: SiteId = 33, ManUnits = 103....Actually use, data quality is okay
+#rem.transects.1 = transect.master[SITE_ID==33,unique(Transect_I)] #isolate transect IDs to be removed
+#transect.master = transect.master[SITE_ID!=33]
+
+
+#Minneopa SP: SiteId = 4, ManUnits = 2, 27, 28, 29
+rem.transects.1 = c(transect.master[SITE_ID==4,unique(Transect_I)])
+transect.master = transect.master[SITE_ID!=4]
+
+#Schellburg NPB: SiteID = 26, ManUnites = 89. Not dropping entire site, just specific transects. R.E. Daren (728, 729, 730, 731, 736, 737, 738)
+rem.transects.1 = c(rem.transects.1,c(728, 729, 730, 731, 736, 737, 738))
+z=c(728, 729, 730, 731, 736, 737, 738)
+transect.master = transect.master[!(Transect_I %in% z)]
+
+cover.data.long =cover.data.long[!(TransectID %in% rem.transects.1)]
+
+#The following sites were added in 2017 and lack management history - 81:90...UPDATE after recieving 2019 data
+a = 81:90
+rem.transects.2 = transect.master[SITE_ID %in% a,unique(Transect_I)] #isolate transect IDs to be removed
+transect.master = transect.master[!(SITE_ID %in% a)]
+
+cover.data.long =cover.data.long[!(TransectID %in% rem.transects.2)]
+
+###Correct management history errors 
+#Three mgmt units with data incorrectly added to 2015 - Daren 
+transect.master[MGMTUNIT_I==56,Mgmt.2015:=""]
+transect.master[MGMTUNIT_I==59,Mgmt.2015:=""]
+transect.master[MGMTUNIT_I==89,Mgmt.2015:="Rest"]
+
+
+###Correct actions based on comments - load in correction list
+setwd("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data")
+mgmt.update.1 =  as.data.table(readxl::read_xlsx("MGMT_Action_Site_MU_20190311_HR.xlsx",sheet = "TransectUpdates1"))
+mgmt.update.2 =  as.data.table(readxl::read_xlsx("MGMT_Action_Site_MU_20190311_HR.xlsx",sheet = "TransectUpdates2"))
+
+#Put Master transect file into long form to ease editing
+setnames(transect.master,31:41,new = c('2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018'))
+
+#remember to set names back to original (("Mgmt.2008","Mgmt.2009","Mgmt.2010","Mgmt.2011","Mgmt.2012","Mgmt.2013","Mgmt.2014","Mgmt.2015","Mgmt.2016","Mgmt.2017","Mgmt.2018"))
+
+transect.master.long = melt(transect.master,id.vars = c("Transect_I","MGMTUNIT_I"),measure.vars = c('2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018'),variable.name = "Year",value.name = "Action",na.rm = F)
+
+#First correct errors from duplicate management entries
+duplicate.update = unique(mgmt.update.2[,.(ManUnitID,MgmYr,`New Action`)])
+setnames(duplicate.update,old = c("ManUnitID","MgmYr","New Action") , new =  c('MGMTUNIT_I',"Year","Action"))
+duplicate.update[,MGMTUNIT_I:=as.integer(MGMTUNIT_I)]
+duplicate.update[,Year:=as.factor(Year)]
+
+transect.master.long[transect.master.long[duplicate.update[Action=="Rest"], on=.(MGMTUNIT_I,Year), which=TRUE, nomatch=0],Action:="Rest"]
+transect.master.long[transect.master.long[duplicate.update[Action=="Combo"], on=.(MGMTUNIT_I,Year), which=TRUE, nomatch=0],Action:="Combo"]
+transect.master.long[transect.master.long[duplicate.update[Action=="Burn"], on=.(MGMTUNIT_I,Year), which=TRUE, nomatch=0],Action:="Burn"]
+
+#transect.master.long[MGMTUNIT_I==162&Year==2013] #test should be Combo..Works
+
+#Remove management actions #####HUGH confirm if set as "" or as special code to indicate do not use
+remove.unit =(unique(mgmt.update.1[Change=="Remove" & Transect=="ALL",.(`MGMT Unit`,`MGMT Year`)]))
+setnames(remove.unit,old = c("MGMT Unit","MGMT Year") , new =  c('MGMTUNIT_I',"Year"))
+remove.unit[,MGMTUNIT_I:=as.integer(MGMTUNIT_I)]
+remove.unit[,Year:=as.factor(Year)]
+
+#Test procedure below
+#testing.dt = data.table(MGMTUNIT_I=1,Year=as.factor(2011)) 
+#test.tran = transect.master.long
+#test.tran[MGMTUNIT_I==1&Year==2011]
+#test.tran[test.tran[testing.dt, on=.(MGMTUNIT_I,Year), which=TRUE, nomatch=0],Action:=""]
+#test.tran[MGMTUNIT_I==1&Year==2011] #Test confirms change
+
+transect.master.long[transect.master.long[remove.unit, on=.(MGMTUNIT_I,Year), which=TRUE, nomatch=0],Action:=""]
+
+##Hugh - should I also remove from cover data?...only for when I am calculating delta does this matter. Doing in section below
+
+#Now remove all specified transects
+remove.transect = (unique(mgmt.update.1[Change=="Remove" & !(Transect=="ALL"),.(Transect,`MGMT Year`)]))
+setnames(remove.transect,old = c("Transect","MGMT Year") , new =  c('Transect_I',"Year"))
+remove.transect[,Transect_I:=as.integer(Transect_I)]
+remove.transect[,Year:=as.factor(Year)]
+
+transect.master.long[transect.master.long[remove.transect, on=.(Transect_I,Year), which=TRUE, nomatch=0],Action:=""]
+transect.master.long[Transect_I==851&Year==2010] #test, works
+
+#Update mgmt unit actions based on comments - currently I do not know the transects associated with these units
+#update.unit = (unique(mgmt.update.1[Change=="Update" & Transect=="ALL",.(`MGMT Unit`,`MGMT Year`,`New Action`)]))
+#setnames(update.unit,old = c("MGMT Unit","MGMT Year","New Action") , new =  c('MGMTUNIT_I',"Year","Action"))
+#update.unit[,MGMTUNIT_I:=as.integer(MGMTUNIT_I)]
+#update.unit[,Year:=as.factor(Year)]
+
+
+#Update transect actions based on comments
+update.transect = (unique(mgmt.update.1[Change=="Update" & !(Transect=="ALL"),.(`Transect`,`MGMT Year`,`New Action`)]))
+setnames(update.transect,old = c("Transect","MGMT Year","New Action") , new =  c('Transect_I',"Year","Action"))
+update.transect[,Transect_I:=as.integer(Transect_I)]
+update.transect[,Year:=as.factor(Year)]
+
+transect.master.long[transect.master.long[update.transect[Action=="Rest"], on=.(Transect_I,Year), which=TRUE, nomatch=0],Action:="Rest"]
+transect.master.long[transect.master.long[update.transect[Action=="Combo"], on=.(Transect_I,Year), which=TRUE, nomatch=0],Action:="Combo"]
+transect.master.long[transect.master.long[update.transect[Action=="Burn"], on=.(Transect_I,Year), which=TRUE, nomatch=0],Action:="Burn"]
+
+#create a list of mgmt units with non-uniform actions - will likely remove from mgmt unit averages
+diff.actions.unit = transect.master.long[,length(unique(Action)),by=.(MGMTUNIT_I,Year)][V1>1]
+
+#Now recreate master transect file from long version
+transect.master.long.2=dcast(transect.master.long, Transect_I+MGMTUNIT_I ~ Year,value.var = "Action",fill = "")
+transect.master=transect.master[,!(31:41)]
+transect.master = merge(transect.master,transect.master.long.2,by = c("Transect_I","MGMTUNIT_I"))
+
+setnames(transect.master,31:41,new = c("Mgmt.2008","Mgmt.2009","Mgmt.2010","Mgmt.2011","Mgmt.2012","Mgmt.2013","Mgmt.2014","Mgmt.2015","Mgmt.2016","Mgmt.2017","Mgmt.2018"))
+
+```
+
+#Data Filtering
+Transects/sites will be removed based on: 
+- Lack of Protocol C
+
+Also, creating new category for transects with more than 1 observation for delta comparisons. This will then incorporate necessary removals from the above management corrections - i.e. I cannot compare delta values when management history is unknown
+
+```{r Data Filtering}
+#Remove 2008 and 2009 since not really using protocol C ever
+cover.data.long =cover.data.long[!(Year==2008 | Year==2009)]
+
+#Two transects have blank years of observation (826 - 2014; 548 - 2014)
+cover.data.long=cover.data.long[!(TransectID==826 & Year==2014)]
+cover.data.long=cover.data.long[!(TransectID==548 & Year==2014)]
+
+transect.master[Transect_I==826,Obs.2014:=0]
+transect.master[Transect_I==548,Obs.2014:=0]
+
+#Transects < 2 observations, assign binary delta analysis variable, 1 = can look at delta
+transect.master[, NumObs := Reduce(`+`, .SD), .SDcol = 11:19] #calculate number times each transect is observed - from 2010-2018
+rem.transects.3 = transect.master[NumObs<2|is.na(NumObs),Transect_I] #Remove transects that lack at least two observations, 340 remain
+transect.master[(NumObs<2|is.na(NumObs)),Delta:=0]
+transect.master[(NumObs>1|is.na(NumObs)),Delta:=1]
+
+cover.data.long[(TransectID %in% rem.transects.3),Delta:=0] 
+cover.data.long[!(TransectID %in% rem.transects.3),Delta:=1] 
+
+#remove delta binary from transects with removed or undefined management actions, but only if gap coincides between management years
+
+remove.delta=transect.master.long[transect.master.long[remove.transect, on=.(Transect_I,Year), which=TRUE, nomatch=0],]
+remove.delta=rbind(remove.delta,transect.master.long[transect.master.long[remove.unit, on=.(MGMTUNIT_I), which=TRUE, nomatch=0],])
+
+remove.delta = remove.delta[Action=="",.(Transect_I,Year)]
+setnames(remove.delta,old = c('Transect_I',"Year") , new =  c('TransectID',"Missing"))
+
+cover.obs =cover.data.long[Delta>0,][,unique(Year),by=TransectID]
+
+remove.delta=merge(cover.obs,remove.delta,by = "TransectID")
+remove.delta[,Min:=min(V1),by=TransectID]
+remove.delta[,Max:=max(V1),by=TransectID]
+
+remove.delta$Missing=as.numeric(as.character(remove.delta$Missing))
+remove.delta[Missing>Min&Missing<=Max,Remove:=1] #this assumes monitoring takes place after the completion of management year
+remove.delta[V1>Min & V1<Missing,Remove:=0]
+
+#Because of how this is written, the 0's ^ do not include the intial measurement year, which they should. Manually correct below
+
+remove.delta[TransectID==548&V1==2010,Remove:=0]
+
+remove.delta=remove.delta[Remove==1,.(TransectID,V1)]
+setnames(remove.delta,old = c('V1') , new =  c('Year'))
+
+cover.data.long[cover.data.long[remove.delta, on=.(TransectID,Year), which=TRUE, nomatch=0],Delta:=0]
+
+```
+
+#Frequencies
+Merge key attributes from transect.master file and cover.data.long.
+Using frequency as an indicator of abundance.
+Frequency of each species presence at plots for each: transect, ManUnit, and Site
+
+```{r Frequencies}
+z=transect.master[,.(Transect_I,MGMTUNIT_I,SITE_ID)]
+cover.data.analysis = merge(cover.data.long,z,by.x = "TransectID",by.y = "Transect_I")
+cover.data.analysis=cover.data.analysis[Protocol=="C"]
+
+#Transect Species frequency
+transect.freq = cover.data.analysis[!(Cover==""),.N, by = .(SpeciesID,TransectID,Year,MonDate, ObsCode, Protocol)]
+transect.freq[,Freq := N/25]
+transect.freq=transect.freq[Protocol=="C"]
+
+
+#ManUnit frequency - adjust for comparing averages between years when the number of transects in a management unit changes as some are added and dropped
+
+#first count number of transects per management unit per year
+
+mgmt.freq = cover.data.analysis
+mgmt.freq[,tran.count:=length(unique(TransectID)),by = .(MGMTUNIT_I,Year)]
+mgmt.freq = mgmt.freq[!(Cover==""),.N, by= .(SpeciesID,MGMTUNIT_I,Year,MonDate, ObsCode, Protocol, tran.count)]
+mgmt.freq[,Freq:= N/(tran.count*25)]
+mgmt.freq=mgmt.freq[Protocol=="C"]
+
+#Site Frequency
+site.freq = cover.data.analysis
+site.freq[,tran.count:=length(unique(TransectID)),by = .(SITE_ID,Year)]
+site.freq = site.freq[!(Cover==""),.N, by= .(SpeciesID,SITE_ID,Year,MonDate, ObsCode, Protocol, tran.count)]
+site.freq[,Freq:= N/(tran.count*25)]
+site.freq=site.freq[Protocol=="C"]
+
+
+```
+
+#Cover Averages
+
+Match cover data with the bin values.
+
+Create averages per transect, MGMT Unit, Site
+
+```{r Cover Data and Bins}
+site.mgmt=transect.master[,.(Transect_I,MGMTUNIT_I,SITE_ID)]
+cover.data.analysis = merge(cover.data.long,site.mgmt,by.x = "TransectID",by.y = "Transect_I")
+z=unique(cover.data.analysis[,.(TransectID,MGMTUNIT_I,SITE_ID)])
+
+#####create cover data table for each applicable binning method (4 dt)
+
+##method 1 = at least 2 years in (2008-2012) OR at least 2 years in (2015-2018)
+cover.data.long[,unique(Year),by=TransectID]
+yrs.method.1.1 = cover.data.long[,unique(Year),by=TransectID]
+yrs.method.1.1 = yrs.method.1.1[V1<2013,.N,by = TransectID][N>1]
+yrs.method.1.1 = yrs.method.1.1[,TransectID]
+
+yrs.method.1.2 = cover.data.long[,unique(Year),by=TransectID]
+yrs.method.1.2 = yrs.method.1.2[V1>2014,.N,by = TransectID][N>1]
+yrs.method.1.2 = yrs.method.1.2[,TransectID]
+
+cover.method.1.1 = cover.data.long[Year<2013][TransectID %in% yrs.method.1.1][Protocol=="C"]
+cover.method.1.1 = merge(cover.method.1.1,Prot.C[Method=="Method 1"],by.x = "Cover",by.y = "OriginalBin",all.x = T)
+cover.method.1.1[is.na(Method),Method:="Method 1"]
+cover.method.1.1[is.na(Bin),Bin:=0]
+
+cover.method.1.2 = cover.data.long[Year>2014][TransectID %in% yrs.method.1.2][Protocol=="C"]
+cover.method.1.2 = merge(cover.method.1.2,Prot.C[Method=="Method 1"],by.x = "Cover",by.y = "OriginalBin",all.x = T)
+cover.method.1.2[is.na(Method),Method:="Method 1"]
+cover.method.1.2[is.na(Bin),Bin:=0]
+
+#averages
+transect.method.1.1 = cover.method.1.1[, (freq=sum(Bin)),by = .(TransectID,MonDate,Year,Protocol,ObsCode,Method,SpeciesID)]
+names(transect.method.1.1)[length(names(transect.method.1.1))] = "AVG"
+transect.method.1.1[,AVG:= AVG/25]
+
+mgmt.setup.1.1 = merge(cover.method.1.1,z,by = "TransectID")
+mgmt.setup.1.1[,tran.count:=length(unique(TransectID)),by = .(MGMTUNIT_I,Year)]
+mgmt.setup.1.1[,mgmt.count:=length(unique(TransectID)),by = .(SITE_ID,Year)]
+
+mgmt.method.1.1 = mgmt.setup.1.1[,(freq=sum(Bin)), by= .(MGMTUNIT_I,Year,MonDate, Protocol, tran.count,SpeciesID)] #can no longer use Observer covariate
+names(mgmt.method.1.1)[length(names(mgmt.method.1.1))] = "AVG"
+mgmt.method.1.1[,AVG:= AVG/(tran.count*25)]
+
+site.method.1.1 = mgmt.setup.1.1[,(freq=sum(Bin)), by= .(SITE_ID,Year,MonDate, Protocol,mgmt.count,SpeciesID)] 
+names(site.method.1.1)[length(names(site.method.1.1))] = "AVG"
+site.method.1.1[,AVG:= AVG/(mgmt.count*25)]
+
+
+
+transect.method.1.2 = cover.method.1.2[, (freq=sum(Bin)),by = .(TransectID,MonDate,Year,Protocol,ObsCode,Method,SpeciesID)]
+names(transect.method.1.2)[length(names(transect.method.1.2))] = "AVG"
+transect.method.1.2[,AVG:= AVG/25]
+
+mgmt.setup.1.2 = merge(cover.method.1.2,z,by = "TransectID")
+mgmt.setup.1.2[,tran.count:=length(unique(TransectID)),by = .(MGMTUNIT_I,Year)]
+mgmt.setup.1.2[,mgmt.count:=length(unique(TransectID)),by = .(SITE_ID,Year)]
+
+mgmt.method.1.2 = mgmt.setup.1.2[,(freq=sum(Bin)), by= .(MGMTUNIT_I,Year,MonDate, Protocol, tran.count,SpeciesID)] #can no longer use Observer covariate
+names(mgmt.method.1.2)[length(names(mgmt.method.1.2))] = "AVG"
+mgmt.method.1.2[,AVG:= AVG/(tran.count*25)]
+
+site.method.1.2 = mgmt.setup.1.2[,(freq=sum(Bin)), by= .(SITE_ID,Year,MonDate, Protocol,mgmt.count,SpeciesID)] 
+names(site.method.1.2)[length(names(site.method.1.2))] = "AVG"
+site.method.1.2[,AVG:= AVG/(mgmt.count*25)]
+
+
+##method 2 = All years comparison using 3 bins
+cover.method.2 = cover.data.long[Protocol=="C"]
+cover.method.2 = merge(cover.method.2,Prot.C[Method=="Method 2"],by.x = "Cover",by.y = "OriginalBin",all.x = T)
+cover.method.2[is.na(Method),Method:="Method 2"]
+cover.method.2[is.na(Bin),Bin:=0]
+
+
+#averages
+transect.method.2 = cover.method.2[, (freq=sum(Bin)),by = .(TransectID,MonDate,Year,Protocol,ObsCode,Method,SpeciesID)]
+names(transect.method.2)[length(names(transect.method.2))] = "AVG"
+transect.method.2[,AVG:= AVG/25]
+
+mgmt.setup.2 = merge(cover.method.2,z,by = "TransectID")
+mgmt.setup.2[,tran.count:=length(unique(TransectID)),by = .(MGMTUNIT_I,Year)]
+mgmt.setup.2[,mgmt.count:=length(unique(TransectID)),by = .(SITE_ID,Year)]
+
+mgmt.method.2 = mgmt.setup.2[,(freq=sum(Bin)), by= .(MGMTUNIT_I,Year,MonDate, Protocol, tran.count,SpeciesID)] #can no longer use Observer covariate
+names(mgmt.method.2)[length(names(mgmt.method.2))] = "AVG"
+mgmt.method.2[,AVG:= AVG/(tran.count*25)]
+
+site.method.2 = mgmt.setup.2[,(freq=sum(Bin)), by= .(SITE_ID,Year,MonDate, Protocol,mgmt.count,SpeciesID)] 
+names(site.method.2)[length(names(site.method.2))] = "AVG"
+site.method.2[,AVG:= AVG/(mgmt.count*25)]
+
+
+##Method 3 = Compare 2013 or 2014 to 2015-2018
+
+yrs.method.3 = cover.data.long[,unique(Year),by=TransectID]
+yrs.method.3.1 = yrs.method.3[V1==2012 | V1==2013 ,unique(TransectID)]
+yrs.method.3.2 = yrs.method.3[V1>2014 ,unique(TransectID)]
+yrs.method.3= intersect(yrs.method.3.1,yrs.method.3.2)
+
+cover.method.3 = cover.data.long[Year>2012][TransectID %in% yrs.method.3][Protocol=="C"]
+cover.method.3 = merge(cover.method.3,Prot.C[Method=="Method 3"],by.x = "Cover",by.y = "OriginalBin",all.x = T)
+cover.method.3[is.na(Method),Method:="Method 3"]
+cover.method.3[is.na(Bin),Bin:=0]
+
+#averages
+transect.method.3 = cover.method.3[, (freq=sum(Bin)),by = .(TransectID,MonDate,Year,Protocol,ObsCode,Method,SpeciesID)]
+names(transect.method.3)[length(names(transect.method.3))] = "AVG"
+transect.method.3[,AVG:= AVG/25]
+
+mgmt.setup.3 = merge(cover.method.3,z,by = "TransectID")
+mgmt.setup.3[,tran.count:=length(unique(TransectID)),by = .(MGMTUNIT_I,Year)]
+mgmt.setup.3[,mgmt.count:=length(unique(TransectID)),by = .(SITE_ID,Year)]
+
+mgmt.method.3 = mgmt.setup.3[,(freq=sum(Bin)), by= .(MGMTUNIT_I,Year,MonDate, Protocol, tran.count,SpeciesID)] #can no longer use Observer covariate
+names(mgmt.method.3)[length(names(mgmt.method.3))] = "AVG"
+mgmt.method.3[,AVG:= AVG/(tran.count*25)]
+
+site.method.3 = mgmt.setup.3[,(freq=sum(Bin)), by= .(SITE_ID,Year,MonDate, Protocol,mgmt.count,SpeciesID)] 
+names(site.method.3)[length(names(site.method.3))] = "AVG"
+site.method.3[,AVG:= AVG/(mgmt.count*25)]
+
+
+##Method 4 - Compare 2013 and 2014
+yrs.method.4 = cover.data.long[,unique(Year),by=TransectID]
+yrs.method.4.1 = yrs.method.4[V1==2013 ,unique(TransectID)]
+yrs.method.4.2 = yrs.method.4[V1==2014 ,unique(TransectID)]
+yrs.method.4= intersect(yrs.method.4.1,yrs.method.4.2)
+
+cover.method.4 = cover.data.long[Year<2014&Year>2012][TransectID %in% yrs.method.4][Protocol=="C"]
+cover.method.4 = merge(cover.method.4,Prot.C[Method=="Method 4"],by.x = "Cover",by.y = "OriginalBin",all.x = T)
+cover.method.4[is.na(Method),Method:="Method 4"]
+cover.method.4[is.na(Bin),Bin:=0]
+
+#averages
+transect.method.4 = cover.method.4[, (freq=sum(Bin)),by = .(TransectID,MonDate,Year,Protocol,ObsCode,Method,SpeciesID)]
+names(transect.method.4)[length(names(transect.method.4))] = "AVG"
+transect.method.4[,AVG:= AVG/25]
+
+mgmt.setup.4 = merge(cover.method.4,z,by = "TransectID")
+mgmt.setup.4[,tran.count:=length(unique(TransectID)),by = .(MGMTUNIT_I,Year)]
+mgmt.setup.4[,mgmt.count:=length(unique(TransectID)),by = .(SITE_ID,Year)]
+
+mgmt.method.4 = mgmt.setup.4[,(freq=sum(Bin)), by= .(MGMTUNIT_I,Year,MonDate, Protocol, tran.count,SpeciesID)] #can no longer use Observer covariate
+names(mgmt.method.4)[length(names(mgmt.method.4))] = "AVG"
+mgmt.method.4[,AVG:= AVG/(tran.count*25)]
+
+site.method.4 = mgmt.setup.4[,(freq=sum(Bin)), by= .(SITE_ID,Year,MonDate, Protocol,mgmt.count,SpeciesID)] 
+names(site.method.4)[length(names(site.method.4))] = "AVG"
+site.method.4[,AVG:= AVG/(mgmt.count*25)]
+
+```
+
+
+#Master Cover file
+
+Merge all files for analysis here. List of files to be merged:
+
+cover.data.analysis
+
+cover.method.1-4
+transect.method.1-4
+mgmt.method.1-4
+site.method.1-4
+
+transect.freq
+mgmt.freq
+site.freq
+
+transect.master ...complete with soil data
+
+Species #TBD
+
+
+```{r Master Cover}
+
+#merge plot level covers
+cover = cover.data.analysis[Protocol=="C"]
+cover=cover[,.(TransectID,MGMTUNIT_I,SITE_ID,MonDate,Year,PlotID, Protocol,ObsCode,VOR,Litter,Delta,SpeciesID,Cover)]
+cover = merge(cover,cover.method.1.1,by=c("TransectID","MonDate","Year","PlotID","Protocol","ObsCode","VOR","Litter","Delta","SpeciesID","Cover"),all= T)
+names(cover)[length(names(cover))] = "Bin.1.1"
+cover[,Method:=NULL]
+
+cover = merge(cover,cover.method.1.2,by=c("TransectID","MonDate","Year","PlotID","Protocol","ObsCode","VOR","Litter","Delta","SpeciesID","Cover"),all=T)
+names(cover)[length(names(cover))] = "Bin.1.2"
+cover[,Method:=NULL]
+
+cover = merge(cover,cover.method.2,by=c("TransectID","MonDate","Year","PlotID","Protocol","ObsCode","VOR","Litter","Delta","SpeciesID","Cover"),all=T)
+names(cover)[length(names(cover))] = "Bin.2"
+cover[,Method:=NULL]
+
+cover = merge(cover,cover.method.3,by=c("TransectID","MonDate","Year","PlotID","Protocol","ObsCode","VOR","Litter","Delta","SpeciesID","Cover"),all=T)
+names(cover)[length(names(cover))] = "Bin.3"
+cover[,Method:=NULL]
+
+cover = merge(cover,cover.method.4,by=c("TransectID","MonDate","Year","PlotID","Protocol","ObsCode","SpeciesID","Cover"),all=T)
+names(cover)[length(names(cover))] = "Bin.4"
+cover[,Method:=NULL]
+
+#Merge transect cover averages
+cover = merge(cover,transect.method.1.1,by=c("TransectID","MonDate","Year","Protocol","ObsCode","SpeciesID"),all= T)
+names(cover)[length(names(cover))] = "AVG.T.1.1"
+cover[,Method:=NULL]
+
+cover = merge(cover,transect.method.1.2,by=c("TransectID","MonDate","Year","Protocol","ObsCode","SpeciesID"),all= T)
+names(cover)[length(names(cover))] = "AVG.T.1.2"
+cover[,Method:=NULL]
+
+cover = merge(cover,transect.method.2,by=c("TransectID","MonDate","Year","Protocol","ObsCode","SpeciesID"),all= T)
+names(cover)[length(names(cover))] = "AVG.T.2"
+cover[,Method:=NULL]
+
+cover = merge(cover,transect.method.3,by=c("TransectID","MonDate","Year","Protocol","ObsCode","SpeciesID"),all= T)
+names(cover)[length(names(cover))] = "AVG.T.3"
+cover[,Method:=NULL]
+
+cover = merge(cover,transect.method.4,by=c("TransectID","MonDate","Year","Protocol","ObsCode","SpeciesID"),all= T)
+names(cover)[length(names(cover))] = "AVG.T.4"
+cover[,Method:=NULL]
+
+#Merge mgmt cover averages
+cover = merge(cover,mgmt.method.1.1,by=c("MGMTUNIT_I","MonDate","Year","Protocol","SpeciesID"),all= T)
+names(cover)[length(names(cover))] = "AVG.M.1.1"
+cover[,tran.count:=NULL]
+
+cover = merge(cover,mgmt.method.1.2,by=c("MGMTUNIT_I","MonDate","Year","Protocol","SpeciesID"),all= T)
+names(cover)[length(names(cover))] = "AVG.M.1.2"
+cover[,tran.count:=NULL]
+
+cover = merge(cover,mgmt.method.2,by=c("MGMTUNIT_I","MonDate","Year","Protocol","SpeciesID"),all= T)
+names(cover)[length(names(cover))] = "AVG.M.2"
+cover[,tran.count:=NULL]
+
+cover = merge(cover,mgmt.method.3,by=c("MGMTUNIT_I","MonDate","Year","Protocol","SpeciesID"),all= T)
+names(cover)[length(names(cover))] = "AVG.M.3"
+cover[,tran.count:=NULL]
+
+cover = merge(cover,mgmt.method.4,by=c("MGMTUNIT_I","MonDate","Year","Protocol","SpeciesID"),all= T)
+names(cover)[length(names(cover))] = "AVG.M.4"
+cover[,tran.count:=NULL]
+
+#Merge site cover averages
+cover = merge(cover,site.method.1.1,by=c("SITE_ID","MonDate","Year","Protocol","SpeciesID"),all= T)
+names(cover)[length(names(cover))] = "AVG.S.1.1"
+cover[,mgmt.count:=NULL]
+
+cover = merge(cover,site.method.1.2,by=c("SITE_ID","MonDate","Year","Protocol","SpeciesID"),all= T)
+names(cover)[length(names(cover))] = "AVG.S.1.2"
+cover[,mgmt.count:=NULL]
+
+cover = merge(cover,site.method.2,by=c("SITE_ID","MonDate","Year","Protocol","SpeciesID"),all= T)
+names(cover)[length(names(cover))] = "AVG.S.2"
+cover[,mgmt.count:=NULL]
+
+cover = merge(cover,site.method.3,by=c("SITE_ID","MonDate","Year","Protocol","SpeciesID"),all= T)
+names(cover)[length(names(cover))] = "AVG.S.3"
+cover[,mgmt.count:=NULL]
+
+cover = merge(cover,site.method.4,by=c("SITE_ID","MonDate","Year","Protocol","SpeciesID"),all= T)
+names(cover)[length(names(cover))] = "AVG.S.4"
+cover[,mgmt.count:=NULL]
+
+#Merge frequencies
+cover = merge(cover,transect.freq,by=c("TransectID","MonDate","Year","Protocol","ObsCode","SpeciesID"),all= T)
+names(cover)[length(names(cover))] = "Freq.T"
+cover[,N:=NULL]
+cover[is.na(Freq.T),Freq.T:=0] #There should not be NA values for frequency, should be zero for comparing change.
+
+cover = merge(cover,mgmt.freq,by=c("MGMTUNIT_I","MonDate","Year","Protocol","ObsCode","SpeciesID"),all= T)
+names(cover)[length(names(cover))] = "Freq.M"
+cover[,N:=NULL]
+cover[,tran.count:=NULL]
+cover[is.na(Freq.M),Freq.M:=0] #There should not be NA values for frequency, should be zero for comparing change.
+
+cover = merge(cover,site.freq,by=c("SITE_ID","MonDate","Year","Protocol","ObsCode","SpeciesID"),all= T)
+names(cover)[length(names(cover))] = "Freq.S"
+cover[,N:=NULL]
+cover[,tran.count:=NULL]
+cover[is.na(Freq.S),Freq.S:=0] #There should not be NA values for frequency, should be zero for comparing change.
+
+#Merge in management data
+names(transect.master.long)=c("TransectID","MGMTUNIT_I", "Year", "Action")
+transect.master.long$Year=as.numeric(as.character(transect.master.long$Year))
+cover = merge(cover,transect.master.long,by=c("MGMTUNIT_I", "Year","TransectID"))
+
+#Merge in other Master Transect Info (this will include more when I add soil)
+z = transect.master[,.(Transect_I,StartLat,StartLong,ManUnitAcres)]
+names(z)[1]="TransectID"
+cover = merge(cover,z,by="TransectID")
+
+#Merge in Species Info
+species.dat = as.data.table(readxl::read_xlsx("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Species Traits and Range/Plant Reference List.xlsx",sheet = "Plant Reference",skip=1))
+species.dat = species.dat[,.(SpeciesID,Species.Cat,Inclusion.Cat,Indicator,Native.Status)] #add in more as I complete plant trait data
+species.dat$SpeciesID=as.numeric(species.dat$SpeciesID)
+cover = merge(cover,species.dat,by = "SpeciesID")
+
+#remove unnecessary merge remnants and correct names
+cover[,VOR.y:=NULL]
+cover[,Litter.y:=NULL]
+cover[,Delta.y:=NULL]
+setnames(cover,old = c("VOR.x","Litter.x","Delta.x") , new =  c('VOR',"Litter","Delta"))
+
+
+```
+
+#Management Timing Analysis
+Confirm timing of management actions relative to observation
+
+```{r Management Timing Analysis}
+library(lubridate)
+
+#reload mgmt data with comments
+management.raw =data.table(readxl::read_xlsx("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data/Original Data/MGMT_Action_Site_MU_20190311.xlsx"))
+management.raw = management.raw[,.(SiteID,SiteName,ManUnitID,ManUnitAcres,StartDate,EndDate,MgmYr,Action,comments)]
+
+#merge files to create accurate table with management action timing and observation date by mgmt unit
+mgmt.timing = management.raw[,.(ManUnitID,MgmYr,StartDate,EndDate,comments)]
+mgmt.timing$ManUnitID = as.numeric(mgmt.timing$ManUnitID)
+mgmt.timing$MgmYr = as.numeric(mgmt.timing$MgmYr)
+
+timing.merge.1 = unique(cover[,.(MGMTUNIT_I,SITE_ID,Year,MonDate)])
+
+mgmt.timing = merge(mgmt.timing,timing.merge.1,by.x = c("ManUnitID","MgmYr"), by.y =c("MGMTUNIT_I","Year")) #add in observation timing
+mgmt.timing$MonDate = mdy(mgmt.timing$MonDate)
+
+timing.merge.2 = unique(cover[,.(MGMTUNIT_I,Year,Action)])
+mgmt.timing = merge(mgmt.timing,timing.merge.2,by.x = c("ManUnitID","MgmYr"), by.y =c("MGMTUNIT_I","Year")) #add in corrected actions
+
+#Timing of rest actions does not matter, exclude
+mgmt.timing=mgmt.timing[!(Action=="Rest")]
+
+#Check if monitoring happened after completion of action
+mgmt.timing[MonDate>EndDate,Obs_check:="After"]
+mgmt.timing[MonDate<EndDate,Obs_check:="Before"]
+
+#Check if action corresponds to the correct management year window and observation year
+mgmt.timing[year(EndDate)==MgmYr & year(EndDate) == year(MonDate),Year_check:="Same"]
+mgmt.timing[is.na(Year_check),Year_check:="Different"]
+
+#mgmt.timing = mgmt.timing[,.(ManUnitID,SITE_ID,MgmYr,StartDate,EndDate,MonDate,Timing_check,Year_check,Action,comments)] #reorder
+
+#write.csv(mgmt.timing,"/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis/mgmt_timing_obs.csv")
+
+#Timing of observation relative to the management actions seems to be okay. Also depending on the validity of management action timing the specified years are good
+
+```
+
+Finalize and Save data tables for analysis Rmd file
+```{r Finish}
+
+setwd("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis")
+
+#Save cover file
+fwrite(cover,"/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis/Cover_data_V2.csv")
+
+#save master transect file
+fwrite(transect.master,"/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis/Transect_master_V2.csv")
+
+```
+Need to remove units and sites that should not be averaged because of different management actions - file name = diff.actions.unit....I think I have done this
+
+Check 2013 Binning, particularly Bin 2
