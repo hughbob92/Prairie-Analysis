@@ -740,7 +740,8 @@ mgmt.setup.1.1 = merge(cover.method.1.1,z,by = "TransectID")
 mgmt.setup.1.1[,tran.count:=length(unique(TransectID)),by = .(MGMTUNIT_I,Year)]
 mgmt.setup.1.1[,mgmt.count:=length(unique(TransectID)),by = .(SITE_ID,Year)]
 
-mgmt.method.1.1 = mgmt.setup.1.1[,(freq=sum(Bin)), by= .(MGMTUNIT_I,Year,MonDate, Protocol, tran.count,SpeciesID)] #can no longer use Observer covariate
+mgmt.method.1.1 = mgmt.setup.1.1[,(freq=sum(Bin)), by= .(MGMTUNIT_I,Year,MonDate, Protocol, tran.count,SpeciesID)] 
+#can no longer use Observer covariate
 names(mgmt.method.1.1)[length(names(mgmt.method.1.1))] = "AVG"
 mgmt.method.1.1[,AVG:= AVG/(tran.count*25)]
 
@@ -862,7 +863,6 @@ cover.data.analysis
 cover.method.1-4
 transect.method.1-4
 mgmt.method.1-4
-site.method.1-4
 
 transect.freq
 mgmt.freq
@@ -900,66 +900,66 @@ cover[,Method:=NULL]
 
 #Merge transect cover averages
 cover = merge(cover,transect.method.1.1,by=c("TransectID","MonDate","Year","Protocol","ObsCode","SpeciesID"),all= T)
-names(cover)[length(names(cover))] = "AVG.T.1.1"
+names(cover)[length(names(cover))] = "cov.1.1.T"
 cover[,Method:=NULL]
 
 cover = merge(cover,transect.method.1.2,by=c("TransectID","MonDate","Year","Protocol","ObsCode","SpeciesID"),all= T)
-names(cover)[length(names(cover))] = "AVG.T.1.2"
+names(cover)[length(names(cover))] = "cov.1.2.T"
 cover[,Method:=NULL]
 
 cover = merge(cover,transect.method.2,by=c("TransectID","MonDate","Year","Protocol","ObsCode","SpeciesID"),all= T)
-names(cover)[length(names(cover))] = "AVG.T.2"
+names(cover)[length(names(cover))] = "cov.2.T"
 cover[,Method:=NULL]
 
 cover = merge(cover,transect.method.3,by=c("TransectID","MonDate","Year","Protocol","ObsCode","SpeciesID"),all= T)
-names(cover)[length(names(cover))] = "AVG.T.3"
+names(cover)[length(names(cover))] = "cov.3.T"
 cover[,Method:=NULL]
 
 cover = merge(cover,transect.method.4,by=c("TransectID","MonDate","Year","Protocol","ObsCode","SpeciesID"),all= T)
-names(cover)[length(names(cover))] = "AVG.T.4"
+names(cover)[length(names(cover))] = "cov.4.T"
 cover[,Method:=NULL]
 
 #Merge mgmt cover averages
 cover = merge(cover,mgmt.method.1.1,by=c("MGMTUNIT_I","MonDate","Year","Protocol","SpeciesID"),all= T)
-names(cover)[length(names(cover))] = "AVG.M.1.1"
+names(cover)[length(names(cover))] = "cov.1.1.M"
 cover[,tran.count:=NULL]
 
 cover = merge(cover,mgmt.method.1.2,by=c("MGMTUNIT_I","MonDate","Year","Protocol","SpeciesID"),all= T)
-names(cover)[length(names(cover))] = "AVG.M.1.2"
+names(cover)[length(names(cover))] = "cov.1.2.M"
 cover[,tran.count:=NULL]
 
 cover = merge(cover,mgmt.method.2,by=c("MGMTUNIT_I","MonDate","Year","Protocol","SpeciesID"),all= T)
-names(cover)[length(names(cover))] = "AVG.M.2"
+names(cover)[length(names(cover))] = "cov.2.M"
 cover[,tran.count:=NULL]
 
 cover = merge(cover,mgmt.method.3,by=c("MGMTUNIT_I","MonDate","Year","Protocol","SpeciesID"),all= T)
-names(cover)[length(names(cover))] = "AVG.M.3"
+names(cover)[length(names(cover))] = "cov.3.M"
 cover[,tran.count:=NULL]
 
 cover = merge(cover,mgmt.method.4,by=c("MGMTUNIT_I","MonDate","Year","Protocol","SpeciesID"),all= T)
-names(cover)[length(names(cover))] = "AVG.M.4"
+names(cover)[length(names(cover))] = "cov.4.M"
 cover[,tran.count:=NULL]
 
 #Merge site cover averages
-cover = merge(cover,site.method.1.1,by=c("SITE_ID","MonDate","Year","Protocol","SpeciesID"),all= T)
-names(cover)[length(names(cover))] = "AVG.S.1.1"
-cover[,mgmt.count:=NULL]
+#cover = merge(cover,site.method.1.1,by=c("SITE_ID","MonDate","Year","Protocol","SpeciesID"),all= T)
+#names(cover)[length(names(cover))] = "AVG.S.1.1"
+#cover[,mgmt.count:=NULL]
 
-cover = merge(cover,site.method.1.2,by=c("SITE_ID","MonDate","Year","Protocol","SpeciesID"),all= T)
-names(cover)[length(names(cover))] = "AVG.S.1.2"
-cover[,mgmt.count:=NULL]
+#cover = merge(cover,site.method.1.2,by=c("SITE_ID","MonDate","Year","Protocol","SpeciesID"),all= T)
+#names(cover)[length(names(cover))] = "AVG.S.1.2"
+#cover[,mgmt.count:=NULL]
 
-cover = merge(cover,site.method.2,by=c("SITE_ID","MonDate","Year","Protocol","SpeciesID"),all= T)
-names(cover)[length(names(cover))] = "AVG.S.2"
-cover[,mgmt.count:=NULL]
+#cover = merge(cover,site.method.2,by=c("SITE_ID","MonDate","Year","Protocol","SpeciesID"),all= T)
+#names(cover)[length(names(cover))] = "AVG.S.2"
+#cover[,mgmt.count:=NULL]
 
-cover = merge(cover,site.method.3,by=c("SITE_ID","MonDate","Year","Protocol","SpeciesID"),all= T)
-names(cover)[length(names(cover))] = "AVG.S.3"
-cover[,mgmt.count:=NULL]
+#cover = merge(cover,site.method.3,by=c("SITE_ID","MonDate","Year","Protocol","SpeciesID"),all= T)
+#names(cover)[length(names(cover))] = "AVG.S.3"
+#cover[,mgmt.count:=NULL]
 
-cover = merge(cover,site.method.4,by=c("SITE_ID","MonDate","Year","Protocol","SpeciesID"),all= T)
-names(cover)[length(names(cover))] = "AVG.S.4"
-cover[,mgmt.count:=NULL]
+#cover = merge(cover,site.method.4,by=c("SITE_ID","MonDate","Year","Protocol","SpeciesID"),all= T)
+#names(cover)[length(names(cover))] = "AVG.S.4"
+#cover[,mgmt.count:=NULL]
 
 #Merge frequencies
 cover = merge(cover,transect.freq,by=c("TransectID","MonDate","Year","Protocol","ObsCode","SpeciesID"),all= T)

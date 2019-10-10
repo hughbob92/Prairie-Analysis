@@ -25,6 +25,16 @@ cover=as.data.table(read.csv("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data
 
 transect.master=as.data.table(read.csv("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis/Transect_master_V2.csv",header = T)) #use V2 after data issue
 
+lat = (cover[,max(StartLat)]-cover[,min(StartLat)])-3
+long = (cover[,max(StartLong)]-cover[,min(StartLong)])-3
+
+#Create a test latitude category
+cover[,Lat.Cat:=ifelse(StartLat<cover[,min(StartLat)]+lat,yes = "South",no = ifelse(StartLat<cover[,min(StartLat)]+(2*lat),yes = "Middle",no = "North"))]
+
+#Create a test longitude category
+cover[,Long.Cat:=ifelse(StartLong<cover[,min(StartLong)]-long,yes = "West",no = ifelse(StartLong<cover[,min(StartLong)]-(2*long),yes = "Middle",no = "East"))]
+
+
 ```
 
 Steps to complete first: 
@@ -134,15 +144,6 @@ ggplot(unique(cover[!(Action==""),.(TransectID,Year,sr_tran,Action)]), aes(x = A
 
 
 ```{r Richness - Spatial}
-lat = (cover[,max(StartLat)]-cover[,min(StartLat)])-3
-long = (cover[,max(StartLong)]-cover[,min(StartLong)])-3
-
-#Create a test latitude category
-cover[,Lat.Cat:=ifelse(StartLat<cover[,min(StartLat)]+lat,yes = "South",no = ifelse(StartLat<cover[,min(StartLat)]+(2*lat),yes = "Middle",no = "North"))]
-
-#Create a test longitude category
-cover[,Long.Cat:=ifelse(StartLong<cover[,min(StartLong)]-long,yes = "West",no = ifelse(StartLong<cover[,min(StartLong)]-(2*long),yes = "Middle",no = "East"))]
-
 
 ####Plot Latitude 
 
@@ -759,14 +760,14 @@ cover=merge(cover,change_f.all,by=c("Year","SpeciesID","change_f.tran","Transect
 
 #Quick visualize
 #ggplot(unique(cover[!(Action=="")&!(is.na(Freq.all)),.(Freq.all,Year,SpeciesID,Native.Status,Indicator)]), aes(x = Year,y = Freq.all,group = Year))+
-  geom_boxplot()+
+  #geom_boxplot()+
   #stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~Native.Status,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  coord_cartesian(ylim = c(0, 0.05))+
-  labs(title="Species Average frequency by Year", 
-       x="Year",
-       y="Species Frequency")
+  #facet_wrap(~Native.Status,nrow = 2)+
+  #theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  #coord_cartesian(ylim = c(0, 0.05))+
+  #labs(title="Species Average frequency by Year", 
+       #x="Year",
+       #y="Species Frequency")
 
 
  ggplot(unique(cover[!(Action=="")&!(is.na(change_f.all)),.(change_f.all,Year,SpeciesID,Native.Status,Indicator)]), aes(x = Year,y = change_f.all,group = Year))+
@@ -1002,7 +1003,6 @@ plot = ggplot(unique(cover[!(Action=="")&!(is.na(eval(parse(text=(as.character(f
        x= as.character(freq.vis[i,X]),
        y= as.character(freq.vis[i,Y]))
   print(plot)
-
     }
  
 ```
@@ -1026,8 +1026,159 @@ Compare transect & Mgmt level coverage for:
 Then analyze change in coverage.
 
 ```{r Cover Analysis - Setup}
+#Already calculated mean cover by transect and mgmt unit. Cover values should also have an appropriate zero after similar modifications for frequency
+
+# HUGH....something is going on with average cover values for mgmt unit by methodology...some transect averages are not counting in one method but are for in the mgmt avg...see cover[TransectID==1977 & SpeciesID==5 & Year==2018,] as an example
+
+#Calculate delta coverage for each species by transect and mgmt unit
+cover.list = data.frame(
+  cover = c("cov.1.1.T","cov.1.2.T","cov.2.T","cov.3.T","cov.4.T","cov.1.1.M","cov.1.2.M","cov.2.M","cov.3.M","cov.4.M"),
+  Change = c("change_cov.1.1.T","change_cov.1.2.T","change_cov.2.T","change_cov.3.T","change_cov.4.T","change_cov.1.1.M","change_cov.1.2.M",
+             "change_cov.2.M","change_cov.3.M","change_cov.4.M"))
+
+for (i in 1:length(cover.list$cover)){
+  z = cover[,cover.list[i,1],with=FALSE]
+  z = cbind(z,cover[,.(Year,TransectID,Delta,SpeciesID)])[Delta==1,][!(is.na(eval(parse(text=(as.character(cover.list[i,1])))))),]
+  z=unique(z[order(Year),])
+  z[, paste(cover.list[i,2]) := eval(parse(text=(as.character(cover.list[i,1]))))-shift(eval(parse(text=(as.character(cover.list[i,1]))))),  
+    by = .(TransectID, SpeciesID)]
+  z[,Delta:=NULL]
+  cover = merge(cover,z,by = c("Year","TransectID","SpeciesID",as.character(cover.list[i,1])),all = T)
+}
+
+#Calculate average cover for each transect and mgmt unit by native status and indicator...this might be too many variables to make into columns (5 methods * 10 species cat * 2 avgs)...can calculate and subset within plots/analysis
 
 ```
+
+```{r Cover - Visualization Setup}
+
+#Create boxplots evaluating cover relative to: time, lat, long * Species cat OR/AND MGMT Action
+
+#create variable list to quickly replicate boxplots
+
+
+x.list = c("Year","Long.Cat","Lat.Cat")
+y.list = c(as.character(cover.list[,1]),as.character(cover.list[,2]))
+y.list = y.list[ y.list != "change_cov.4.T" & y.list != "change_cov.4.M" ] #remove those which have no values
+X = c(rep(x.list,each = length(y.list)))
+Y = c(rep(y.list,times = length(x.list)))
+Native = rep(c("Native.Status"),times=length(X))
+Indicator =rep(c("Indicator"),times=length(X))
+Action = rep(c("Action"),times=length(X))
+Scale = rep(c(rep(c("TransectID","MGMTUNIT_I"),each =5) ,rep(c("TransectID","MGMTUNIT_I"),each =4)), times = (length(x.list)))
+  
+cover.vis = as.data.table(cbind(Y, X , Native, Indicator, Action, Scale))
+
+```
+
+```{r Cover - Visualization 1}
+
+#First create boxplots by Native Status
+for (i in 1:(cover.vis[,length(Action)])) {
+  
+  stat_box_data <- function(y, upper_limit = max (cover[!is.na(eval(parse(text=(as.character(cover.vis[i,Y]))))), eval(parse(text=(as.character(cover.vis[i,Y]))))]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+plot = ggplot(unique(cover[!(Action=="")&!(is.na(eval(parse(text=(as.character(cover.vis[i,Y]))))))
+                  ,.(eval(parse(text=(as.character(cover.vis[i,Scale])))),Action,Year, SpeciesID,
+                  eval(parse(text=(as.character(cover.vis[i,Y])))),Lat.Cat,Long.Cat,Native.Status)]), 
+              aes(x = eval(parse(text=(as.character(cover.vis[i,X])))),y = V5, fill= Native.Status,))  +
+  geom_boxplot() +   
+  stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~ Action,nrow = 4)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title= paste("Species Cover - Method ",as.character(cover.vis[i,Y]), "by", as.character(cover.vis[i,X]), sep = " "), 
+       x= as.character(cover.vis[i,X]),
+       y= as.character(cover.vis[i,Y]),
+       fill="Species Category")
+  print(plot)
+    }
+
+```
+
+```{r Cover - Visualization 2}
+#Now create boxplots by Indicator Status
+for (i in 1:(cover.vis[,length(Action)])) {
+  
+  stat_box_data <- function(y, upper_limit = max (cover[!is.na(eval(parse(text=(as.character(cover.vis[i,Y]))))), eval(parse(text=(as.character(cover.vis[i,Y]))))]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+plot = ggplot(unique(cover[!(Action=="")&!(is.na(eval(parse(text=(as.character(cover.vis[i,Y]))))))
+                  ,.(eval(parse(text=(as.character(cover.vis[i,Scale])))),Action,Year, SpeciesID,
+                  eval(parse(text=(as.character(cover.vis[i,Y])))),Lat.Cat,Long.Cat,Indicator)]), 
+              aes(x = eval(parse(text=(as.character(cover.vis[i,X])))),y = V5, fill= Indicator,))  +
+  geom_boxplot() +   
+  stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~ Action,nrow = 4)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title= paste("Species Cover - Method ",as.character(cover.vis[i,Y]), "by", as.character(cover.vis[i,X]), sep = " "), 
+       x= as.character(cover.vis[i,X]),
+       y= as.character(cover.vis[i,Y]),
+       fill="Species Category")
+  print(plot)
+    }
+
+```
+
+```{r Cover - Visualization 4}
+
+#Plot cover by averaging by Native.Status for each transect/mgmgt unit
+
+for (i in 1:(cover.vis[,length(Action)])) {
+  
+ stat_box_data <- function(y, upper_limit = max (cover[!is.na(eval(parse(text=(as.character(cover.vis[i,Y]))))), eval(parse(text=(as.character(cover.vis[i,Y]))))]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+plot = ggplot(unique(cover[!(Action=="")&!(is.na(eval(parse(text=(as.character(cover.vis[i,Y]))))))
+                  ,.(eval(parse(text=(as.character(cover.vis[i,Scale])))),Action,Year,
+                  eval(parse(text=(as.character(cover.vis[i,Y])))),Lat.Cat,Long.Cat,Native.Status)]
+                    [,V4:=mean(V4),by=.(Year,V1,Native.Status)]), 
+              aes(x = eval(parse(text=(as.character(cover.vis[i,X])))),y = V4, fill= Native.Status,))  +
+  geom_boxplot() +   
+  stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~ Action,nrow = 4)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title= paste("Species Cover - Method ",as.character(cover.vis[i,Y]), "by", as.character(cover.vis[i,X]), sep = " "), 
+       x= as.character(cover.vis[i,X]),
+       y= as.character(cover.vis[i,Y]),
+       fill="Species Category")
+  print(plot)
+    }
+
+
+```
+
+
+```{r Cover - Visualization 5}
+#Plot cover by averaging by  Indicators for each transect/mgmgt unit
+
+for (i in 1:(cover.vis[,length(Action)])) {
+  
+ stat_box_data <- function(y, upper_limit = max (cover[!is.na(eval(parse(text=(as.character(cover.vis[i,Y]))))), eval(parse(text=(as.character(cover.vis[i,Y]))))]) * 1.15) {
+  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
+
+plot = ggplot(unique(cover[!(Action=="")&!(is.na(eval(parse(text=(as.character(cover.vis[i,Y]))))))
+                  ,.(eval(parse(text=(as.character(cover.vis[i,Scale])))),Action,Year,
+                  eval(parse(text=(as.character(cover.vis[i,Y])))),Lat.Cat,Long.Cat,Indicator)]
+                    [,V4:=mean(V4),by=.(Year,V1,Indicator)]), 
+              aes(x = eval(parse(text=(as.character(cover.vis[i,X])))),y = V4, fill= Indicator,))  +
+  geom_boxplot() +   
+  stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
+  facet_wrap(~ Action,nrow = 4)+
+  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
+  labs(title= paste("Species Cover - Method ",as.character(cover.vis[i,Y]), "by", as.character(cover.vis[i,X]), sep = " "), 
+       x= as.character(cover.vis[i,X]),
+       y= as.character(cover.vis[i,Y]),
+       fill="Species Category")
+  print(plot)
+    }
+
+
+```
+
+
+
+
 
 
 ###First plot native and invasive richness overall 
