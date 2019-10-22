@@ -1,0 +1,159 @@
+---
+title: "Climate Data Organization"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Compile data into single data frame
+
+```{r data compilation}
+setwd("~/Documents/Grad School/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Monthly")
+
+month_files <- list.files("~/Documents/Grad School/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Monthly",full.names = T) 
+
+month_files_name <- list.files("~/Documents/Grad School/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Monthly",full.names = F)
+
+indices.monthly = data.frame()
+
+######Read each monthly csv and bind all into one data frame with necessary labels
+for(i in 1:length(month_files)){
+  data.ind <- read.csv(month_files[i],header = F,skip = 1)
+  Month <- rep(substr(month_files_name[i],1,3),times=length(data.ind[,1]))
+  index <- rep(substr(month_files_name[i],5,nchar(month_files_name[i])-4),times=length(data.ind[,1]))
+  binding = cbind(data.ind,Month,index)
+  indices.monthly = rbind(indices.monthly,binding)
+    }
+
+Years = 1980:(1980+ncol(indices.monthly)-6)
+colnames(indices.monthly) = c("Transect","Lat",'Lon',Years,"Month","Index")  
+
+```
+
+Now let's put this in long form to make analysis easier
+```{r monthly long form}
+library(data.table)
+head(indices.monthly)
+indices.monthly.long = data.table(melt(indices.monthly,id=c("Transect","Month","Index"),measure=4:(ncol(indices.monthly)-2)))
+head(indices.monthly.long)
+class(indices.monthly.long)
+index.names = as.character(indices.monthly.long[,unique(Index)])
+```
+
+#Visualize the monthly indices 
+
+##Index Key:
+FD -Annual count of days when TN (daily minimum temperature) < 0°C  
+SU - Annual count of days when TX (daily maximum temperature) > 25°C.  
+ID - Annual count of days when TX (daily maximum temperature) < 0 °C.  
+TR - Annual count of days when TN (daily minimum temperature) > 20 °C.   
+GSL - Growing Season length. Annual* count between the first span of at least 6 days with daily mean temperature TG >5 °C and the first span after July 1st (Jan 1st in SH) of 6 days with TG <5 °C.  
+TXx - Monthly maximum value of daily maximum temperature  
+TNx - Monthly maximum value of daily minimum temperature  
+TXn - Monthly minimum value of daily minimum temperature  
+TNn - Monthly minimum value of daily minimum temperature  
+TN10p - Percentage of days when TN < 10th percentile  
+TX10p - Percentage of days when TX < 10th percentile  
+TN90p - Percentage of days when TN > 90th percentile  
+TX90p - Percentage of days when TX > 90th percentile  
+WSDI - Warm spell duration index: annual count of days with at least 6 consecutive days when TX > 90th percentile  
+CSDI - Cold spell duration index: annual count of days with at least 6 consecutive days when TN < 10th percentile  
+DTR - Daily temperature range  
+Rx1day - Monthly maximum 1-day precipitation  
+Rx5day - Monthly maximum consecutive 5-day precipitation  
+SDII - Simple precipitation intensity index  
+R10mm - Annual count of days when PRCP ≥ 10mm  
+R20mm - Annual count of days when PRCP ≥ 20mm  
+Rnnmm - Annual count of days when PRCP ≥ nn mm, where nn is a user-defined threshold  
+CDD - Maximum length of dry spell: maximum number of consecutive days with RR < 1mm  
+CWD - Maximum length of wet spell: maximum number of consecutive days with RR ≥ 1mm  
+R95p - Annual total PRCP when RR > 95th percentile  
+R99p - Annual total PRCP when RR > 99th percentile  
+PRCPTOT - Annual total precipitation on wet days  
+
+```{r monthly visualization}
+library(ggplot2)
+for(t in 1:length(index.names)) {
+plots = ggplot(indices.monthly.long[Index==index.names[t]],aes(x=Month,y=value,fill=Month))+
+  geom_violin(trim=FALSE) +
+  geom_boxplot(width=0.1,fill="white")+
+  labs(title="Transect Climate Index Variability by Month") +
+  ylab(index.names[t])+
+  theme_classic() 
+  
+print(plots)
+  }
+
+```
+
+##Compilation for yearly indices
+
+```{r data compilation 2}
+setwd("~/Documents/Grad School/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Yearly")
+
+year_files <- list.files("~/Documents/Grad School/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Yearly",full.names = T) 
+
+year_files_name <- list.files("~/Documents/Grad School/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Yearly",full.names = F)
+
+indices.yearly = data.frame()
+
+######Read each monthly csv and bind all into one data frame with necessary labels
+for(i in 1:length(year_files)){
+  data.ind <- read.csv(year_files[i],header = F,skip = 1)
+  index <- rep(substr(year_files_name[i],1,nchar(year_files_name[i])-4),times=length(data.ind[,1]))
+  binding = cbind(data.ind,index)
+  indices.yearly = rbind(indices.yearly,binding)
+    }
+
+Years = 1980:(1980+ncol(indices.yearly)-5)
+colnames(indices.yearly) = c("Transect","Lat",'Lon',Years,"Index")  
+
+```
+
+Now let's put this in long form to make analysis easier
+```{r yearly long form}
+library(data.table)
+head(indices.yearly)
+indices.yearly.long = data.table(melt(indices.yearly,id=c("Transect","Index"),measure=4:(ncol(indices.yearly)-2)))
+head(indices.yearly.long)
+class(indices.yearly.long)
+index.names = as.character(indices.yearly.long[,unique(Index)])
+```
+
+Visualize the monthly indices 
+```{r yearly visualization}
+library(ggplot2)
+for(t in 1:length(index.names)) {
+plots = ggplot(indices.yearly.long[Index==index.names[t]],aes(x=variable,y=value,fill=variable))+
+  geom_violin(trim=FALSE) +
+  geom_boxplot(width=0.1,fill="white")+
+  labs(title="Transect Climate Yearly-Index Variability") +
+  ylab(index.names[t])+
+  theme_classic() 
+  
+print(plots)
+  }
+
+```
+
+#Export
+Combine Monthly and Yearly Indices into one table and export.
+
+```{r Export}
+setwd("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis")
+
+library(data.table)
+
+#Save cover file
+fwrite(indices.yearly.long,"/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis/Indices_Yearly.csv")
+
+#save master transect file
+fwrite(indices.monthly.long,"/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis/Indices_Monthly.csv")
+
+
+```
+
+
+
