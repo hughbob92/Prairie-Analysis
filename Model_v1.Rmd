@@ -20,7 +20,7 @@ library(foreign)
 library(rmarkdown)
 
 #load data
-cover=as.data.table(read.csv("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis/Cover_Analysis.csv",header = T)) 
+cover=as.data.table(read.csv("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis/Cover_data_model.csv",header = T)) 
 
 transect.master=as.data.table(read.csv("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis/Transect_master_V2.csv",header = T)) #use V2 after data issue
 
@@ -28,6 +28,146 @@ Indices.Yearly=as.data.table(read.csv("/Volumes/GoogleDrive/My Drive/Thesis/Prai
 
 Indices.Monthly=as.data.table(read.csv("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis/Indices_Monthly.csv",header = T)) 
 
+#add in TransectIDs to Indices lists
+z = transect.master[,.(Transect_I,TransectNa)]
+setnames(z,c("Transect_I","TransectNa"),c("TransectID","Transect"))
+Indices.Monthly = merge(Indices.Monthly,z, by = "Transect", all = T)
+Indices.Monthly[,Transect:=NULL]
+Indices.Yearly = merge(Indices.Yearly,z, by = "Transect", all = T)
+Indices.Yearly[,Transect:=NULL]
+
+setnames(Indices.Monthly,c("variable", "value","Index"),c("Year","val.mth","Index.m"),skip_absent=TRUE)
+setnames(Indices.Yearly,c("variable", "value","Index"),c("Year","val.yr","Index.y"),skip_absent=TRUE)
 ```
 
+##Models Set 1  - Invasive Species
+Create a linear model to explain invasive species values.
 
+Response variables: A
+  - Invasive richness (transect and mgmt units)
+      o All invasives or indicator species
+      
+  - Invasive Frequency (transect and mgmt unit)
+      o Avg and individual species
+      o All invasives or indicator species
+
+  - Cover (transect and mgmt units)
+    o Avg and individual species - relative cover
+    
+  - Dominance
+    o aggregate invasive cover by dominance
+    
+Treatment Variables
+  - Climate indices (C)
+    o Yearly
+    o Selected monthly (or all)
+  - Soil Type (S)
+  - Observer (O)
+  - Management action (current year and prior years) (M)
+  - Management Timing (D)
+  - System Type (T)
+  - Latitude
+  - Longitude
+
+Can think of demeaning - put in transect as a factor
+
+Other treatment variables to consider: Size of management area, 
+    
+#Model Formula
+Aist = βi + β1Mit + β2Tit + β3Cit + β4S +  β5D + β6M*T*C*D
+
+#Index Key:
+Yearly:
+FD -Annual count of days when TN (daily minimum temperature) < 0°C  
+SU - Annual count of days when TX (daily maximum temperature) > 25°C.  
+ID - Annual count of days when TX (daily maximum temperature) < 0 °C.  
+TR - Annual count of days when TN (daily minimum temperature) > 20 °C.   
+GSL - Growing Season length. Annual* count between the first span of at least 6 days with daily mean temperature TG >5 °C and the first span after July 1st (Jan 1st in SH) of 6 days with TG <5 °C.  
+WSDI - Warm spell duration index: annual count of days with at least 6 consecutive days when TX > 90th percentile  
+CSDI - Cold spell duration index: annual count of days with at least 6 consecutive days when TN < 10th percentile  
+SDII - Simple precipitation intensity index  
+R10mm - Annual count of days when PRCP ≥ 10mm  
+R20mm - Annual count of days when PRCP ≥ 20mm  
+Rnnmm - Annual count of days when PRCP ≥ nn mm, where nn is a user-defined threshold  
+CDD - Maximum length of dry spell: maximum number of consecutive days with RR < 1mm  
+CWD - Maximum length of wet spell: maximum number of consecutive days with RR ≥ 1mm  
+R95p - Annual total PRCP when RR > 95th percentile  
+R99p - Annual total PRCP when RR > 99th percentile  
+PRCPTOT - Annual total precipitation on wet days  
+
+Monthly:
+TXx - Monthly maximum value of daily maximum temperature  
+TNx - Monthly maximum value of daily minimum temperature  
+TXn - Monthly minimum value of daily minimum temperature  
+TNn - Monthly minimum value of daily minimum temperature  
+TN10p - Percentage of days when TN < 10th percentile  
+TX10p - Percentage of days when TX < 10th percentile  
+TN90p - Percentage of days when TN > 90th percentile  
+TX90p - Percentage of days when TX > 90th percentile
+DTR - Daily temperature range  
+Rx1day - Monthly maximum 1-day precipitation  
+Rx5day - Monthly maximum consecutive 5-day precipitation  
+
+#Run Model
+
+```{r Model Set 1 - Invasives}
+#Start with modeling invasive richness
+#Subset cover file and merge 
+dt.lm.1.1 = unique(cover[!(is.na(ir_tran)) & !(Action==""),
+                         .(TransectID,MGMTUNIT_I,SITE_ID,Year,StartLat,StartLong,Lat.Cat,Long.Cat,Action,
+                           Delta,ObsCode,ir_tran,ir_mgmt,change_ir_tran,change_ir_mgmt)])
+
+#relevel so it is relative to rest as y intercept
+#run one model without climate
+lm.1.1 = lm(data = dt.lm.1.1, 
+            formula = ir_tran ~ Action + ObsCode + StartLat + StartLong)
+summary(lm.1.1)
+step(lm.1.1)
+
+#Consider correlations between indices and inputting multiple in one model
+#Now merge climate indices in and run a model for each index....still need 2017 and 2018 climate indices
+dt.lm.1.2 = merge(dt.lm.1.1,Indices.Yearly,by = c("Year","TransectID"))
+dt.lm.1.3 = merge(dt.lm.1.1,Indices.Monthly,by = c("Year","TransectID"))
+
+#create a list of yearly indices to loop through
+ind.y.list = dt.lm.1.2[,unique(Index.y)]
+
+#Loop through yearly indices
+lm.1.2 =list()
+aic.lm.1.2 = c()
+index.name = c()
+step.lm.1.2 = list()
+
+for (i in 1:length(ind.y.list)) {
+  z = lm(data = dt.lm.1.2[Index.y==as.character(ind.y.list[i]),], 
+         formula = ir_tran ~ Action + ObsCode + StartLat + StartLong + val.yr)
+  lm.1.2[[i]] = summary(z)
+  index.name = c(index.name,as.character(ind.y.list[i]))
+  aic.lm.1.2 = c(aic.lm.1.2,AIC(z))
+  step.lm.1.2[[i]] = step(z)
+  }
+aic.lm.1.2 = data.frame(index.name,aic.lm.1.2)
+names(lm.1.2) = ind.y.list
+
+#create a list of monthly indices to loop through
+ind.m.list = dt.lm.1.3[,unique(Index.m)]
+
+#Loop through monthly indices and months!
+lm.1.3 =list()
+aic.lm.1.3 = c()
+index.name = c()
+step.lm.1.3 = list()
+
+for (i in 1:length(ind.m.list)) {
+  z = lm(data = dt.lm.1.3[Index.m==as.character(ind.m.list[i]),], 
+         formula = ir_tran ~ Action + ObsCode + StartLat + StartLong + val.mth)
+  lm.1.3[[i]] = summary(z)
+  index.name = c(index.name,as.character(ind.m.list[i]))
+  aic.lm.1.3 = c(aic.lm.1.3,AIC(z))
+  step.lm.1.3[[i]] = step(z)
+  }
+aic.lm.1.3 = data.frame(index.name,aic.lm.1.3)
+names(lm.1.3) = ind.m.list
+
+```
+Write out a long logic portion of the methods, so the model and what indices

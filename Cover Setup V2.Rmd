@@ -523,6 +523,15 @@ transect.master = transect.master[!(SITE_ID %in% a)]
 
 cover.data.long =cover.data.long[!(TransectID %in% rem.transects.2)]
 
+#The following sites and years only utilized Protocol A (relable as A) - See Daren's Protocol C list
+sites.A = data.frame(site=c("15","16","22","13","23","21","24","26","27","29","14","31"),Year=c(2019,2018,2018,2019,2019,2016,2016,2019,2017,2016,2015,2015))
+
+sites.A = merge(sites.A,unique(transect.master[,.(SITE_ID,Transect_I)]),by.x = "site", by.y = "SITE_ID")
+
+for (i in 1:length(sites.A$site)){
+cover.data.long[Protocol=="C" & TransectID==sites.A[i,1] & Year == sites.A[i,2],Protocol:="A"]
+}
+
 ###Correct management history errors 
 #Three mgmt units with data incorrectly added to 2015 - Daren 
 transect.master[MGMTUNIT_I==56,Mgmt.2015:=""]
