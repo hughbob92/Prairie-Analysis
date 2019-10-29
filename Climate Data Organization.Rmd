@@ -125,8 +125,10 @@ index.names = as.character(indices.yearly.long[,unique(Index)])
 Visualize the monthly indices 
 ```{r yearly visualization}
 library(ggplot2)
+indices.yearly.long[,variable:=as.numeric(as.character(variable))]
+
 for(t in 1:length(index.names)) {
-plots = ggplot(indices.yearly.long[Index==index.names[t]],aes(x=variable,y=value,fill=variable))+
+plots = ggplot(indices.yearly.long[Index==index.names[t] & variable>2009],aes(x=as.factor(variable),y=value,fill=as.factor(variable)))+
   geom_violin(trim=FALSE) +
   geom_boxplot(width=0.1,fill="white")+
   labs(title="Transect Climate Yearly-Index Variability") +

@@ -829,7 +829,7 @@ for (i in 1:(freq.vis[,(length(Action)/2)])) {
 
 plot = ggplot(unique(cover[!(Action=="")&!(is.na(eval(parse(text=(as.character(freq.vis[i,Y])))))), 
               .(TransectID, SpeciesID, Action, Year, eval(parse(text=(as.character(freq.vis[i,Y])))), Lat.Cat,Long.Cat,Native.Status,Indicator)]), 
-              aes(x = eval(parse(text = (as.character(freq.vis[i,X])))),  
+              aes(x = as.factor(eval(parse(text = (as.character(freq.vis[i,X]))))),  
                   y= V5, fill= eval(parse(text=(as.character(freq.vis[i,Group])))))) +
   geom_boxplot() +   
   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
@@ -851,7 +851,7 @@ for (i in (freq.vis[,length(Action)]/2):freq.vis[,length(Action)]) {
 
 plot = ggplot(unique(cover[!(Action=="")&!(is.na(eval(parse(text=(as.character(freq.vis[i,Y])))))), 
               .(TransectID, SpeciesID, Action, Year, eval(parse(text=(as.character(freq.vis[i,Y])))), Lat.Cat,Long.Cat,Native.Status,Indicator)]), 
-              aes(x = eval(parse(text = (as.character(freq.vis[i,X])))),  
+              aes(x = as.factor(eval(parse(text = (as.character(freq.vis[i,X]))))),  
                   y= V5, fill= eval(parse(text=(as.character(freq.vis[i,Group])))))) +
   geom_boxplot() +   
   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
@@ -873,7 +873,7 @@ for (i in (freq.vis[,length(Action)]/2+1):freq.vis[,length(Action)]) {
 
 plot = ggplot(unique(cover[!(Action=="")&!(is.na(eval(parse(text=(as.character(freq.vis[i,Y])))))), 
               .(TransectID, SpeciesID, Action, Year, eval(parse(text=(as.character(freq.vis[i,Y])))), Lat.Cat,Long.Cat,Native.Status,Indicator)]), 
-              aes(x = eval(parse(text = (as.character(freq.vis[i,X])))),  
+              aes(x = as.factor(eval(parse(text = (as.character(freq.vis[i,X]))))),  
                   y= V5, fill= Action)) +
   geom_boxplot() +   
   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
@@ -968,7 +968,8 @@ for (i in 1:(freq.vis[,length(Action)]/2)) {
   stat_box_data <- function(y, upper_limit = max (cover[!is.na(eval(parse(text=(as.character(freq.vis[i,Y]))))), eval(parse(text=(as.character(freq.vis[i,Y]))))]) * 1.15) {
   return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
 
-plot = ggplot(unique(cover[!(Action=="")&!(is.na(eval(parse(text=(as.character(freq.vis[i,Y])))))),.(MGMTUNIT_I,TransectID,Action,Year,eval(parse(text=(as.character(freq.vis[i,Y])))),Lat.Cat,Long.Cat)]), aes(x = eval(parse(text=(as.character(freq.vis[i,X])))),y = V5, group= eval(parse(text=(as.character(freq.vis[i,X])))))) +
+plot = ggplot(unique(cover[!(Action=="")&!(is.na(eval(parse(text=(as.character(freq.vis[i,Y])))))),.(MGMTUNIT_I,TransectID,Action,Year,eval(parse(text=(as.character(freq.vis[i,Y])))),Lat.Cat,Long.Cat)]), 
+              aes(x = eval(parse(text=(as.character(freq.vis[i,X])))),y = V5, group= eval(parse(text=(as.character(freq.vis[i,X])))))) +
   geom_boxplot() +   
   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
   #facet_wrap(~Action,nrow = 2)+
@@ -991,7 +992,8 @@ for (i in 1:(freq.vis[,length(Action)]/2)) {
   stat_box_data <- function(y, upper_limit = max (cover[!is.na(eval(parse(text=(as.character(freq.vis[i,Y]))))), eval(parse(text=(as.character(freq.vis[i,Y]))))]) * 1.15) {
   return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
 
-plot = ggplot(unique(cover[!(Action=="")&!(is.na(eval(parse(text=(as.character(freq.vis[i,Y])))))),.(MGMTUNIT_I,TransectID,Action,Year,eval(parse(text=(as.character(freq.vis[i,Y])))),Lat.Cat,Long.Cat)]), aes(x = eval(parse(text=(as.character(freq.vis[i,X])))),y = V5, group= eval(parse(text=(as.character(freq.vis[i,X])))))) +
+plot = ggplot(unique(cover[!(Action=="")&!(is.na(eval(parse(text=(as.character(freq.vis[i,Y])))))),.(MGMTUNIT_I,TransectID,Action,Year,eval(parse(text=(as.character(freq.vis[i,Y])))),Lat.Cat,Long.Cat)]), 
+              aes(x = eval(parse(text=(as.character(freq.vis[i,X])))),y = V5, group= eval(parse(text=(as.character(freq.vis[i,X])))))) +
   geom_boxplot() +   
   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
   facet_wrap(~Action,nrow = 2)+
@@ -1079,7 +1081,7 @@ for (i in 1:(cover.vis[,length(Action)])) {
 plot = ggplot(unique(cover[!(Action=="")&!(is.na(eval(parse(text=(as.character(cover.vis[i,Y]))))))
                   ,.(eval(parse(text=(as.character(cover.vis[i,Scale])))),Action,Year, SpeciesID,
                   eval(parse(text=(as.character(cover.vis[i,Y])))),Lat.Cat,Long.Cat,Native.Status)]), 
-              aes(x = eval(parse(text=(as.character(cover.vis[i,X])))),y = V5, fill= Native.Status,))  +
+              aes(x = as.factor(eval(parse(text=(as.character(cover.vis[i,X]))))),y = V5, fill= Native.Status,))  +
   geom_boxplot() +   
   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
   facet_wrap(~ Action,nrow = 4)+
@@ -1267,6 +1269,61 @@ plot(relative_sp_cover.yr.live ~ DI, data = cover)
 ```
 
 
+
+##Tables and Plots for Presentations and Manuscript
+
+```{r Miscellanous Plots and Tables}
+#Tables and averages of transects, sites, and mgmt units
+cover[,length(unique(TransectID)),by=MGMTUNIT_I][,mean(V1)]
+cover[,length(unique(MGMTUNIT_I)),by=SITE_ID][,mean(V1)]
+
+## Table number of management actions each year - one table for those during observed years and all years
+write.table(table(unique(cover[!(Action==""),.(Action,Year,TransectID)])[,.(Action,Year)]),pipe("pbcopy")) #observed years
+
+#A bit more work to create a table of all management actions by year, regardless of observation
+tab.action.all = rbind(transect.master[!(Mgmt.2010==""),.(Transect_I,Mgmt.2010)][,Year:=rep("2010",times=length(Transect_I))],
+                       transect.master[!(Mgmt.2011==""),.(Transect_I,Mgmt.2011)][,Year:=rep("2011",times=length(Transect_I))],
+                       transect.master[!(Mgmt.2012==""),.(Transect_I,Mgmt.2012)][,Year:=rep("2012",times=length(Transect_I))],
+                       transect.master[!(Mgmt.2013==""),.(Transect_I,Mgmt.2013)][,Year:=rep("2013",times=length(Transect_I))],
+                       transect.master[!(Mgmt.2014==""),.(Transect_I,Mgmt.2014)][,Year:=rep("2014",times=length(Transect_I))],
+                       transect.master[!(Mgmt.2015==""),.(Transect_I,Mgmt.2015)][,Year:=rep("2015",times=length(Transect_I))],
+                       transect.master[!(Mgmt.2016==""),.(Transect_I,Mgmt.2016)][,Year:=rep("2016",times=length(Transect_I))],
+                       transect.master[!(Mgmt.2017==""),.(Transect_I,Mgmt.2017)][,Year:=rep("2017",times=length(Transect_I))],
+                       transect.master[!(Mgmt.2018==""),.(Transect_I,Mgmt.2018)][,Year:=rep("2018",times=length(Transect_I))],
+                       use.names=FALSE)
+
+#Filter for transects I will actually use
+tab.action.all = merge(tab.action.all,data.frame(Transect_I=cover[,unique(TransectID)]),by = "Transect_I")
+
+write.table(table(tab.action.all[,.(Mgmt.2010,Year)]),pipe("pbcopy")) #All years
+
+##Management Acres
+#Total
+unique(cover[,.(ManUnitAcres,MGMTUNIT_I)])[!(is.na(ManUnitAcres)),sum(ManUnitAcres)]
+
+##Total number of species and species richness histograms
+#Total Species
+cover[,length(unique(SpeciesID))]
+
+#Total Species histogram
+hist(unique(cover[!(is.na(sr_tran)),.(Year, TransectID, sr_tran)])[,sr_tran],freq = T,breaks = 0:65,main = "Species Richness by Transect",xlab = "Species Richness",ylab = "Nmber of Transects")
+
+hist(unique(cover[!(is.na(ir_tran)),.(Year, TransectID, ir_tran)])[,ir_tran],freq = T,breaks = 0:20,main = "Invasive Richness by Transect",xlab = "Invasive Richness",ylab = "Number of Transects")
+
+##Dominance
+hist(unique(cover[,.(SpeciesID,Year,Native.Status,DI.T.2,TransectID)])[Native.Status=="I",sum(DI.T.2),by=.(Year,TransectID)][,V1],
+     freq=F, breaks = seq(0,3,by = 0.05),main = "Invasive Dominance by Transect",xlab = "Invasive Dominance",ylab = "Number of Transects")
+
+hist(unique(cover[,.(SpeciesID,Year,Native.Status,DI.T.2,TransectID)])[Native.Status=="N",sum(DI.T.2),by=.(Year,TransectID)][V1<7,V1],
+     freq=F, breaks = seq(0,7,by = 0.05),main = "Native Dominance by Transect",xlab = "Native Dominance",ylab = "Number of Transects")
+  
+```
+
+```{r Species Characteristics}
+
+```
+
+
 Finalize and Save data tables for model Rmd file
 ```{r Finish}
 
@@ -1274,6 +1331,17 @@ setwd("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie A
 
 #Save cover file
 fwrite(cover,"/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis/Cover_data_model.csv")
+
+#Create smaller cover files for maps
+
+#Map 1 - all years no species data....update with soils, system type
+cover.map.1 = unique(cover[,.(TransectID,MGMTUNIT_I,SITE_ID,StartLat,StartLong,Protocol,ManUnitAcres)])
+fwrite(cover.map.1,"/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Mapping/Data/cover.map.1.txt")
+
+#Map 2 - Years & Actions......update with soils, system type
+cover.map.2 = unique(cover[,.(TransectID,MGMTUNIT_I,SITE_ID,StartLat,StartLong,Protocol,ManUnitAcres,Action,Year,ir_tran,change_ir_tran,
+                              nr_tran,change_nr_tran,indf.n2.tran,indf.n1.tran,indf.i2.tran,indf.i1.tran,indf.i.tran,indf.n.tran,if.tran,nf.tran)])
+fwrite(cover.map.2,"/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Mapping/Data/cover.map.2.txt")
 
 ```
 
@@ -1406,17 +1474,6 @@ cover[order(year), change_sr_rarespp2 := sr_rarespp2 -shift(sr_rarespp2), by =.(
 cover[order(year), change_sr_subordspp2 := sr_subordspp2 -shift(sr_subordspp2), by =.(plot, site_code)]
 
 
-
-
-```
-
-```{r Plots - Miscellaneous}
-
-```
-
-```{r Species Characteristics}
-
-```
 
 ```{r Cover Export}
 setwd("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis")
