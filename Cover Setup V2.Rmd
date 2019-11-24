@@ -28,6 +28,8 @@ Files used in this project:
 
 ## R Markdown
 ```{r file load}
+rm(list=ls())
+
 setwd("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data/Original Data")
 library(data.table)
 library(stringr)
@@ -538,6 +540,9 @@ cover.data.long[Protocol=="C" & TransectID==sites.A[i,3] & Year == sites.A[i,2],
 
 cover.data.long = cover.data.long[!(TransectID==652 & Year<2013),]
 cover.data.long = cover.data.long[!(TransectID==657 & MonDate=="8/1/18"),]
+
+#Transect 666 in 2016 has two dates of measurement with overlapping species. Making the measurement date match the rest of the transects at that site
+cover.data.long = cover.data.long[!(TransectID==666 & MonDate=='8/18/16'),]
 
 
 ###Correct management history errors 

@@ -5,6 +5,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+rm(list=ls())
 ```
 
 ## Compile data into single data frame
@@ -73,20 +74,6 @@ R95p - Annual total PRCP when RR > 95th percentile
 R99p - Annual total PRCP when RR > 99th percentile  
 PRCPTOT - Annual total precipitation on wet days  
 
-```{r monthly visualization}
-library(ggplot2)
-for(t in 1:length(index.names)) {
-plots = ggplot(indices.monthly.long[Index==index.names[t]],aes(x=Month,y=value,fill=Month))+
-  geom_violin(trim=FALSE) +
-  geom_boxplot(width=0.1,fill="white")+
-  labs(title="Transect Climate Index Variability by Month") +
-  ylab(index.names[t])+
-  theme_classic() 
-  
-print(plots)
-  }
-
-```
 
 ##Compilation for yearly indices
 
@@ -122,37 +109,166 @@ class(indices.yearly.long)
 index.names = as.character(indices.yearly.long[,unique(Index)])
 ```
 
-Visualize the monthly indices 
-```{r yearly visualization}
-library(ggplot2)
-indices.yearly.long[,variable:=as.numeric(as.character(variable))]
+##Prepping and merging indices
 
-for(t in 1:length(index.names)) {
-plots = ggplot(indices.yearly.long[Index==index.names[t] & variable>2009],aes(x=as.factor(variable),y=value,fill=as.factor(variable)))+
-  geom_violin(trim=FALSE) +
-  geom_boxplot(width=0.1,fill="white")+
-  labs(title="Transect Climate Yearly-Index Variability") +
-  ylab(index.names[t])+
-  theme_classic() 
-  
-print(plots)
-  }
+See model indices selection logic for which ones we are using and why. Several of these need to be adjusted, averages, etc. and then all need to be appropriately merged to the cover file.
+
+```{r indices prep}
+indices.yearly=as.data.table(indices.yearly.long)
+indices.monthly=as.data.table(indices.monthly.long)
+setnames(indices.monthly,c("variable", "value","Index"),c("Year","val.mth","Index.m"),skip_absent=TRUE)
+setnames(indices.yearly,c("variable", "value","Index"),c("Year","val.yr","Index.y"),skip_absent=TRUE)
+
+#load in cover
+#load data
+cover=as.data.table(read.csv("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis/Cover_data_model.csv",header = T)) 
+
+#Create a new cover file to merge climate data into
+cover.climate = cover
+
+transect.master=as.data.table(read.csv("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis/Transect_master_V2.csv",header = T)) #use V2 after data issue
+
+z = transect.master[,.(Transect_I,TransectNa)]
+setnames(z,c("Transect_I","TransectNa"),c("TransectID","Transect"))
+indices.monthly = merge(indices.monthly,z, by = "Transect", all = T)
+indices.monthly[,Transect:=NULL]
+indices.yearly = merge(indices.yearly,z, by = "Transect", all = T)
+indices.yearly[,Transect:=NULL]
+
+indices.monthly$Year = as.integer(as.character(indices.monthly$Year))
+indices.yearly$Year = as.integer(as.character(indices.yearly$Year))
+
+###txx
+txx = indices.monthly[Index.m=="txx" & Year>2009,.SD[which.max(val.mth)],by=.(Year,TransectID)]
+
+table(txx$Year,txx$Month) #See how max temperatures are divided between months each year. There is a case here for just taking txx for July...but August also has an impact.
+
+#Merge txx with cover
+txx[,Month:=NULL]
+txx[,Index.m:=NULL]
+cover.climate = merge(cover.climate,txx, by=c("Year","TransectID"))
+setnames(cover.climate,"val.mth",'txx')
+
+###tn90p
+#First sum tn90p values for winter "dormant" months, let's say Decemeber - March
+tn90p = indices.monthly[Index.m=="tn90p" & Year>2009 & (Month =="Dec" | Month == "Jan" | Month == "Feb" | Month=="Mar"),sum(val.mth)/4,by=.(Year,TransectID)]
+setnames(tn90p,"V1","tn90p")
+
+#Merge tn90p with cover
+cover.climate = merge(cover.climate,tn90p, by=c("Year","TransectID"))
+
+###tx90p
+#First sum tn90p values for winter "dormant" months, let's say Decemeber - March
+tx90p = indices.monthly[Index.m=="tx90p" & Year>2009 & (Month =="Dec" | Month == "Jan" | Month == "Feb" | Month=="Mar"),sum(val.mth)/4,by=.(Year,TransectID)]
+setnames(tx90p,"V1","tx90p")
+
+#Merge tx90p with cover
+cover.climate = merge(cover.climate,tx90p, by=c("Year","TransectID"))
+
+###rx1
+#I don't see what this will capture that rx5 will not, hold off for now
+
+###rx5
+#This is a monthly index, break out by seasons (Winter/Dormant,Spring, Summer/Fall) and also calculate yearly
+
+#rx5.winter
+rx5.winter = indices.monthly[Index.m=="rx5day" & Year>2009 & (Month =="Dec" | Month == "Jan" | Month == "Feb" | Month=="Mar"),
+                             .SD[which.max(val.mth)],by=.(Year,TransectID)]
+rx5.winter[,Month:=NULL]
+rx5.winter[,Index.m:=NULL]
+
+cover.climate = merge(cover.climate,rx5.winter, by=c("Year","TransectID"))
+setnames(cover.climate,"val.mth",'rx5.winter')
+
+#rx5.spring
+rx5.spring = indices.monthly[Index.m=="rx5day" & Year>2009 & (Month =="Apr" | Month == "May"),
+                             .SD[which.max(val.mth)],by=.(Year,TransectID)]
+rx5.spring[,Month:=NULL]
+rx5.spring[,Index.m:=NULL]
+
+cover.climate = merge(cover.climate,rx5.spring, by=c("Year","TransectID"))
+setnames(cover.climate,"val.mth",'rx5.spring')
+
+#rx5.summer
+rx5.summer = indices.monthly[Index.m=="rx5day" & Year>2009 & (Month =="Jun" | Month == "Jul"| Month == "Aug"| Month == "Sep"),
+                             .SD[which.max(val.mth)],by=.(Year,TransectID)]
+
+rx5.summer[,Month:=NULL]
+rx5.summer[,Index.m:=NULL]
+
+cover.climate = merge(cover.climate,rx5.summer, by=c("Year","TransectID"))
+setnames(cover.climate,"val.mth",'rx5.summer')
+
+#rx5.year
+rx5.year = indices.monthly[Index.m=="rx5day" & Year>2009,
+                             .SD[which.max(val.mth)],by=.(Year,TransectID)]
+
+rx5.year[,Month:=NULL]
+rx5.year[,Index.m:=NULL]
+
+cover.climate = merge(cover.climate,rx5.year, by=c("Year","TransectID"))
+setnames(cover.climate,"val.mth",'rx5.year')
+
+#Hugh, work on total prcp and average T when I get the data, also SPEI
+
+####The rest of the indices are yearly
+
+###FD
+fd = indices.yearly[Index.y=='fd' & Year>2009,.(Year,TransectID,val.yr)]
+cover.climate = merge(cover.climate,fd, by=c("Year","TransectID"))
+setnames(cover.climate,"val.yr",'fd')
+
+###GSL
+gsl = indices.yearly[Index.y=='gsl' & Year>2009,.(Year,TransectID,val.yr)]
+cover.climate = merge(cover.climate,gsl, by=c("Year","TransectID"))
+setnames(cover.climate,"val.yr",'gsl')
+
+### WSDI
+wsdi = indices.yearly[Index.y=='wsdi' & Year>2009,.(Year,TransectID,val.yr)]
+cover.climate = merge(cover.climate,wsdi, by=c("Year","TransectID"))
+setnames(cover.climate,"val.yr",'wsdi')
+
+### CSDI
+csdi = indices.yearly[Index.y=='csdi' & Year>2009,.(Year,TransectID,val.yr)]
+cover.climate = merge(cover.climate,csdi, by=c("Year","TransectID"))
+setnames(cover.climate,"val.yr",'csdi')
+
+### SDII
+sdii = indices.yearly[Index.y=='sdii' & Year>2009,.(Year,TransectID,val.yr)]
+cover.climate = merge(cover.climate,sdii, by=c("Year","TransectID"))
+setnames(cover.climate,"val.yr",'sdii')
+
+### CDD
+cdd = indices.yearly[Index.y=='cdd' & Year>2009,.(Year,TransectID,val.yr)]
+cover.climate = merge(cover.climate,cdd, by=c("Year","TransectID"))
+setnames(cover.climate,"val.yr",'cdd')
+
+### CWD
+cwd = indices.yearly[Index.y=='cwd' & Year>2009,.(Year,TransectID,val.yr)]
+cover.climate = merge(cover.climate,cwd, by=c("Year","TransectID"))
+setnames(cover.climate,"val.yr",'cwd')
+
+#prcptot
+prcptot = indices.yearly[Index.y=='prcptot' & Year>2009,.(Year,TransectID,val.yr)]
+cover.climate = merge(cover.climate,prcptot, by=c("Year","TransectID"))
+setnames(cover.climate,"val.yr",'prcptot')
 
 ```
 
-#Export
-Combine Monthly and Yearly Indices into one table and export.
+
 
 ```{r Export}
 setwd("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis")
 
 library(data.table)
 
-#Save cover file
-fwrite(indices.yearly.long,"/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis/Indices_Yearly.csv")
+#Save indices files
+fwrite(indices.yearly,"/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis/Indices_Yearly.csv")
 
-#save master transect file
-fwrite(indices.monthly.long,"/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis/Indices_Monthly.csv")
+fwrite(indices.monthly,"/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis/Indices_Monthly.csv")
+
+#Save cover file with climate data
+fwrite(cover.climate,"/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis/cover_climate.csv")
 
 
 ```

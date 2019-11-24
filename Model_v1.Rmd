@@ -20,6 +20,7 @@ library(foreign)
 library(rmarkdown)
 library(lme4)
 library(lmerTest)
+library(lfe)
 
 #load data
 cover=as.data.table(read.csv("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis/Cover_data_model.csv",header = T)) 
@@ -30,22 +31,17 @@ Indices.Yearly=as.data.table(read.csv("/Volumes/GoogleDrive/My Drive/Thesis/Prai
 
 Indices.Monthly=as.data.table(read.csv("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis/Indices_Monthly.csv",header = T)) 
 
-#add in TransectIDs to Indices lists
-z = transect.master[,.(Transect_I,TransectNa)]
-setnames(z,c("Transect_I","TransectNa"),c("TransectID","Transect"))
-Indices.Monthly = merge(Indices.Monthly,z, by = "Transect", all = T)
-Indices.Monthly[,Transect:=NULL]
-Indices.Yearly = merge(Indices.Yearly,z, by = "Transect", all = T)
-Indices.Yearly[,Transect:=NULL]
-
-setnames(Indices.Monthly,c("variable", "value","Index"),c("Year","val.mth","Index.m"),skip_absent=TRUE)
-setnames(Indices.Yearly,c("variable", "value","Index"),c("Year","val.yr","Index.y"),skip_absent=TRUE)
-
 options(max.print = 50) #set print limit for expediency 
 
 #relevel so it is relative to rest as y intercept
 levels(cover$Action)
 cover$Action = factor(cover$Action, levels = c("Rest","Burn","Graze","Combo",""))
+
+#Factorize TransectID and Year later so I can merge climate indices correctly...merge it in the climate compilation file
+
+#remove instances where action is blank, we dont need this
+
+
 ```
 
 ##Models Set 1  - Invasive Species
@@ -73,7 +69,6 @@ T = Transect
   •	Factorized Transect ID
 Y = Year
   •	Factorized year of observation and management action
-
 
 put in transect as a factor
 
@@ -122,13 +117,8 @@ Rx5day - Monthly maximum consecutive 5-day precipitation
 
 #Run Model
 
-```{r Model Set 1 - Invasives}
+```{r Model Set 1-Invasives}
 #Start with modeling invasive richness
-
-#Subset cover file and merge 
-dt.lm.1.1 = unique(cover[!(is.na(ir_tran)) & !(Action==""),
-                         .(TransectID,MGMTUNIT_I,SITE_ID,Year,StartLat,StartLong,Lat.Cat,Long.Cat,Action,
-                           Delta,ObsCode,ir_tran,ir_mgmt,change_ir_tran,change_ir_mgmt,VOR,nr_tran)])
 
 #run one model without climate
 lm.1.1 = lm(data = dt.lm.1.1, 
@@ -208,19 +198,7 @@ Create a mixed effect model for each metric of invasive abundance (richness, fre
 
 ```{r Model Set 2 - Invasives-TXx}
 #First determine the max tempt (TXx) for each transect and each year. This is originally a monthly value.
-txx = Indices.Monthly[Index.m=="txx" & Year>2009,.SD[which.max(val.mth)],by=.(Year,TransectID)]
 
-table(txx$Year,txx$Month) #See how max temperatures are divided between months each year. There is a case here for just taking txx for July...but August also has an impact.
-
-#Merge txx with cover
-dt.cover.txx = merge(cover,txx, by=c("Year","TransectID"))
-
-#I don't care about Plot ID, reduce the cover table by unique values...I will still have duplicates because of NAs but that is okay for now
-dt.cover.txx[,PlotID:=NULL]
-dt.cover.txx = unique(dt.cover.txx[,])
-
-dt.cover.txx.1 = dt.cover.txx[!(is.na(ir_tran)) & !(Action==""), .(Year,TransectID, val.mth, Action, ir_tran, VOR, nr_tran,ObsCode)] #for some reason nr_tran has NA values, correct
-dt.cover.txx.2 = dt.cover.txx[!(is.na(if.tran)) & !(Action==""), .(Year,TransectID, val.mth, Action, ir_tran,if.tran, VOR, nr_tran,nf.tran,ObsCode)] 
 #build out for cover dt.cover.txx.3 = dt.cover.txx[!(is.na(ir_tran)) & !(Action==""), .(Year,TransectID, val.mth, Action, ir_tran, VOR, nr_tran,ObsCode)] 
 #build out for dominance dt.cover.txx.4 = dt.cover.txx[!(is.na(ir_tran)) & !(Action==""), .(Year,TransectID, val.mth, Action, ir_tran, VOR, nr_tran,ObsCode)] 
 
@@ -230,9 +208,9 @@ ggplot(dt.cover.txx.1, aes(x=val.mth)) +
   facet_wrap(~Year)
 
 #how do these values vary spatially? Use latitude since that is more likely predicted to correlate with temp
-ggplot(dt.cover.txx.1, aes(x=val.mth,color=Lat.Cat,fill=Lat.Cat)) +
-  geom_histogram(binwidth=1,alpha=0.5, position="identity") +
-  facet_wrap(~Year)
+#ggplot(dt.cover.txx.1, aes(x=val.mth,color=Lat.Cat,fill=Lat.Cat)) +
+  #geom_histogram(binwidth=1,alpha=0.5, position="identity") +
+  #facet_wrap(~Year)
 
 #How about variability between action types
 ggplot(dt.cover.txx.1, aes(x=val.mth,color=Action,fill=Action)) +
@@ -309,6 +287,16 @@ txx.lm.4 = lmer(formula = ir_tran ~  Action + val.mth + as.factor(TransectID) + 
 
 summary(txx.lm.4)
 
+txx.flm.5 = felm(ir_tran ~  val.mth + VOR +  Action:val.mth + ObsCode | as.factor(SITE_ID), data = dt.cover.txx.1)
+
+txx.flm.5 = felm(ir_tran ~  val.mth + VOR +  Action:val.mth + ObsCode | as.factor(TransectID), data = dt.cover.txx.1)
+
+
+txx.flm.6 = felm(ir_tran ~ Action:val.mth + val.mth | as.factor(TransectID), data = dt.cover.txx.1)
+
+txx.flm.6 = felm(ir_tran ~ Action:val.mth + val.mth | as.factor(SITE_ID), data = dt.cover.txx.1)
+
+summary(txx.flm.6)
 
 par(mfrow=c(2,2)) #
 plot(txx.lm.4) 
@@ -322,16 +310,8 @@ AIC(txx.lm.4)
 This is a monthly value for the percentage of days when TN > 90th percentile. I care about these values for the whole of winter, create a new value which either add or average these values for the winter months. 
 
 ```{r Model Set 3 - Invasives-TN90p}
-#First sum tn90p values for winter "dormant" months, let's say Decemeber - March
-tn90p = Indices.Monthly[Index.m=="tn90p" & Year>2009 & (Month =="Dec" | Month == "Jan" | Month == "Feb" | Month=="Mar"),sum(val.mth)/4,by=.(Year,TransectID)]
-setnames(tn90p,"V1","val.mth")
 
-#Merge tn90p with cover
-dt.cover.tn90p = merge(cover,tn90p, by=c("Year","TransectID"))
 
-#I don't care about Plot ID, reduce the cover table by unique values...I will still have duplicates because of NAs but that is okay for now
-dt.cover.tn90p[,PlotID:=NULL]
-dt.cover.tn90p = unique(dt.cover.tn90p[,])
 
 dt.cover.tn90p.1 = dt.cover.tn90p[!(is.na(ir_tran)) & !(Action==""), .(Year,TransectID, val.mth, Action, ir_tran, VOR, nr_tran,ObsCode)] #for some reason nr_tran has NA values, correct
 dt.cover.tn90p.2 = dt.cover.tn90p[!(is.na(if.tran)) & !(Action==""), .(Year,TransectID, val.mth, Action, ir_tran,if.tran, VOR, nr_tran,nf.tran,ObsCode)] 
@@ -405,12 +385,18 @@ plot(tn90p.lm.3) # This looks pretty weird, what's going on here?
 par(mfrow=c(1,1)) 
 AIC(tn90p.lm.3)
 
+
+
 #Now consider transect as a fixed effect, create a strong global model
 tn90p.lm.4 = lmer(formula = ir_tran ~  Action + val.mth + as.factor(TransectID) + VOR +  Action*val.mth + (1|ObsCode), 
                 data = dt.cover.tn90p.1)
 
 summary(tn90p.lm.4)
 
+tn90p.flm.4 = felm(ir_tran ~   val.mth + Action | TransectID,  
+                data = dt.cover.tn90p.1)
+
+summary(tn90p.flm.4)
 
 par(mfrow=c(2,2)) #
 plot(tn90p.lm.4) 

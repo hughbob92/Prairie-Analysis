@@ -34,6 +34,16 @@ cover[,Lat.Cat:=ifelse(StartLat<cover[,min(StartLat)]+lat,yes = "South",no = ife
 #Create a test longitude category
 cover[,Long.Cat:=ifelse(StartLong<cover[,min(StartLong)]-long,yes = "West",no = ifelse(StartLong<cover[,min(StartLong)]-(2*long),yes = "Middle",no = "East"))]
 
+#We no longer care about Plot level info, reduce the Cover file so save headaches later on
+#Also do not care about plot level cover, this has been recalculated at the transect level
+cover[,PlotID:=NULL]
+cover[,Cover:=NULL]
+cover[,Bin.1.1:=NULL]
+cover[,Bin.1.2:=NULL]
+cover[,Bin.2:=NULL]
+cover[,Bin.3:=NULL]
+cover[,Bin.4:=NULL]
+cover=unique(cover)
 
 ```
 
@@ -48,15 +58,14 @@ Visualize this variability spatially and temporally, as well as in respect to ma
 
 ```{r Species Richness}
 #Compute native and non-native richness by transect, mgmt unit, site for each year
-cover[!(Cover==""), sr_tran:=length(unique(SpeciesID)), by = .(TransectID, Year)]
-cover[!(Cover==""), sr_mgmt:=length(unique(SpeciesID)), by = .(MGMTUNIT_I, Year)]
-cover[!(Cover==""), sr_site:=length(unique(SpeciesID)), by = .(SITE_ID, Year)]
+cover[!(cov.2.T==0), sr_tran:=length(unique(SpeciesID)), by = .(TransectID, Year)]
+cover[!(cov.2.T==0), sr_mgmt:=length(unique(SpeciesID)), by = .(MGMTUNIT_I, Year)]
+cover[!(cov.2.T==0), sr_site:=length(unique(SpeciesID)), by = .(SITE_ID, Year)]
 
-## do first differences for the marginal efcomb[order(year)
+## do first differences for sr
 change_sr_tran=unique(cover[Delta==1 & !is.na(sr_tran),.(Year,TransectID,sr_tran)])
 change_sr_mgmt=unique(cover[Delta==1 & !is.na(sr_mgmt),.(Year,MGMTUNIT_I,sr_mgmt)])
 change_sr_site=unique(cover[Delta==1& !is.na(sr_site),.(Year,SITE_ID,sr_site)])
-
 
 change_sr_tran[order(Year), change_sr_tran := sr_tran-shift(sr_tran), by =.(TransectID)]
 change_sr_mgmt[order(Year), change_sr_mgmt := sr_mgmt-shift(sr_mgmt), by =.(MGMTUNIT_I)]
@@ -66,40 +75,8 @@ cover = merge(cover,change_sr_tran,by=c("Year","TransectID","sr_tran"),all = T)
 cover = merge(cover,change_sr_mgmt,by=c("Year","MGMTUNIT_I","sr_mgmt"),all=T)
 cover = merge(cover,change_sr_site,by=c("Year","SITE_ID","sr_site"),all=T)
 
-#cover[order(year), change_sr_INT := sr_INT-shift(sr_INT), by =.(plot, site_code)]
-#cover[order(year), change_sr_NAT := sr_NAT-shift(sr_NAT), by =.(plot, site_code)]
-#cover[order(year), change_sr_NULL := sr_NULL-shift(sr_NULL), by =.(plot, site_code)]
-#cover[order(year), change_sr_UNK := sr_NULL-shift(sr_UNK), by =.(plot, site_code)]
 
-# plot them
-hist(unique(cover[!(is.na(change_sr_tran))][,.(Year,TransectID,change_sr_tran)])[,change_sr_tran],freq = T,main = "SR First Diff - Transects",xlab = "Delta SR",ylab = "Number of Transects",breaks = 100)
-
-hist(unique(cover[!(is.na(change_sr_mgmt))][,.(Year,MGMTUNIT_I,change_sr_mgmt)])[,change_sr_mgmt],freq = T,main = "SR First Diff - MGMT Units",xlab = "Delta SR",ylab = "Number of MGMT Units",breaks = 100)
-
-hist(unique(cover[!(is.na(change_sr_site))][,.(Year,SITE_ID,change_sr_site)])[,change_sr_site],freq = T,main = "SR First Diff - Sites",xlab = "Delta SR",ylab = "Number of Sites",breaks = 100)
-     
-#Clearly there is some craziness going on for some years, e.g. Transect 555 in 2015 only has 1 species (Poa) which is only given 1-5% cover. In 2012 there were 27 species and in 2018 there were 36. Rhett Johnson was obs
-
-xx.1 = change_sr_tran[change_sr_tran>20,TransectID]
-unique(cover[TransectID %in% xx.1,.(TransectID,Year,ObsCode,change_sr_tran,sr_tran,SITE_ID)])[order(TransectID),][!(is.na(sr_tran)),] 
-
-
-xx.2 = change_sr_tran[change_sr_tran<(-20),TransectID]
-unique(cover[TransectID %in% xx.2,.(TransectID,Year,ObsCode,change_sr_tran,sr_tran,SITE_ID)])[order(TransectID),][!(is.na(sr_tran)),] 
-
-#make a table for Daren to correct these issues...just past in the two tables above
-
-
-#hist(cover$change_sr_INT)
-#hist(cover$change_sr_NAT)
-#hist(cover$change_sr_UNK)
-#hist(cover$change_sr_NULL)
-
-
-###############################################################################
-### Compute site-level richness variables  ##############################
-##########################################################################################
-
+###Additional metrics to add
 # # average site richness over time
 # cover[, ave_siterich := mean(site_richness, na.rm = TRUE), by = site_code]
 # # average for the change year to year
@@ -109,110 +86,21 @@ unique(cover[TransectID %in% xx.2,.(TransectID,Year,ObsCode,change_sr_tran,sr_tr
 
 ```
 
-```{r Richness - Action}
-#Plot hist of change in SR by Action and Year
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_sr_tran),change_sr_tran]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action=="")&!(is.na(change_sr_tran)),.(TransectID,Year,change_sr_tran,Action)]), aes(x = Action,y = change_sr_tran))+
-  geom_boxplot()+
-  stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") + 
-  facet_wrap(~Year,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Delta SR by Year and Action", 
-       x="Action",
-       y="Change in SR")
-
-#Plot hist of actual SR by Action and Year
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(sr_tran),sr_tran]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action==""),.(TransectID,Year,sr_tran,Action)]), aes(x = Action,y = sr_tran))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~Year,nrow = 3)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="SR by Year and Action", 
-       x="Action",
-       y="SR")
-
-```
-
-
-```{r Richness - Spatial}
-
-####Plot Latitude 
-
-#Plot hist of change in SR by Lat and Action
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_sr_tran),change_sr_tran]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action=="")&!(is.na(change_sr_tran)),.(TransectID,Year,change_sr_tran,Action,Lat.Cat,Long.Cat)]), aes(x = Lat.Cat,y = change_sr_tran))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~Action,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Delta SR by Latitude and Action", 
-       x="Latitude Category",
-       y="Change in SR")
-
-#Plot hist of actual SR by Lat and Action
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(sr_tran),sr_tran]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action=="")&!(is.na(sr_tran)),.(TransectID,Year,sr_tran,Action,Lat.Cat,Long.Cat)]), aes(x = Lat.Cat,y = sr_tran))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~Action,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="SR by Latitude and Action", 
-       x="Latitude Category",
-       y="SR")
-
-
-
-####Plot Longitude
-
-#Plot hist of change in SR by Long and Action
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_sr_tran),change_sr_tran]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action=="")&!(is.na(change_sr_tran)),.(TransectID,Year,change_sr_tran,Action,Lat.Cat,Long.Cat)]), aes(x = Long.Cat,y = change_sr_tran))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~Action,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Delta SR by Longitude and Action", 
-       x="Longitude Category",
-       y="Change in SR")
-
-#Plot hist of actual SR by Long and Action
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(sr_tran),sr_tran]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action=="")&!(is.na(sr_tran)),.(TransectID,Year,sr_tran,Action,Lat.Cat,Long.Cat)]), aes(x = Long.Cat,y = sr_tran))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~Action,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="SR by Longitude and Action", 
-       x="Longitude Category",
-       y="Ch SR")
-
-
-```
-
-
 Calculate SR by native/invasive/unknown status
 ```{r Richness - Species Type}
 
 #Compute native and non-native richness by transect, mgmt unit, site for each year
-cover[Native.Status=="I" & !(Cover==""), ir_tran:=length(unique(SpeciesID)), by = .(TransectID, Year)]
-cover[Native.Status=="I" & !(Cover==""), ir_mgmt:=length(unique(SpeciesID)), by = .(MGMTUNIT_I, Year)]
-#cover[Native.Status=="I" & !(Cover==""), ir_site:=length(unique(SpeciesID)), by = .(SITE_ID, Year)]
+cover[Native.Status=="I" & !(cov.2.T==0), ir_tran:=length(unique(SpeciesID)), by = .(TransectID, Year)]
+cover[Native.Status=="I" & !(cov.2.T==0), ir_mgmt:=length(unique(SpeciesID)), by = .(MGMTUNIT_I, Year)]
+#cover[Native.Status=="I" & !(cov.2.T==0), ir_site:=length(unique(SpeciesID)), by = .(SITE_ID, Year)]
 
-cover[Native.Status=="N" & !(Cover==""), nr_tran:=length(unique(SpeciesID)), by = .(TransectID, Year)]
-cover[Native.Status=="N" & !(Cover==""), nr_mgmt:=length(unique(SpeciesID)), by = .(MGMTUNIT_I, Year)]
-#cover[Native.Status=="N" & !(Cover==""), nr_site:=length(unique(SpeciesID)), by = .(SITE_ID, Year)]
+cover[Native.Status=="N" & !(cov.2.T==0), nr_tran:=length(unique(SpeciesID)), by = .(TransectID, Year)]
+cover[Native.Status=="N" & !(cov.2.T==0), nr_mgmt:=length(unique(SpeciesID)), by = .(MGMTUNIT_I, Year)]
+#cover[Native.Status=="N" & !(cov.2.T==0), nr_site:=length(unique(SpeciesID)), by = .(SITE_ID, Year)]
 
-#cover[Native.Status=="U" & !(Cover==""), ur_tran:=length(unique(SpeciesID)), by = .(TransectID, Year)]
-#cover[Native.Status=="U" & !(Cover==""), ur_mgmt:=length(unique(SpeciesID)), by = .(MGMTUNIT_I, Year)]
-#cover[Native.Status=="U" & !(Cover==""), ur_site:=length(unique(SpeciesID)), by = .(SITE_ID, Year)]
+#cover[Native.Status=="U" & !(cov.2.T==0), ur_tran:=length(unique(SpeciesID)), by = .(TransectID, Year)]
+#cover[Native.Status=="U" & !(cov.2.T==0), ur_mgmt:=length(unique(SpeciesID)), by = .(MGMTUNIT_I, Year)]
+#cover[Native.Status=="U" & !(cov.2.T==0), ur_site:=length(unique(SpeciesID)), by = .(SITE_ID, Year)]
 
 ## do first differences for the marginal efcomb[order(year)
 change_ir_tran=unique(cover[Delta==1 & !(is.na(ir_tran)),.(Year,TransectID,ir_tran)])
@@ -253,421 +141,22 @@ cover = merge(cover,change_nr_mgmt,by=c("Year","MGMTUNIT_I","nr_mgmt"),all=T)
 #cover = merge(cover,change_ur_mgmt,by=c("Year","MGMTUNIT_I","ur_mgmt"),all=T)
 #cover = merge(cover,change_ur_site,by=c("Year","SITE_ID","ur_site"),all=T)
 
-###First plot native and invasive richness overall 
-#IR
-hist(unique(cover[!(is.na(ir_tran))][,.(Year,TransectID,ir_tran)])[,ir_tran],freq = T,main = "ir - Transects",xlab = "Total ir",ylab = "Number of Transects",breaks = length(unique(cover[!(is.na(ir_tran)),ir_tran]))) #all
-
-hist(unique(cover[!(is.na(change_ir_tran))][,.(Year,TransectID,change_ir_tran)])[,change_ir_tran],freq = T,main = "ir First Diff - Transects",xlab = "Delta ir",ylab = "Number of Transects",breaks = length(unique(cover[!(is.na(change_ir_tran)),change_ir_tran]))) #delta
-
-hist(unique(cover[!(is.na(ir_mgmt))][,.(Year,MGMTUNIT_I,ir_mgmt)])[,ir_mgmt],freq = T,main = "ir - MGMT Units",xlab = "Total ir",ylab = "Number of MGMT Units",breaks = length(unique(cover[!(is.na(ir_mgmt)),ir_mgmt]))) #all
-
-hist(unique(cover[!(is.na(change_ir_mgmt))][,.(Year,MGMTUNIT_I,change_ir_mgmt)])[,change_ir_mgmt],freq = T,main = "ir First Diff - MGMT Units",xlab = "Delta ir",ylab = "Number of MGMT Units",breaks = length(unique(cover[!(is.na(change_ir_mgmt)),change_ir_mgmt]))) #delta
-
-#hist(unique(cover[!(is.na(ir_site))][,.(Year,SITE_ID,ir_site)])[,ir_site],freq = T,main = "ir - Sites",xlab = "Total ir",ylab = "Number of Sites",breaks = length(unique(cover[!(is.na(ir_site)),ir_site]))) #all
-
-#hist(unique(cover[!(is.na(change_ir_site))][,.(Year,SITE_ID,change_ir_site)])[,change_ir_site],freq = T,main = "ir First Diff - Sites",xlab = "Delta ir",ylab = "Number of Sites",breaks = length(unique(cover[!(is.na(change_ir_site)),change_ir_site]))) #delta
-
-#NR
-hist(unique(cover[!(is.na(nr_tran))][,.(Year,TransectID,nr_tran)])[,nr_tran],freq = T,main = "nr - Transects",xlab = "Total nr",ylab = "Number of Transects",breaks = length(unique(cover[!(is.na(nr_tran)),nr_tran]))) #all
-
-hist(unique(cover[!(is.na(change_nr_tran))][,.(Year,TransectID,change_nr_tran)])[,change_nr_tran],freq = T,main = "nr First Diff - Transects",xlab = "Delta nr",ylab = "Number of Transects",breaks = length(unique(cover[!(is.na(change_nr_tran)),change_nr_tran]))) #delta
-
-hist(unique(cover[!(is.na(nr_mgmt))][,.(Year,MGMTUNIT_I,nr_mgmt)])[,nr_mgmt],freq = T,main = "nr - MGMT Units",xlab = "Total nr",ylab = "Number of MGMT Units",breaks = length(unique(cover[!(is.na(nr_mgmt)),nr_mgmt]))) #all
-
-hist(unique(cover[!(is.na(change_nr_mgmt))][,.(Year,MGMTUNIT_I,change_nr_mgmt)])[,change_nr_mgmt],freq = T,main = "nr First Diff - MGMT Units",xlab = "Delta nr",ylab = "Number of MGMT Units",breaks = length(unique(cover[!(is.na(change_nr_mgmt)),change_nr_mgmt]))) #delta
-
-#hist(unique(cover[!(is.na(nr_site))][,.(Year,SITE_ID,nr_site)])[,nr_site],freq = T,main = "nr - Sites",xlab = "Total nr",ylab = "Number of Sites",breaks = length(unique(cover[!(is.na(nr_site)),nr_site]))) #all
-
-#hist(unique(cover[!(is.na(change_nr_site))][,.(Year,SITE_ID,change_nr_site)])[,change_nr_site],freq = T,main = "nr First Diff - Sites",xlab = "Delta nr",ylab = "Number of Sites",breaks = length(unique(cover[!(is.na(change_nr_site)),change_nr_site]))) #delta
-     
+  
 ```
 
-
-
-Compare ir and nr relative to other factors
-```{r Richness - Species Type comparison}
-
-#######Plot ir and nr over time
-
-#Plot hist of total IR by Year - transects
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(ir_tran),ir_tran]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action==""),.(TransectID,Year,ir_tran)]), aes(x = Year,y = ir_tran,group=Year))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Transect IR by Year", 
-       x="Year",
-       y="IR")
-
-#Plot hist of change in IR by Year - transects
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_ir_tran),change_ir_tran]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action=="")&!(is.na(change_ir_tran)),.(TransectID,Year,change_ir_tran)]), aes(x = Year,y = change_ir_tran,group=Year))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Delta Transect IR by Year", 
-       x="Action",
-       y="Change in IR")
-
-#Plot hist of change in IR by Year - Mgmt units
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_ir_mgmt),change_ir_mgmt]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action=="")&!(is.na(change_ir_mgmt)),.(MGMTUNIT_I,Year,change_ir_mgmt)]), aes(x = Year,y = change_ir_mgmt,group=Year))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Delta MGMT UNIT IR by Year", 
-       x="Action",
-       y="Change in IR")
-
-#Plot hist of total NR by Year - transects
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(nr_tran),nr_tran]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action==""),.(TransectID,Year,nr_tran)]), aes(x = Year,y = nr_tran,group=Year))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Transect nr by Year", 
-       x="Year",
-       y="nr")
-
-#Plot hist of change in NR by Year - transects
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_nr_tran),change_nr_tran]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action=="")&!(is.na(change_nr_tran)),.(TransectID,Year,change_nr_tran)]), aes(x = Year,y = change_nr_tran,group=Year))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Delta Transect nr by Year", 
-       x="Action",
-       y="Change in nr")
-
-#Plot hist of change in NR by Year - Mgmt units
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_nr_mgmt),change_nr_mgmt]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action=="")&!(is.na(change_nr_mgmt)),.(MGMTUNIT_I,Year,change_nr_mgmt)]), aes(x = Year,y = change_nr_mgmt,group=Year))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Delta MGMT UNIT nr by Year", 
-       x="Action",
-       y="Change in nr")
-
-#######Plot ir and nr relative to management action
-
-#Plot hist of total IR by Action - transects
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(ir_tran),ir_tran]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action==""),.(TransectID,Action,ir_tran)]), aes(x = Action,y = ir_tran,group=Action))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Transect IR by Action", 
-       x="Action",
-       y="IR")
-
-#Plot hist of change in IR by Action - transects
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_ir_tran),change_ir_tran]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action=="")&!(is.na(change_ir_tran)),.(TransectID,Action,change_ir_tran)]), aes(x = Action,y = change_ir_tran,group=Action))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Delta Transect IR by Action", 
-       x="Action",
-       y="Change in IR")
-
-#Plot hist of change in IR by Action - Mgmt units
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_ir_mgmt),change_ir_mgmt]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action=="")&!(is.na(change_ir_mgmt)),.(MGMTUNIT_I,Action,change_ir_mgmt)]), aes(x = Action,y = change_ir_mgmt,group=Action))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Delta MGMT UNIT IR by Action", 
-       x="Action",
-       y="Change in IR")
-
-#Plot hist of total NR by Action - transects
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(nr_tran),nr_tran]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action==""),.(TransectID,Action,nr_tran)]), aes(x = Action,y = nr_tran,group=Action))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Transect nr by Action", 
-       x="Action",
-       y="nr")
-
-#Plot hist of change in NR by Action - transects
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_nr_tran),change_nr_tran]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action=="")&!(is.na(change_nr_tran)),.(TransectID,Action,change_nr_tran)]), aes(x = Action,y = change_nr_tran,group=Action))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Delta Transect nr by Action", 
-       x="Action",
-       y="Change in nr")
-
-#Plot hist of change in NR by Action - Mgmt units
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_nr_mgmt),change_nr_mgmt]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action=="")&!(is.na(change_nr_mgmt)),.(MGMTUNIT_I,Action,change_nr_mgmt)]), aes(x = Action,y = change_nr_mgmt,group=Action))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Delta MGMT UNIT nr by Action", 
-       x="Action",
-       y="Change in nr")
-
-
-#######Plot ir and nr over time * management action
-
-#Plot hist of total IR by Action and Year - transects
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(ir_tran),ir_tran]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action==""),.(TransectID,Action,Year,ir_tran)]), aes(x = Year,y = ir_tran,group=Year))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~Action,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Transect IR by Year and Action", 
-       x="Year",
-       y="IR")
-
-#Plot hist of change in IR by Action and Year - transects
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_ir_tran),change_ir_tran]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action=="")&!(is.na(change_ir_tran)),.(TransectID,Action,Year,change_ir_tran)]), aes(x = Year,y = change_ir_tran,group=Year))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~Action,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Delta Transect IR by Year and Action", 
-       x="Year",
-       y="Change in IR")
-
-#Plot hist of change in IR by Action and Year - Mgmt units
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_ir_mgmt),change_ir_mgmt]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action=="")&!(is.na(change_ir_mgmt)),.(MGMTUNIT_I,Action,Year,change_ir_mgmt)]), aes(x = Year,y = change_ir_mgmt,group=Year))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~Action,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Delta MGMT UNIT IR by Year and Action", 
-       x="Year",
-       y="Change in IR")
-
-#Plot hist of total NR by Action and Year - transects
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(nr_tran),nr_tran]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action==""),.(TransectID,Action,Year,nr_tran)]), aes(x = Year,y = nr_tran,group=Year))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~Action,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Transect nr by Year and Action", 
-       x="Year",
-       y="nr")
-
-#Plot hist of change in NR by Action and Year - transects
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_nr_tran),change_nr_tran]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action=="")&!(is.na(change_nr_tran)),.(TransectID,Action,Year,change_nr_tran)]), aes(x = Year,y = change_nr_tran,group=Year))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~Action,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Delta Transect nr by Year and Action", 
-       x="Year",
-       y="Change in nr")
-
-#Plot hist of change in NR by Action and Year - Mgmt units
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_nr_mgmt),change_nr_mgmt]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action=="")&!(is.na(change_nr_mgmt)),.(MGMTUNIT_I,Action,Year,change_nr_mgmt)]), aes(x = Year,y = change_nr_mgmt,group=Year))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~Action,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Delta MGMT UNIT nr by Year and Action", 
-       x="Year",
-       y="Change in nr")
-
-######Plot ir and nr by management action * lat 
-
-#Plot hist of total IR by Action and Lat - transects
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(ir_tran),ir_tran]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action==""),.(TransectID,Action,Year,ir_tran,Lat.Cat,Long.Cat)]), aes(x = Lat.Cat,y = ir_tran))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~Action,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Transect IR by Latitude and Action", 
-       x="Latitude Category",
-       y="IR")
-
-#Plot hist of change in IR by Action and Lat - transects
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_ir_tran),change_ir_tran]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action=="")&!(is.na(change_ir_tran)),.(TransectID,Action,Year,change_ir_tran,Lat.Cat,Long.Cat)]), aes(x = Lat.Cat,y = change_ir_tran))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~Action,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Delta Transect IR by Latitude and Action", 
-       x="Latitude Category",
-       y="Change in IR")
-
-#Plot hist of change in IR by Action and Lat - Mgmt units
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_ir_mgmt),change_ir_mgmt]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action=="")&!(is.na(change_ir_mgmt)),.(MGMTUNIT_I,Action,Year,change_ir_mgmt,Lat.Cat,Long.Cat)]), aes(x = Lat.Cat,y = change_ir_mgmt))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~Action,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Delta MGMT UNIT IR by Latitude and Action", 
-       x="Latitude Category",
-       y="Change in IR")
-
-#Plot hist of total NR by Action and Lat - transects
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(nr_tran),nr_tran]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action==""),.(TransectID,Action,Year,nr_tran,Lat.Cat,Long.Cat)]), aes(x = Lat.Cat,y = nr_tran))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~Action,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Transect nr by Latitude and Action", 
-       x="Latitude Category",
-       y="nr")
-
-#Plot hist of change in NR by Action and Lat - transects
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_nr_tran),change_nr_tran]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action=="")&!(is.na(change_nr_tran)),.(TransectID,Action,Year,change_nr_tran,Lat.Cat,Long.Cat)]), aes(x = Lat.Cat,y = change_nr_tran))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~Action,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Delta Transect nr by Latitude and Action", 
-       x="Latitude Category",
-       y="Change in nr")
-
-#Plot hist of change in NR by Action and Lat - Mgmt units
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_nr_mgmt),change_nr_mgmt]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action=="")&!(is.na(change_nr_mgmt)),.(MGMTUNIT_I,Action,Year,change_nr_mgmt,Lat.Cat,Long.Cat)]), aes(x = Lat.Cat,y = change_nr_mgmt))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~Action,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Delta MGMT UNIT nr by Latitude and Action", 
-       x="Latitude",
-       y="Change in nr")
-
-######Plot ir and nr by management action * lat 
-
-#Plot hist of total IR by Action and Lat - transects
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(ir_tran),ir_tran]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action==""),.(TransectID,Action,Year,ir_tran,Lat.Cat,Long.Cat)]), aes(x = Long.Cat,y = ir_tran))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~Action,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Transect IR by Longitude and Action", 
-       x="Longitude Category",
-       y="IR")
-
-#Plot hist of change in IR by Action and Lat - transects
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_ir_tran),change_ir_tran]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action=="")&!(is.na(change_ir_tran)),.(TransectID,Action,Year,change_ir_tran,Lat.Cat,Long.Cat)]), aes(x = Long.Cat,y = change_ir_tran))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~Action,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Delta Transect IR by Longitude and Action", 
-       x="Longitude Category",
-       y="Change in IR")
-
-#Plot hist of change in IR by Action and Lat - Mgmt units
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_ir_mgmt),change_ir_mgmt]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action=="")&!(is.na(change_ir_mgmt)),.(MGMTUNIT_I,Action,Year,change_ir_mgmt,Lat.Cat,Long.Cat)]), aes(x = Long.Cat,y = change_ir_mgmt))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~Action,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Delta MGMT UNIT IR by Longitude and Action", 
-       x="Longitude Category",
-       y="Change in IR")
-
-#Plot hist of total NR by Action and Lat - transects
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(nr_tran),nr_tran]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action==""),.(TransectID,Action,Year,nr_tran,Lat.Cat,Long.Cat)]), aes(x = Long.Cat,y = nr_tran))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~Action,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Transect nr by Longitude and Action", 
-       x="Longitude Category",
-       y="nr")
-
-#Plot hist of change in NR by Action and Lat - transects
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_nr_tran),change_nr_tran]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action=="")&!(is.na(change_nr_tran)),.(TransectID,Action,Year,change_nr_tran,Lat.Cat,Long.Cat)]), aes(x = Long.Cat,y = change_nr_tran))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~Action,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Delta Transect nr by Longitude and Action", 
-       x="Longitude Category",
-       y="Change in nr")
-
-#Plot hist of change in NR by Action and Lat - Mgmt units
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(change_nr_mgmt),change_nr_mgmt]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action=="")&!(is.na(change_nr_mgmt)),.(MGMTUNIT_I,Action,Year,change_nr_mgmt,Lat.Cat,Long.Cat)]), aes(x = Long.Cat,y = change_nr_mgmt))+
-  geom_boxplot()+   stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~Action,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Delta MGMT UNIT nr by Longitude and Action", 
-       x="Longitude",
-       y="Change in nr")
-
-
-```
-
-
-```{r Richness - System Type}
-
-```
-
-
-
+Demeaning and centering may be in important step. If we you a mixed effect model, this will be an automatic result of including transect ID or site as a factor
 ```{r Demeaning}
 #average richness for all observations (at transect level)
-avg_sr=unique(cover[!(Action==""),.(Year,TransectID,sr_tran)])[,avg_sr:=sum(sr_tran)/length(unique(cover[!(Action==""),.(Year,TransectID)])[,Year])]
-avg_sr=avg_sr[,.(Year,TransectID,avg_sr)]
-avg_nr=unique(cover[!(Action=="") & !(is.na(nr_tran)),.(Year,TransectID,nr_tran)])[,avg_nr:=sum(nr_tran)/length(unique(cover[!(Action==""),.(Year,TransectID)])[,Year])]
-avg_nr=avg_nr[,.(Year,TransectID,avg_nr)]
-avg_ir=unique(cover[!(Action=="") & !(is.na(ir_tran)),.(Year,TransectID,ir_tran)])[,avg_ir:=sum(ir_tran)/length(unique(cover[!(Action==""),.(Year,TransectID)])[,Year])]
-avg_ir=avg_ir[,.(Year,TransectID,avg_ir)]
+#avg_sr=unique(cover[!(Action==""),.(Year,TransectID,sr_tran)])[,avg_sr:=sum(sr_tran)/length(unique(cover[!(Action==""),.(Year,TransectID)])[,Year])]
+#avg_sr=avg_sr[,.(Year,TransectID,avg_sr)]
+#avg_nr=unique(cover[!(Action=="") & !(is.na(nr_tran)),.(Year,TransectID,nr_tran)])[,avg_nr:=sum(nr_tran)/length(unique(cover[!(Action==""),.(Year,TransectID)])[,Year])]
+#avg_nr=avg_nr[,.(Year,TransectID,avg_nr)]
+#avg_ir=unique(cover[!(Action=="") & !(is.na(ir_tran)),.(Year,TransectID,ir_tran)])[,avg_ir:=sum(ir_tran)/length(unique(cover[!(Action==""),.(Year,TransectID)])[,Year])]
+#avg_ir=avg_ir[,.(Year,TransectID,avg_ir)]
 
-cover = merge(cover,avg_sr,by=c("Year","TransectID"),all = T)
-cover = merge(cover,avg_nr,by=c("Year","TransectID"),all = T)
-cover = merge(cover,avg_ir,by=c("Year","TransectID"),all = T)
+#cover = merge(cover,avg_sr,by=c("Year","TransectID"),all = T)
+#cover = merge(cover,avg_nr,by=c("Year","TransectID"),all = T)
+#cover = merge(cover,avg_ir,by=c("Year","TransectID"),all = T)
 
 #average frequency of each species for all observations
 
@@ -676,23 +165,6 @@ cover = merge(cover,avg_ir,by=c("Year","TransectID"),all = T)
 
 ```
 
-```{r Observer Sensitivity}
-#Visualize how SR varies with observer id
-stat_box_data <- function(y, upper_limit = max(cover[!is.na(sr_tran),sr_tran]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-ggplot(unique(cover[!(Action=="") & !(is.na(sr_tran)),.(TransectID,ObsCode,sr_tran)]), aes(x = ObsCode,y = sr_tran,group=ObsCode))+
-  geom_boxplot()+   
-  stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Richness Counts by Observer", 
-       x="Observer",
-       y="SR")
-
-#Lets look at a scatter plot
-
-
-```
 
 #Frequency Analysis
 Frequency can be a useful proxy for abundance. It has already been calculated at the transect level (plots present in / 25 total plots).
@@ -725,17 +197,6 @@ change_f.mgmt[order(Year), change_f.mgmt := Freq.M-shift(Freq.M), by =.(MGMTUNIT
 cover=merge(cover,change_f.tran,by=c("TransectID","SpeciesID","Freq.T","Year"),all = T)
 cover=merge(cover,change_f.mgmt,by=c("MGMTUNIT_I","SpeciesID","Freq.M","Year"),all = T)
 
-# also visualize changes in frequency for all species but maybe break out by these categories (full visualization not just an average)
-
-ggplot(unique(cover[!(Action==""),.(TransectID,Year, Freq.T,SpeciesID, Native.Status)]), aes(x = Year,y = Freq.T ,group = SpeciesID & TransectID))+
-  geom_line() +
-  geom_point() +
-   facet_wrap(~Native.Status,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title="Species Freqeuncy", 
-       x="Year",
-       y="Frequency")
-
 
 ### Calculate yearly species-level frequency as an average across: everywhere, (sites & mgmt units already done). Then add delta values.
 
@@ -745,7 +206,7 @@ Freq.all = merge(Freq.all,cover[,length(unique(TransectID)),by=Year],by="Year", 
 Freq.all[,Freq.all:=sum(Freq.T)/unique(V1), by = .(SpeciesID, Year)]
 Freq.all[,V1:=NULL]
 
-#delta all species frequesncy is a little different than the prior differences. I will average transect level differences rather than take the differences of Freq.all (which is already an average)
+#delta all species frequency is a little different than the prior differences. I will average transect level differences rather than take the differences of Freq.all (which is already an average)
 change_f.all = unique(cover[!(is.na(change_f.tran)),.(change_f.tran,Year,SpeciesID,TransectID)])
 change_f.all[,change_f.all:=mean(change_f.tran),by=.(SpeciesID,Year)] #unlike Freq.all this does not use all transects observed that year as the denominator because change is dependent on prior years measured and NA values should not be assumed to be 0 (as they are with presence absence NA values for original frequency)
 
@@ -754,140 +215,8 @@ cover=merge(cover,Freq.all,by=c("Year","SpeciesID","Freq.T","TransectID"),all = 
 cover=merge(cover,change_f.all,by=c("Year","SpeciesID","change_f.tran","TransectID"),all = T)
 
 
-
-#Quick visualize
-#ggplot(unique(cover[!(Action=="")&!(is.na(Freq.all)),.(Freq.all,Year,SpeciesID,Native.Status,Indicator)]), aes(x = Year,y = Freq.all,group = Year))+
-  #geom_boxplot()+
-  #stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  #facet_wrap(~Native.Status,nrow = 2)+
-  #theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  #coord_cartesian(ylim = c(0, 0.05))+
-  #labs(title="Species Average frequency by Year", 
-       #x="Year",
-       #y="Species Frequency")
-
-
- ggplot(unique(cover[!(Action=="")&!(is.na(change_f.all)),.(change_f.all,Year,SpeciesID,Native.Status,Indicator)]), aes(x = Year,y = change_f.all,group = Year))+
-  geom_boxplot()+
-  #stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~Native.Status,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  coord_cartesian(ylim = c((-0.2), 0.25))+
-  labs(title="Average change in species frequency by Year", 
-       x="Year",
-       y="Change in Species Frequency")
-  
-  ggplot(unique(cover[!(Action=="")&!(is.na(change_f.all)),.(change_f.all,Year,SpeciesID,Native.Status,Indicator)]), aes(x = Native.Status,y = change_f.all,group = Native.Status))+
-  geom_boxplot()+
-  #stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~Year,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  coord_cartesian(ylim = c((-0.2), 0.25))+
-  labs(title="Average change in species frequency by Status", 
-       x="Year",
-       y="Change in Species Frequency")
-
-  
-  stat_box_data <- function(y, upper_limit = 0.25) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-  
-  ggplot(unique(cover[!(Action=="")&!(is.na(change_f.all)) & !(Indicator==0), .(change_f.all,Year,SpeciesID,Native.Status,Indicator)]), aes(x = Indicator,y = change_f.all,group = Indicator))+
-  geom_boxplot()+
-  stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~Year,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  coord_cartesian(ylim = c((-0.2), 0.25))+
-  labs(title="Average change in species frequency by Status", 
-       x="Year",
-       y="Change in Species Frequency")
-  
-  
 ```
 
-The above boxplots show frequency changes for each species averaged across sites. However this not only removes the ability to compare site effects but also treatment effects. Create new boxplots to examine impacts on species frequency without pre-averaging across sites. To avoid having to make a boxplot for each species, facet wrap by our categories. 
-
-Freq.T = species frequency at each transect for that year. Later I look at the mean of these values by species categories. 
-
-```{r Frequency Visualization - by species}
-
-#First create a matrix of the plot types to make, use for loop to create boxplots
-x.list = c("Year","Long.Cat","Lat.Cat")
-y.list = c("Freq.T","change_f.tran")
-Group = rep(c("Native.Status","Indicator"),each=length(x.list),times=length(y.list))
-Y = rep(y.list,each = (length(Group)/length(unique(Group))))
-X = c(rep(x.list,times = length(Y)/length(x.list)))
-Action = c(rep(c("Action"),times = length(Y))) 
-
-freq.vis = as.data.table(cbind(Y, X ,Group, Action))
-
-# First create boxplots - species freq x Year/Lat/Long * Species Group * Action
-
-for (i in 1:(freq.vis[,(length(Action)/2)])) {
-  
-  stat_box_data <- function(y, upper_limit = max (cover[!is.na(eval(parse(text=(as.character(freq.vis[i,Y]))))), eval(parse(text=(as.character(freq.vis[i,Y]))))]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-plot = ggplot(unique(cover[!(Action=="")&!(is.na(eval(parse(text=(as.character(freq.vis[i,Y])))))), 
-              .(TransectID, SpeciesID, Action, Year, eval(parse(text=(as.character(freq.vis[i,Y])))), Lat.Cat,Long.Cat,Native.Status,Indicator)]), 
-              aes(x = as.factor(eval(parse(text = (as.character(freq.vis[i,X]))))),  
-                  y= V5, fill= eval(parse(text=(as.character(freq.vis[i,Group])))))) +
-  geom_boxplot() +   
-  stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~ Action,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  coord_cartesian(ylim = c((-.02), 1))+
-  labs(title= paste("Frequency - ",as.character(freq.vis[i,Y]), "by", as.character(freq.vis[i,X]), sep = " "), 
-       x= as.character(freq.vis[i,X]),
-       y= as.character(freq.vis[i,Y]),
-       fill="Species Category")
-  print(plot)
-    }
-
-#Create boxplots - delta species freq x Year/Lat/Long * Species Group * Action
-for (i in (freq.vis[,length(Action)]/2):freq.vis[,length(Action)]) {
-  
-  stat_box_data <- function(y, upper_limit = max (cover[!is.na(eval(parse(text=(as.character(freq.vis[i,Y]))))), eval(parse(text=(as.character(freq.vis[i,Y]))))]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-plot = ggplot(unique(cover[!(Action=="")&!(is.na(eval(parse(text=(as.character(freq.vis[i,Y])))))), 
-              .(TransectID, SpeciesID, Action, Year, eval(parse(text=(as.character(freq.vis[i,Y])))), Lat.Cat,Long.Cat,Native.Status,Indicator)]), 
-              aes(x = as.factor(eval(parse(text = (as.character(freq.vis[i,X]))))),  
-                  y= V5, fill= eval(parse(text=(as.character(freq.vis[i,Group])))))) +
-  geom_boxplot() +   
-  stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~ Action,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  coord_cartesian(ylim = c((-0.5), 0.5))+
-  labs(title= paste("Frequency - ",as.character(freq.vis[i,Y]), "by", as.character(freq.vis[i,X]), sep = " "), 
-       x= as.character(freq.vis[i,X]),
-       y= as.character(freq.vis[i,Y]),
-       fill="Species Category")
-  print(plot)
-    }
-
-#Look at delta F with facet wrap Species Category rather than Action
-for (i in (freq.vis[,length(Action)]/2+1):freq.vis[,length(Action)]) {
-  
-  stat_box_data <- function(y, upper_limit = max (cover[!is.na(eval(parse(text=(as.character(freq.vis[i,Y]))))), eval(parse(text=(as.character(freq.vis[i,Y]))))]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-plot = ggplot(unique(cover[!(Action=="")&!(is.na(eval(parse(text=(as.character(freq.vis[i,Y])))))), 
-              .(TransectID, SpeciesID, Action, Year, eval(parse(text=(as.character(freq.vis[i,Y])))), Lat.Cat,Long.Cat,Native.Status,Indicator)]), 
-              aes(x = as.factor(eval(parse(text = (as.character(freq.vis[i,X]))))),  
-                  y= V5, fill= Action)) +
-  geom_boxplot() +   
-  stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~ eval(parse(text=(as.character(freq.vis[i,Group])))),nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  coord_cartesian(ylim = c((-0.5), 0.5))+
-  labs(title= paste("Frequency - ",as.character(freq.vis[i,Y]), "by", as.character(freq.vis[i,X]), sep = " "), 
-       x= as.character(freq.vis[i,X]),
-       y= as.character(freq.vis[i,Y]),
-       fill="Species Category")
-  print(plot)
-    }
-
-```
 
 ```{r Frequency Categories}
 #Calculate mean frequencies 
@@ -943,69 +272,6 @@ for (i in 1:length(freq.list$freq)) {
 colnames(freq.list[2]) = "change"
 ```
 
-Visualize Frequency 
-- create plots to examine frequency over time, latitude, longitude * action for transects and mgmt units
-
-```{r Frequency Visualization Setup}
-
-#First create a matrix of the plot types to make, use for loop to create boxplots
-x.list = c("Year","Long.Cat","Lat.Cat")
-y.list = rep(c(as.character(freq.list[,1]),freq.list[,2]),times = length(x.list))
-X = c(rep(x.list,each = length(y.list)/length(x.list)))
-Action = c(rep(c("Action"),times = length(y.list))) 
-Size = c(rep(c("TransectID","MGMTUNIT_I"),times = length(y.list)/2)) 
-
-freq.vis = as.data.table(cbind(Y= y.list, X , Action, Size))
-
-```
-
-```{r Frequency Visualization - no action}
-
-# First create boxplots to examing how varying levels of frequency changes over time and space
-
-for (i in 1:(freq.vis[,length(Action)]/2)) {
-  
-  stat_box_data <- function(y, upper_limit = max (cover[!is.na(eval(parse(text=(as.character(freq.vis[i,Y]))))), eval(parse(text=(as.character(freq.vis[i,Y]))))]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-plot = ggplot(unique(cover[!(Action=="")&!(is.na(eval(parse(text=(as.character(freq.vis[i,Y])))))),.(MGMTUNIT_I,TransectID,Action,Year,eval(parse(text=(as.character(freq.vis[i,Y])))),Lat.Cat,Long.Cat)]), 
-              aes(x = eval(parse(text=(as.character(freq.vis[i,X])))),y = V5, group= eval(parse(text=(as.character(freq.vis[i,X])))))) +
-  geom_boxplot() +   
-  stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  #facet_wrap(~Action,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title= paste("Frequency - ",as.character(freq.vis[i,Y]), "by", as.character(freq.vis[i,X]), sep = " "), 
-       x= as.character(freq.vis[i,X]),
-       y= as.character(freq.vis[i,Y]))
-  print(plot)
-  
-    }
-
-```
-
-```{r Frequency Visualization - action}
-
-# Create boxplots showing frequency variation over time and space as a product of action
-
-for (i in 1:(freq.vis[,length(Action)]/2)) {
-  
-  stat_box_data <- function(y, upper_limit = max (cover[!is.na(eval(parse(text=(as.character(freq.vis[i,Y]))))), eval(parse(text=(as.character(freq.vis[i,Y]))))]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-plot = ggplot(unique(cover[!(Action=="")&!(is.na(eval(parse(text=(as.character(freq.vis[i,Y])))))),.(MGMTUNIT_I,TransectID,Action,Year,eval(parse(text=(as.character(freq.vis[i,Y])))),Lat.Cat,Long.Cat)]), 
-              aes(x = eval(parse(text=(as.character(freq.vis[i,X])))),y = V5, group= eval(parse(text=(as.character(freq.vis[i,X])))))) +
-  geom_boxplot() +   
-  stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~Action,nrow = 2)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title= paste("Frequency - ",as.character(freq.vis[i,Y]), "by", as.character(freq.vis[i,X]), sep = " "), 
-       x= as.character(freq.vis[i,X]),
-       y= as.character(freq.vis[i,Y]))
-  print(plot)
-    }
- 
-```
-
 #Cover Analysis
 Because of the binning methodology, this will be tricky. 
 
@@ -1027,7 +293,7 @@ Then analyze change in coverage.
 ```{r Cover Analysis - Setup}
 #Already calculated mean cover by transect and mgmt unit. Cover values should also have an appropriate zero after similar modifications for frequency
 
-# HUGH....something is going on with average cover values for mgmt unit by methodology...some transect averages are not counting in one method but are for in the mgmt avg...see cover[TransectID==1977 & SpeciesID==5 & Year==2018,] as an example
+# HUGH....something is going on with average cover values for mgmt unit by methodology...some transect averages are not counting in one method but are for in the mgmt avg...see cover[TransectID==1977 & SpeciesID==5 & Year==2018,] as an example...I think I fixed this by removing plot and bins. Double check
 
 #Calculate delta coverage for each species by transect and mgmt unit
 cover.list = data.frame(
@@ -1049,131 +315,8 @@ for (i in 1:length(cover.list$cover)){
 
 ```
 
-```{r Cover - Visualization Setup}
 
-#Create boxplots evaluating cover relative to: time, lat, long * Species cat OR/AND MGMT Action
-
-#create variable list to quickly replicate boxplots
-
-
-x.list = c("Year","Long.Cat","Lat.Cat")
-y.list = c(as.character(cover.list[,1]),as.character(cover.list[,2]))
-y.list = y.list[ y.list != "change_cov.4.T" & y.list != "change_cov.4.M" ] #remove those which have no values
-X = c(rep(x.list,each = length(y.list)))
-Y = c(rep(y.list,times = length(x.list)))
-Native = rep(c("Native.Status"),times=length(X))
-Indicator =rep(c("Indicator"),times=length(X))
-Action = rep(c("Action"),times=length(X))
-Scale = rep(c(rep(c("TransectID","MGMTUNIT_I"),each =5) ,rep(c("TransectID","MGMTUNIT_I"),each =4)), times = (length(x.list)))
-  
-cover.vis = as.data.table(cbind(Y, X , Native, Indicator, Action, Scale))
-
-```
-
-```{r Cover - Visualization 1}
-
-#First create boxplots by Native Status
-for (i in 1:(cover.vis[,length(Action)])) {
-  
-  stat_box_data <- function(y, upper_limit = max (cover[!is.na(eval(parse(text=(as.character(cover.vis[i,Y]))))), eval(parse(text=(as.character(cover.vis[i,Y]))))]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-plot = ggplot(unique(cover[!(Action=="")&!(is.na(eval(parse(text=(as.character(cover.vis[i,Y]))))))
-                  ,.(eval(parse(text=(as.character(cover.vis[i,Scale])))),Action,Year, SpeciesID,
-                  eval(parse(text=(as.character(cover.vis[i,Y])))),Lat.Cat,Long.Cat,Native.Status)]), 
-              aes(x = as.factor(eval(parse(text=(as.character(cover.vis[i,X]))))),y = V5, fill= Native.Status,))  +
-  geom_boxplot() +   
-  stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~ Action,nrow = 4)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title= paste("Species Cover - Method ",as.character(cover.vis[i,Y]), "by", as.character(cover.vis[i,X]), sep = " "), 
-       x= as.character(cover.vis[i,X]),
-       y= as.character(cover.vis[i,Y]),
-       fill="Species Category")
-  print(plot)
-    }
-
-```
-
-```{r Cover - Visualization 2}
-#Now create boxplots by Indicator Status
-for (i in 1:(cover.vis[,length(Action)])) {
-  
-  stat_box_data <- function(y, upper_limit = max (cover[!is.na(eval(parse(text=(as.character(cover.vis[i,Y]))))), eval(parse(text=(as.character(cover.vis[i,Y]))))]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-plot = ggplot(unique(cover[!(Action=="")&!(is.na(eval(parse(text=(as.character(cover.vis[i,Y]))))))
-                  ,.(eval(parse(text=(as.character(cover.vis[i,Scale])))),Action,Year, SpeciesID,
-                  eval(parse(text=(as.character(cover.vis[i,Y])))),Lat.Cat,Long.Cat,Indicator)]), 
-              aes(x = eval(parse(text=(as.character(cover.vis[i,X])))),y = V5, fill= Indicator,))  +
-  geom_boxplot() +   
-  stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~ Action,nrow = 4)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title= paste("Species Cover - Method ",as.character(cover.vis[i,Y]), "by", as.character(cover.vis[i,X]), sep = " "), 
-       x= as.character(cover.vis[i,X]),
-       y= as.character(cover.vis[i,Y]),
-       fill="Species Category")
-  print(plot)
-    }
-
-```
-
-```{r Cover - Visualization 4}
-
-#Plot cover by averaging by Native.Status for each transect/mgmgt unit
-
-for (i in 1:(cover.vis[,length(Action)])) {
-  
- stat_box_data <- function(y, upper_limit = max (cover[!is.na(eval(parse(text=(as.character(cover.vis[i,Y]))))), eval(parse(text=(as.character(cover.vis[i,Y]))))]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-plot = ggplot(unique(cover[!(Action=="")&!(is.na(eval(parse(text=(as.character(cover.vis[i,Y]))))))
-                  ,.(eval(parse(text=(as.character(cover.vis[i,Scale])))),Action,Year,
-                  eval(parse(text=(as.character(cover.vis[i,Y])))),Lat.Cat,Long.Cat,Native.Status)]
-                    [,V4:=mean(V4),by=.(Year,V1,Native.Status)]), 
-              aes(x = eval(parse(text=(as.character(cover.vis[i,X])))),y = V4, fill= Native.Status,))  +
-  geom_boxplot() +   
-  stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~ Action,nrow = 4)+ #maybe first wrap by year without actions broken out
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title= paste("Species Cover - Method ",as.character(cover.vis[i,Y]), "by", as.character(cover.vis[i,X]), sep = " "), 
-       x= as.character(cover.vis[i,X]),
-       y= as.character(cover.vis[i,Y]),
-       fill="Species Category")
-  print(plot)
-    }
-
-
-```
-
-
-```{r Cover - Visualization 5}
-#Plot cover by averaging by  Indicators for each transect/mgmgt unit
-
-for (i in 1:(cover.vis[,length(Action)])) {
-  
- stat_box_data <- function(y, upper_limit = max (cover[!is.na(eval(parse(text=(as.character(cover.vis[i,Y]))))), eval(parse(text=(as.character(cover.vis[i,Y]))))]) * 1.15) {
-  return( data.frame(y = 1 * upper_limit,label = paste('',length(y),'\n')))}
-
-plot = ggplot(unique(cover[!(Action=="")&!(is.na(eval(parse(text=(as.character(cover.vis[i,Y]))))))
-                  ,.(eval(parse(text=(as.character(cover.vis[i,Scale])))),Action,Year,
-                  eval(parse(text=(as.character(cover.vis[i,Y])))),Lat.Cat,Long.Cat,Indicator)]
-                    [,V4:=mean(V4),by=.(Year,V1,Indicator)]), 
-              aes(x = eval(parse(text=(as.character(cover.vis[i,X])))),y = V4, fill= Indicator,))  +
-  geom_boxplot() +   
-  stat_summary(fun.data = stat_box_data, geom = "text", hjust = 0.5,vjust = 0.9,size=3,colour="blue") +    
-  facet_wrap(~ Action,nrow = 4)+
-  theme(axis.text.x = element_text(angle=0, vjust=0.6)) + 
-  labs(title= paste("Species Cover - Method ",as.character(cover.vis[i,Y]), "by", as.character(cover.vis[i,X]), sep = " "), 
-       x= as.character(cover.vis[i,X]),
-       y= as.character(cover.vis[i,Y]),
-       fill="Species Category")
-  print(plot)
-    }
-
-
-```
+#Create relative cover values
 
 ```{r Cover - Relative Cover}
 
@@ -1193,6 +336,10 @@ for (i in 1:length(tot.cov.list$cov)) {
   z[,V4:=NULL]
   cover = merge(cover, z, by = c("SpeciesID","TransectID","Year"),all = T)
 }
+
+#cover = merge(cover, z, by = c("SpeciesID","TransectID","Year"),all = T)
+
+#Sum up realtive cover by invasive status
 
 ```
 
@@ -1221,18 +368,32 @@ for (i in 1:length(DI.list$cov)) {
   cover = merge(cover,z, by = c("SpeciesID","TransectID","Year","Freq.T"),all = T)
   }
   
-#Hugh - why won't DI.3 merge??
+
+###Create a mean dominance by native status.....Hugh right now don't break out my methodology
+# I wondered if it would be better to take an actual value of Dominance for invasive (summing up invasive relative cover and invasive frequency, but at that point we are mostly just looking at invasive cover...the mean is likely more informative)
+#Invasive
+cover[!(is.na(DI.T.1.1)) & Native.Status=="I",meanDI.I_tran:=mean(DI.T.1.1), by = .(TransectID,Year)]
+cover[!(is.na(DI.T.1.2)) & Native.Status=="I",meanDI.I_tran:=mean(DI.T.1.2), by = .(TransectID,Year)]
+cover[!(is.na(DI.T.2)) & Native.Status=="I",meanDI.I_tran:=mean(DI.T.2), by = .(TransectID,Year)]
+cover[!(is.na(DI.T.3)) & Native.Status=="I",meanDI.I_tran:=mean(DI.T.3), by = .(TransectID,Year)]
+cover[!(is.na(DI.T.4)) & Native.Status=="I",meanDI.I_tran:=mean(DI.T.4), by = .(TransectID,Year)]
+
+#Native
 
 ####### Make Categorical Variables of Dominance too ########
 
-# then given them a ranking into different categories
-# to look at changes in those types of species and the impact on productivity?
+# Rank them in categories....Hugh right now lets use the same categories for all years even though cover measurements are different
+# to look at changes in those types of species, which types of species are dominant?
 ## sub-ordinate and rare -- how can I compute this? ###########
-cover[, DIgroup.1.1:=cut(DI.T.1.1, breaks=c(0.0,0.2,0.8,1.0), labels=c("Rare","Subordinate","Dominant"))]
-cover[, DIgroup.1.2:=cut(DI.T.1.2, breaks=c(0.0,0.2,0.8,1.0), labels=c("Rare","Subordinate","Dominant"))]
-cover[, DIgroup.2:=cut(DI.T.2, breaks=c(0.0,0.2,0.8,1.0), labels=c("Rare","Subordinate","Dominant"))]
-cover[, DIgroup.3:=cut(DI, breaks=c(0.0,0.2,0.8,1.0), labels=c("Rare","Subordinate","Dominant"))]
-cover[, DIgroup.3:=cut(DI.T.4, breaks=c(0.0,0.2,0.8,1.0), labels=c("Rare","Subordinate","Dominant"))]
+
+######Something here is breaking my code
+
+#cover[!(is.na(DI.T.1.1)), DIgroup:=cut(DI.T.1.1, breaks=c(0.0,0.2,0.8,1.0), labels=c("Rare","Subordinate","Dominant"))]
+#cover[!(is.na(DI.T.1.2)), DIgroup:=cut(DI.T.1.2, breaks=c(0.0,0.2,0.8,1.0), labels=c("Rare","Subordinate","Dominant"))]
+#cover[!(is.na(DI.T.2)), DIgroup:=cut(DI.T.2, breaks=c(0.0,0.2,0.8,1.0), labels=c("Rare","Subordinate","Dominant"))]
+#cover[!(is.na(DI.T.3)), DIgroup:=cut(DI.T.3, breaks=c(0.0,0.2,0.8,1.0), labels=c("Rare","Subordinate","Dominant"))]
+#cover[!(is.na(DI.T.4)), DIgroup:=cut(DI.T.4, breaks=c(0.0,0.2,0.8,1.0), labels=c("Rare","Subordinate","Dominant"))]
+
 
 #richness in each group 
 #cover[, sr_domspp := length(unique(Taxon[DIgroup == "Dominant"])), by = .(plot, site_code, year)]
@@ -1254,10 +415,6 @@ summary(cover$sr_rare)
 #cover[order(year), lagged_sr_subordspp := shift(sr_subordspp), by =.(plot, site_code)]
 
 
-plot(ave_rel_abundance_over_time.live ~ DI, data= cover)
-abline(lm(ave_rel_abundance_over_time.live ~ DI, data= cover), col = "yellow")
-plot(relative_sp_cover.yr.live ~ DI, data = cover)
-
 
 ## Make a variable that captures changes in *cover* of species classified as dominance, rare, subordinate each year 
 # (so we can look at variations from year to year)
@@ -1269,62 +426,12 @@ plot(relative_sp_cover.yr.live ~ DI, data = cover)
 ```
 
 
-
-##Tables and Plots for Presentations and Manuscript
-
-```{r Miscellanous Plots and Tables}
-#Tables and averages of transects, sites, and mgmt units
-cover[,length(unique(TransectID)),by=MGMTUNIT_I][,mean(V1)]
-cover[,length(unique(MGMTUNIT_I)),by=SITE_ID][,mean(V1)]
-
-## Table number of management actions each year - one table for those during observed years and all years
-write.table(table(unique(cover[!(Action==""),.(Action,Year,TransectID)])[,.(Action,Year)]),pipe("pbcopy")) #observed years
-
-#A bit more work to create a table of all management actions by year, regardless of observation
-tab.action.all = rbind(transect.master[!(Mgmt.2010==""),.(Transect_I,Mgmt.2010)][,Year:=rep("2010",times=length(Transect_I))],
-                       transect.master[!(Mgmt.2011==""),.(Transect_I,Mgmt.2011)][,Year:=rep("2011",times=length(Transect_I))],
-                       transect.master[!(Mgmt.2012==""),.(Transect_I,Mgmt.2012)][,Year:=rep("2012",times=length(Transect_I))],
-                       transect.master[!(Mgmt.2013==""),.(Transect_I,Mgmt.2013)][,Year:=rep("2013",times=length(Transect_I))],
-                       transect.master[!(Mgmt.2014==""),.(Transect_I,Mgmt.2014)][,Year:=rep("2014",times=length(Transect_I))],
-                       transect.master[!(Mgmt.2015==""),.(Transect_I,Mgmt.2015)][,Year:=rep("2015",times=length(Transect_I))],
-                       transect.master[!(Mgmt.2016==""),.(Transect_I,Mgmt.2016)][,Year:=rep("2016",times=length(Transect_I))],
-                       transect.master[!(Mgmt.2017==""),.(Transect_I,Mgmt.2017)][,Year:=rep("2017",times=length(Transect_I))],
-                       transect.master[!(Mgmt.2018==""),.(Transect_I,Mgmt.2018)][,Year:=rep("2018",times=length(Transect_I))],
-                       use.names=FALSE)
-
-#Filter for transects I will actually use
-tab.action.all = merge(tab.action.all,data.frame(Transect_I=cover[,unique(TransectID)]),by = "Transect_I")
-
-write.table(table(tab.action.all[,.(Mgmt.2010,Year)]),pipe("pbcopy")) #All years
-
-##Management Acres
-#Total
-unique(cover[,.(ManUnitAcres,MGMTUNIT_I)])[!(is.na(ManUnitAcres)),sum(ManUnitAcres)]
-
-##Total number of species and species richness histograms
-#Total Species
-cover[,length(unique(SpeciesID))]
-
-#Total Species histogram
-hist(unique(cover[!(is.na(sr_tran)),.(Year, TransectID, sr_tran)])[,sr_tran],freq = T,breaks = 0:65,main = "Species Richness by Transect",xlab = "Species Richness",ylab = "Nmber of Transects")
-
-hist(unique(cover[!(is.na(ir_tran)),.(Year, TransectID, ir_tran)])[,ir_tran],freq = T,breaks = 0:20,main = "Invasive Richness by Transect",xlab = "Invasive Richness",ylab = "Number of Transects")
-
-##Dominance
-hist(unique(cover[,.(SpeciesID,Year,Native.Status,DI.T.2,TransectID)])[Native.Status=="I",sum(DI.T.2),by=.(Year,TransectID)][,V1],
-     freq=F, breaks = seq(0,3,by = 0.05),main = "Invasive Dominance by Transect",xlab = "Invasive Dominance",ylab = "Number of Transects")
-
-hist(unique(cover[,.(SpeciesID,Year,Native.Status,DI.T.2,TransectID)])[Native.Status=="N",sum(DI.T.2),by=.(Year,TransectID)][V1<7,V1],
-     freq=F, breaks = seq(0,7,by = 0.05),main = "Native Dominance by Transect",xlab = "Native Dominance",ylab = "Number of Transects")
-  
-```
-
 ```{r Species Characteristics}
 
 ```
 
 
-Finalize and Save data tables for model Rmd file
+#Finalize and Save data tables for model Rmd file
 ```{r Finish}
 
 setwd("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis")
@@ -1344,6 +451,11 @@ cover.map.2 = unique(cover[,.(TransectID,MGMTUNIT_I,SITE_ID,StartLat,StartLong,P
 fwrite(cover.map.2,"/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Mapping/Data/cover.map.2.txt")
 
 ```
+
+
+
+
+
 
 
 
