@@ -34,6 +34,52 @@ cover[,Lat.Cat:=ifelse(StartLat<cover[,min(StartLat)]+lat,yes = "South",no = ife
 #Create a test longitude category
 cover[,Long.Cat:=ifelse(StartLong<cover[,min(StartLong)]-long,yes = "West",no = ifelse(StartLong<cover[,min(StartLong)]-(2*long),yes = "Middle",no = "East"))]
 
+```
+
+Steps to complete first: 
+- (complete) and merge species level data
+
+
+#Species Richness Analysis
+Calculate total richness (sr), native (nr), and invasive (ir) for all transects, mgmt units, and sites.
+
+First create SR, NR, and IR counts based on plot level data, then mask out repetitive plot data. Come back and run first differences
+
+```{r Species Richness}
+#Compute native and non-native richness by transect, mgmt unit, site for each year
+sr_tran=unique(cover[!(cov.2.T==0), length(unique(SpeciesID)), by = .(TransectID, Year)]
+               [!(is.na(V1)),.(TransectID,Year,V1)])
+setnames(sr_tran,"V1","sr_tran")
+
+sr_mgmt=unique(cover[!(cov.2.T==0), length(unique(SpeciesID)), by = .(MGMTUNIT_I, Year)]
+               [!(is.na(V1)),.(MGMTUNIT_I,Year,V1)])
+setnames(sr_mgmt,"V1","sr_mgmt")
+
+#sr_site=unique(cover[!(cov.2.T==0), sr_site:=length(unique(SpeciesID)), by = .(SITE_ID, Year)] [!(is.na(sr_site)),.(SITE_ID,Year,sr_site)])
+#setnames(sr_site,"V1","sr_site")
+
+ir_tran = unique(cover[Native.Status=="I" & !(cov.2.T==0), length(unique(SpeciesID)), by = .(TransectID, Year)]
+                 [!(is.na(V1)),.(TransectID,Year,V1)])
+setnames(ir_tran,"V1","ir_tran")
+
+ir_mgmt = unique(cover[Native.Status=="I" & !(cov.2.T==0),length(unique(SpeciesID)), by = .(MGMTUNIT_I, Year)]
+                 [!(is.na(V1)),.(MGMTUNIT_I,Year,V1)])
+setnames(ir_mgmt,"V1","ir_mgmt")
+
+#ir_site = unique(cover[Native.Status=="I" & !(cov.2.T==0), ir_site:=length(unique(SpeciesID)), by = .(SITE_ID, Year)]     [!(is.na(ir_site)),.(SITE_ID,Year,ir_site)])
+#setnames(ir_site,"V1","ir_site")
+
+nr_tran = unique(cover[Native.Status=="N" & !(cov.2.T==0), length(unique(SpeciesID)), by = .(TransectID, Year)]
+                 [!(is.na(V1)),.(TransectID,Year,V1)])
+setnames(nr_tran,"V1","nr_tran")
+
+nr_mgmt = unique(cover[Native.Status=="N" & !(cov.2.T==0), length(unique(SpeciesID)), by = .(MGMTUNIT_I, Year)]
+                 [!(is.na(V1)),.(MGMTUNIT_I,Year,V1)])
+setnames(nr_mgmt,"V1","nr_mgmt")
+
+#nr_site = unique(cover[Native.Status=="n" & !(cov.2.T==0), nr_site:=length(unique(SpeciesID)), by = .(SITE_ID, Year)]     [!(is.na(nr_site)),.(SITE_ID,Year,nr_site)])
+#setnames(nr_site,"V1","nr_site")
+
 #We no longer care about Plot level info, reduce the Cover file so save headaches later on
 #Also do not care about plot level cover, this has been recalculated at the transect level
 cover[,PlotID:=NULL]
@@ -45,35 +91,32 @@ cover[,Bin.3:=NULL]
 cover[,Bin.4:=NULL]
 cover=unique(cover)
 
+##Merge all richness calcs
+cover = merge(cover,sr_tran,by=c('TransectID','Year'))
+cover = merge(cover,ir_tran,by=c('TransectID','Year'))
+cover = merge(cover,nr_tran,by=c('TransectID','Year'))
+
+cover = merge(cover,sr_mgmt,by=c('MGMTUNIT_I','Year'))
+cover = merge(cover,ir_mgmt,by=c('MGMTUNIT_I','Year'))
+cover = merge(cover,nr_mgmt,by=c('MGMTUNIT_I','Year'))
+
 ```
 
-Steps to complete first: 
-- (complete) and merge species level data
-
-
-#Species Richness Analysis
-Calculate total richness (sr), native (nr), and invasive (ir) for all transects, mgmt units, and sites.
-
-Visualize this variability spatially and temporally, as well as in respect to management actions.
-
-```{r Species Richness}
-#Compute native and non-native richness by transect, mgmt unit, site for each year
-cover[!(cov.2.T==0), sr_tran:=length(unique(SpeciesID)), by = .(TransectID, Year)]
-cover[!(cov.2.T==0), sr_mgmt:=length(unique(SpeciesID)), by = .(MGMTUNIT_I, Year)]
-cover[!(cov.2.T==0), sr_site:=length(unique(SpeciesID)), by = .(SITE_ID, Year)]
+Calculate SR by native/invasive/unknown status
+```{r Richness differences}
 
 ## do first differences for sr
 change_sr_tran=unique(cover[Delta==1 & !is.na(sr_tran),.(Year,TransectID,sr_tran)])
 change_sr_mgmt=unique(cover[Delta==1 & !is.na(sr_mgmt),.(Year,MGMTUNIT_I,sr_mgmt)])
-change_sr_site=unique(cover[Delta==1& !is.na(sr_site),.(Year,SITE_ID,sr_site)])
+#change_sr_site=unique(cover[Delta==1& !is.na(sr_site),.(Year,SITE_ID,sr_site)])
 
 change_sr_tran[order(Year), change_sr_tran := sr_tran-shift(sr_tran), by =.(TransectID)]
 change_sr_mgmt[order(Year), change_sr_mgmt := sr_mgmt-shift(sr_mgmt), by =.(MGMTUNIT_I)]
-change_sr_site[order(Year), change_sr_site := sr_site-shift(sr_site), by =.(SITE_ID)]
+#change_sr_site[order(Year), change_sr_site := sr_site-shift(sr_site), by =.(SITE_ID)]
 
 cover = merge(cover,change_sr_tran,by=c("Year","TransectID","sr_tran"),all = T)
 cover = merge(cover,change_sr_mgmt,by=c("Year","MGMTUNIT_I","sr_mgmt"),all=T)
-cover = merge(cover,change_sr_site,by=c("Year","SITE_ID","sr_site"),all=T)
+#cover = merge(cover,change_sr_site,by=c("Year","SITE_ID","sr_site"),all=T)
 
 
 ###Additional metrics to add
@@ -84,25 +127,8 @@ cover = merge(cover,change_sr_site,by=c("Year","SITE_ID","sr_site"),all=T)
 # # initial site richness
 # cover[, init_siterich := site_richness[year_trt == 0] ,  by = site_code]
 
-```
 
-Calculate SR by native/invasive/unknown status
-```{r Richness - Species Type}
-
-#Compute native and non-native richness by transect, mgmt unit, site for each year
-cover[Native.Status=="I" & !(cov.2.T==0), ir_tran:=length(unique(SpeciesID)), by = .(TransectID, Year)]
-cover[Native.Status=="I" & !(cov.2.T==0), ir_mgmt:=length(unique(SpeciesID)), by = .(MGMTUNIT_I, Year)]
-#cover[Native.Status=="I" & !(cov.2.T==0), ir_site:=length(unique(SpeciesID)), by = .(SITE_ID, Year)]
-
-cover[Native.Status=="N" & !(cov.2.T==0), nr_tran:=length(unique(SpeciesID)), by = .(TransectID, Year)]
-cover[Native.Status=="N" & !(cov.2.T==0), nr_mgmt:=length(unique(SpeciesID)), by = .(MGMTUNIT_I, Year)]
-#cover[Native.Status=="N" & !(cov.2.T==0), nr_site:=length(unique(SpeciesID)), by = .(SITE_ID, Year)]
-
-#cover[Native.Status=="U" & !(cov.2.T==0), ur_tran:=length(unique(SpeciesID)), by = .(TransectID, Year)]
-#cover[Native.Status=="U" & !(cov.2.T==0), ur_mgmt:=length(unique(SpeciesID)), by = .(MGMTUNIT_I, Year)]
-#cover[Native.Status=="U" & !(cov.2.T==0), ur_site:=length(unique(SpeciesID)), by = .(SITE_ID, Year)]
-
-## do first differences for the marginal efcomb[order(year)
+## do first differences 
 change_ir_tran=unique(cover[Delta==1 & !(is.na(ir_tran)),.(Year,TransectID,ir_tran)])
 change_ir_mgmt=unique(cover[Delta==1 & !(is.na(ir_mgmt)),.(Year,MGMTUNIT_I,ir_mgmt)])
 #change_ir_site=unique(cover[Delta==1 & !(is.na(ir_site)),.(Year,SITE_ID,ir_site)])
@@ -219,49 +245,57 @@ cover=merge(cover,change_f.all,by=c("Year","SpeciesID","change_f.tran","Transect
 
 
 ```{r Frequency Categories}
-#Calculate mean frequencies 
-cover[!(is.na(Freq.T)), allf.tran:=mean(Freq.T), by = .(TransectID, Year)]
-cover[!(is.na(Freq.M)), allf.mgmt:=mean(Freq.M), by = .(MGMTUNIT_I, Year)]
+#Calculate mean frequencies, have to do similar to with SR
+cover[, allf.tran:=mean(Freq.T,na.rm=T), by = .(TransectID, Year)]
+cover[, allf.mgmt:=mean(Freq.M,na.rm=T), by = .(MGMTUNIT_I, Year)]
 
-cover[!(is.na(Freq.T)) & Native.Status=="N", nf.tran:=mean(Freq.T), by = .(TransectID, Year)]
-cover[!(is.na(Freq.M)) & Native.Status=="N", nf.mgmt:=mean(Freq.M), by = .(MGMTUNIT_I, Year)]
+nf.tran = cover[Native.Status=="N", mean(Freq.T,na.rm=T), by = .(TransectID, Year)]
+setnames(nf.tran,"V1","nf.tran")
 
-cover[!(is.na(Freq.T)) & Native.Status=="I", if.tran:=mean(Freq.T), by = .(TransectID, Year)]
-cover[!(is.na(Freq.M)) & Native.Status=="I", if.mgmt:=mean(Freq.M), by = .(MGMTUNIT_I, Year)]
+nf.mgmt = cover[Native.Status=="N", mean(Freq.T,na.rm=T), by = .(MGMTUNIT_I, Year)]
+setnames(nf.mgmt,"V1","nf.mgmt")
 
-cover[!(is.na(Freq.T)) & (Indicator=="I1" | Indicator=="I2") , indf.i.tran:=mean(Freq.T), by = .(TransectID, Year)]
-cover[!(is.na(Freq.M)) & (Indicator=="I1" | Indicator=="I2") , indf.i.mgmt:=mean(Freq.M), by = .(MGMTUNIT_I, Year)]
+if.tran = cover[Native.Status=="I", mean(Freq.T,na.rm=T), by = .(TransectID, Year)]
+setnames(if.tran,"V1","if.tran")
 
-cover[!(is.na(Freq.T)) & Indicator=="I1" , indf.i1.tran:=mean(Freq.T), by = .(TransectID, Year)]
-cover[!(is.na(Freq.M)) & Indicator=="I1" , indf.i1.mgmt:=mean(Freq.M), by = .(MGMTUNIT_I, Year)]
+if.mgmt = cover[Native.Status=="I", mean(Freq.T,na.rm=T), by = .(MGMTUNIT_I, Year)]
+setnames(if.mgmt,"V1","if.mgmt")
 
-cover[!(is.na(Freq.T)) & Indicator=="I2" , indf.i2.tran:=mean(Freq.T), by = .(TransectID, Year)]
-cover[!(is.na(Freq.M)) & Indicator=="I2" , indf.i2.mgmt:=mean(Freq.M), by = .(MGMTUNIT_I, Year)]
+indf.n.tran = cover[Indicator=="N1" | Indicator=="N2", mean(Freq.T, na.rm=T), by = .(TransectID, Year)]
+setnames(indf.n.tran,"V1","indf.n.tran")
 
-cover[!(is.na(Freq.T)) & (Indicator=="N1" | Indicator=="N2") , indf.n.tran:=mean(Freq.T), by = .(TransectID, Year)]
-cover[!(is.na(Freq.M)) & (Indicator=="N1" | Indicator=="N2") , indf.n.mgmt:=mean(Freq.M), by = .(MGMTUNIT_I, Year)]
+indf.n.mgmt = cover[Indicator=="N1" | Indicator=="N2", mean(Freq.T, na.rm=T), by = .(MGMTUNIT_I, Year)]
+setnames(indf.n.mgmt,"V1","indf.n.mgmt")
 
-cover[!(is.na(Freq.T)) & Indicator=="N1" , indf.n1.tran:=mean(Freq.T), by = .(TransectID, Year)]
-cover[!(is.na(Freq.M)) & Indicator=="N1" , indf.n1.mgmt:=mean(Freq.M), by = .(MGMTUNIT_I, Year)]
+indf.i.tran = cover[Indicator=="I1" | Indicator=="I2", mean(Freq.T, na.rm=T), by = .(TransectID, Year)]
+setnames(indf.i.tran,"V1","indf.i.tran")
 
-cover[!(is.na(Freq.T)) & Indicator=="N2" , indf.n2.tran:=mean(Freq.T), by = .(TransectID, Year)]
-cover[!(is.na(Freq.M)) & Indicator=="N2" , indf.n2.mgmt:=mean(Freq.M), by = .(MGMTUNIT_I, Year)]
+indf.i.mgmt = cover[Indicator=="I1" | Indicator=="I2", mean(Freq.T, na.rm=T), by = .(MGMTUNIT_I, Year)]
+setnames(indf.i.mgmt,"V1","indf.i.mgmt")
 
-cover[!(is.na(Freq.T)) & Indicator=="D" , indf.d.tran:=mean(Freq.T), by = .(TransectID, Year)]
-cover[!(is.na(Freq.M)) & Indicator=="D" , indf.d.mgmt:=mean(Freq.M), by = .(MGMTUNIT_I, Year)]
 
+##Merge all frequency calcs
+cover = merge(cover,if.tran,by=c('TransectID','Year'),all = T)
+cover = merge(cover,nf.tran,by=c('TransectID','Year'),all = T)
+cover = merge(cover,indf.n.tran,by=c('TransectID','Year'),all = T)
+cover = merge(cover,indf.i.tran,by=c('TransectID','Year'),all = T)
+
+cover = merge(cover,if.mgmt,by=c('MGMTUNIT_I','Year'),all = T)
+cover = merge(cover,nf.mgmt,by=c('MGMTUNIT_I','Year'))
+cover = merge(cover,indf.n.mgmt,by=c('MGMTUNIT_I','Year'),all = T)
+cover = merge(cover,indf.i.mgmt,by=c('MGMTUNIT_I','Year'),all = T)
 
 # Calc first differences in a loop (go back and turn prior code into loop formate to speed coding)
 
 #Create list of variables names for loop
-freq.list = data.frame(freq = c("allf.tran", "allf.mgmt","nf.tran","nf.mgmt","if.tran","if.mgmt","indf.i.tran","indf.i.mgmt","indf.i1.tran","indf.i1.mgmt","indf.i2.tran","indf.i2.mgmt","indf.n1.tran","indf.n1.mgmt","indf.n2.tran","indf.n2.mgmt","indf.d.tran","indf.d.mgmt"))
+freq.list = data.frame(freq = c("allf.tran", "allf.mgmt","nf.tran","nf.mgmt","if.tran","if.mgmt","indf.i.tran","indf.i.mgmt","indf.n.tran","indf.n.mgmt"))
 
 freq.list$change = apply(freq.list,2,function(x) paste("change",freq.list$freq,sep = "_"))
 colnames(freq.list[2])
 
 for (i in 1:length(freq.list$freq)) {
   z = cover[,freq.list[i,1],with=FALSE]
-  z = cbind(z,cover[,.(Year,TransectID,Delta)])[Delta==1,][!(is.na(eval(parse(text=(as.character(freq.list[i,1])))))),]
+  z = cbind(z,cover[,.(Year,TransectID,Delta)])[Delta==1,][!(is.na(eval(parse(text=(as.character(freq.list[i,1]))))))]
   z=unique(z[order(Year),])
   z[, paste(freq.list[i,2]) := eval(parse(text=(as.character(freq.list[i,1]))))-shift(eval(parse(text=(as.character(freq.list[i,1]))))),  
     by = .(TransectID)]
@@ -337,9 +371,47 @@ for (i in 1:length(tot.cov.list$cov)) {
   cover = merge(cover, z, by = c("SpeciesID","TransectID","Year"),all = T)
 }
 
-#cover = merge(cover, z, by = c("SpeciesID","TransectID","Year"),all = T)
 
-#Sum up realtive cover by invasive status
+
+#Sum up realtive cover by native status
+rel.cov.i.1.1 = cover[Native.Status=="I",sum(rel.cov.T.1.1,na.rm = T),by=.(Year,TransectID)]
+rel.cov.i.1.2 = cover[Native.Status=="I",sum(rel.cov.T.1.2,na.rm = T),by=.(Year,TransectID)]
+rel.cov.i.2 = cover[Native.Status=="I",sum(rel.cov.T.2,na.rm = T),by=.(Year,TransectID)]
+rel.cov.i.3 = cover[Native.Status=="I",sum(rel.cov.T.3,na.rm = T),by=.(Year,TransectID)]
+rel.cov.i.4 = cover[Native.Status=="I",sum(rel.cov.T.4,na.rm = T),by=.(Year,TransectID)]
+
+setnames(rel.cov.i.1.1,"V1","rel.cov.i.1.1")
+setnames(rel.cov.i.1.2,"V1","rel.cov.i.1.2")
+setnames(rel.cov.i.2,"V1","rel.cov.i.2")
+setnames(rel.cov.i.3,"V1","rel.cov.i.3")
+setnames(rel.cov.i.4,"V1","rel.cov.i.4")
+
+rel.cov.n.1.1 = cover[Native.Status=="N",sum(rel.cov.T.1.1,na.rm = T),by=.(Year,TransectID)]
+rel.cov.n.1.2 = cover[Native.Status=="N",sum(rel.cov.T.1.2,na.rm = T),by=.(Year,TransectID)]
+rel.cov.n.2 = cover[Native.Status=="N",sum(rel.cov.T.2,na.rm = T),by=.(Year,TransectID)]
+rel.cov.n.3 = cover[Native.Status=="N",sum(rel.cov.T.3,na.rm = T),by=.(Year,TransectID)]
+rel.cov.n.4 = cover[Native.Status=="N",sum(rel.cov.T.4,na.rm = T),by=.(Year,TransectID)]
+
+setnames(rel.cov.n.1.1,"V1","rel.cov.n.1.1")
+setnames(rel.cov.n.1.2,"V1","rel.cov.n.1.2")
+setnames(rel.cov.n.2,"V1","rel.cov.n.2")
+setnames(rel.cov.n.3,"V1","rel.cov.n.3")
+setnames(rel.cov.n.4,"V1","rel.cov.n.4")
+
+cover = merge(cover,rel.cov.i.1.1,by=c('TransectID','Year'),all = T)
+cover = merge(cover,rel.cov.i.1.2,by=c('TransectID','Year'),all = T)
+cover = merge(cover,rel.cov.i.2,by=c('TransectID','Year'),all = T)
+cover = merge(cover,rel.cov.i.3,by=c('TransectID','Year'),all = T)
+cover = merge(cover,rel.cov.i.4,by=c('TransectID','Year'),all = T)
+
+cover = merge(cover,rel.cov.n.1.1,by=c('TransectID','Year'),all = T)
+cover = merge(cover,rel.cov.n.1.2,by=c('TransectID','Year'),all = T)
+cover = merge(cover,rel.cov.n.2,by=c('TransectID','Year'),all = T)
+cover = merge(cover,rel.cov.n.3,by=c('TransectID','Year'),all = T)
+cover = merge(cover,rel.cov.n.4,by=c('TransectID','Year'),all = T)
+
+#Calculate change in relative frequency by Native Status
+
 
 ```
 
@@ -369,16 +441,18 @@ for (i in 1:length(DI.list$cov)) {
   }
   
 
-###Create a mean dominance by native status.....Hugh right now don't break out my methodology
+###Create a mean dominance by native status...only doing for Bin M 2 now
 # I wondered if it would be better to take an actual value of Dominance for invasive (summing up invasive relative cover and invasive frequency, but at that point we are mostly just looking at invasive cover...the mean is likely more informative)
-#Invasive
-cover[!(is.na(DI.T.1.1)) & Native.Status=="I",meanDI.I_tran:=mean(DI.T.1.1), by = .(TransectID,Year)]
-cover[!(is.na(DI.T.1.2)) & Native.Status=="I",meanDI.I_tran:=mean(DI.T.1.2), by = .(TransectID,Year)]
-cover[!(is.na(DI.T.2)) & Native.Status=="I",meanDI.I_tran:=mean(DI.T.2), by = .(TransectID,Year)]
-cover[!(is.na(DI.T.3)) & Native.Status=="I",meanDI.I_tran:=mean(DI.T.3), by = .(TransectID,Year)]
-cover[!(is.na(DI.T.4)) & Native.Status=="I",meanDI.I_tran:=mean(DI.T.4), by = .(TransectID,Year)]
 
-#Native
+
+meanDI.i.tran.2 = cover[Native.Status=="I",mean(DI.T.2,na.rm=T), by = .(TransectID,Year)]
+meanDI.n.tran.2 = cover[Native.Status=="N",mean(DI.T.2,na.rm=T), by = .(TransectID,Year)]
+
+setnames(meanDI.i.tran.2,"V1","meanDI.i.tran.2")
+setnames(meanDI.n.tran.2,"V1","meanDI.n.tran.2")
+
+cover = merge(cover,meanDI.i.tran.2,by=c('TransectID','Year'),all = T)
+cover = merge(cover,meanDI.n.tran.2,by=c('TransectID','Year'),all = T)
 
 ####### Make Categorical Variables of Dominance too ########
 
@@ -447,7 +521,7 @@ fwrite(cover.map.1,"/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analy
 
 #Map 2 - Years & Actions......update with soils, system type
 cover.map.2 = unique(cover[,.(TransectID,MGMTUNIT_I,SITE_ID,StartLat,StartLong,Protocol,ManUnitAcres,Action,Year,ir_tran,change_ir_tran,
-                              nr_tran,change_nr_tran,indf.n2.tran,indf.n1.tran,indf.i2.tran,indf.i1.tran,indf.i.tran,indf.n.tran,if.tran,nf.tran)])
+                              nr_tran,change_nr_tran,indf.i.tran,indf.n.tran,if.tran,nf.tran)])
 fwrite(cover.map.2,"/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Mapping/Data/cover.map.2.txt")
 
 ```
