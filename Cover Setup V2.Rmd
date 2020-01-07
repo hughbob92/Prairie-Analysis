@@ -501,6 +501,12 @@ Following conversations with data arbiters, the data will be cleaned to fix entr
 
 ```{r Cleaning}
 
+###Correct multiple SpeciesID's
+#Some of the species have multiple id's...fix each below in the cover data
+cover.data.long[SpeciesID==330, SpeciesID:=1601]
+cover.data.long[SpeciesID==100, SpeciesID:=1600]
+cover.data.long[SpeciesID==517, SpeciesID:=1154]
+
 ####Drop Sites from all data: 
 #Kloos WPA: SiteId = 33, ManUnits = 103....Actually use, data quality is okay
 #rem.transects.1 = transect.master[SITE_ID==33,unique(Transect_I)] #isolate transect IDs to be removed
@@ -892,9 +898,9 @@ transect.freq
 mgmt.freq
 site.freq
 
-transect.master ...complete with soil data
+transect.master
 
-Species #TBD
+Plant Reference
 
 
 ```{r Master Cover}
@@ -1013,11 +1019,14 @@ z = transect.master[,.(Transect_I,StartLat,StartLong,ManUnitAcres)]
 names(z)[1]="TransectID"
 cover = merge(cover,z,by="TransectID")
 
-#Merge in Species Info
+#####Merge in Species Info
 species.dat = as.data.table(readxl::read_xlsx("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Species Traits and Range/Plant Reference List.xlsx",sheet = "Plant Reference",skip=1))
-species.dat = species.dat[,.(SpeciesID,Species.Cat,Inclusion.Cat,Indicator,Native.Status)] #add in more as I complete plant trait data
+
+species.dat = species.dat[,.(SpeciesID,Species.Cat,Inclusion.Cat,Indicator,Native.Status,Duration, Type, Legume, Photopath, Range, Distribution)] #add in more as I complete plant trait data
 species.dat$SpeciesID=as.numeric(species.dat$SpeciesID)
-cover = merge(cover,species.dat,by = "SpeciesID")
+#cover[,length(unique(SpeciesID))]
+#species.dat[,length(unique(SpeciesID))]
+cover = merge(cover, species.dat, by = c("SpeciesID"))
 
 #remove unnecessary merge remnants and correct names
 cover[,VOR.y:=NULL]

@@ -245,32 +245,32 @@ cover=merge(cover,change_f.all,by=c("Year","SpeciesID","change_f.tran","Transect
 
 
 ```{r Frequency Categories}
-#Calculate mean frequencies, have to do similar to with SR
-cover[, allf.tran:=mean(Freq.T,na.rm=T), by = .(TransectID, Year)]
-cover[, allf.mgmt:=mean(Freq.M,na.rm=T), by = .(MGMTUNIT_I, Year)]
+#Calculate mean frequencies, have to do similar to with SR...AND unlike with delta freq I do not want zeros in these means
+cover[Freq.T>0, allf.tran:=mean(Freq.T,na.rm=T), by = .(TransectID, Year)]
+cover[Freq.T>0, allf.mgmt:=mean(Freq.M,na.rm=T), by = .(MGMTUNIT_I, Year)]
 
-nf.tran = cover[Native.Status=="N", mean(Freq.T,na.rm=T), by = .(TransectID, Year)]
+nf.tran = cover[Native.Status=="N" & Freq.T>0, mean(Freq.T,na.rm=T), by = .(TransectID, Year)]
 setnames(nf.tran,"V1","nf.tran")
 
-nf.mgmt = cover[Native.Status=="N", mean(Freq.T,na.rm=T), by = .(MGMTUNIT_I, Year)]
+nf.mgmt = cover[Native.Status=="N" &Freq.T>0, mean(Freq.T,na.rm=T), by = .(MGMTUNIT_I, Year)]
 setnames(nf.mgmt,"V1","nf.mgmt")
 
-if.tran = cover[Native.Status=="I", mean(Freq.T,na.rm=T), by = .(TransectID, Year)]
+if.tran = cover[Native.Status=="I" & Freq.T>0, mean(Freq.T,na.rm=T), by = .(TransectID, Year)]
 setnames(if.tran,"V1","if.tran")
 
-if.mgmt = cover[Native.Status=="I", mean(Freq.T,na.rm=T), by = .(MGMTUNIT_I, Year)]
+if.mgmt = cover[Native.Status=="I" & Freq.T>0, mean(Freq.T,na.rm=T), by = .(MGMTUNIT_I, Year)]
 setnames(if.mgmt,"V1","if.mgmt")
 
-indf.n.tran = cover[Indicator=="N1" | Indicator=="N2", mean(Freq.T, na.rm=T), by = .(TransectID, Year)]
+indf.n.tran = cover[(Indicator=="N1" | Indicator=="N2") & Freq.T>0, mean(Freq.T, na.rm=T), by = .(TransectID, Year)]
 setnames(indf.n.tran,"V1","indf.n.tran")
 
-indf.n.mgmt = cover[Indicator=="N1" | Indicator=="N2", mean(Freq.T, na.rm=T), by = .(MGMTUNIT_I, Year)]
+indf.n.mgmt = cover[(Indicator=="N1" | Indicator=="N2") & Freq.T>0, mean(Freq.T, na.rm=T), by = .(MGMTUNIT_I, Year)]
 setnames(indf.n.mgmt,"V1","indf.n.mgmt")
 
-indf.i.tran = cover[Indicator=="I1" | Indicator=="I2", mean(Freq.T, na.rm=T), by = .(TransectID, Year)]
+indf.i.tran = cover[(Indicator=="I1" | Indicator=="I2") & Freq.T>0, mean(Freq.T, na.rm=T), by = .(TransectID, Year)]
 setnames(indf.i.tran,"V1","indf.i.tran")
 
-indf.i.mgmt = cover[Indicator=="I1" | Indicator=="I2", mean(Freq.T, na.rm=T), by = .(MGMTUNIT_I, Year)]
+indf.i.mgmt = cover[(Indicator=="I1" | Indicator=="I2") & Freq.T>0, mean(Freq.T, na.rm=T), by = .(MGMTUNIT_I, Year)]
 setnames(indf.i.mgmt,"V1","indf.i.mgmt")
 
 
@@ -345,7 +345,7 @@ for (i in 1:length(cover.list$cover)){
   cover = merge(cover,z,by = c("Year","TransectID","SpeciesID",as.character(cover.list[i,1])),all = T)
 }
 
-#Calculate average cover for each transect and mgmt unit by native status and indicator...this might be too many variables to make into columns (5 methods * 10 species cat * 2 avgs)...can calculate and subset within plots/analysis
+#Calculate average cover for each transect and mgmt unit by native status and indicator...this might be too many variables to make into columns (5 methods * 10 species cat * 2 avgs)...can calculate and subset within plots/analysis, also averaging cover is less useful than relative cover below
 
 ```
 
@@ -410,9 +410,6 @@ cover = merge(cover,rel.cov.n.2,by=c('TransectID','Year'),all = T)
 cover = merge(cover,rel.cov.n.3,by=c('TransectID','Year'),all = T)
 cover = merge(cover,rel.cov.n.4,by=c('TransectID','Year'),all = T)
 
-#Calculate change in relative frequency by Native Status
-
-
 ```
 
 
@@ -445,8 +442,8 @@ for (i in 1:length(DI.list$cov)) {
 # I wondered if it would be better to take an actual value of Dominance for invasive (summing up invasive relative cover and invasive frequency, but at that point we are mostly just looking at invasive cover...the mean is likely more informative)
 
 
-meanDI.i.tran.2 = cover[Native.Status=="I",mean(DI.T.2,na.rm=T), by = .(TransectID,Year)]
-meanDI.n.tran.2 = cover[Native.Status=="N",mean(DI.T.2,na.rm=T), by = .(TransectID,Year)]
+meanDI.i.tran.2 = cover[Native.Status=="I" & DI.T.2>0 ,mean(DI.T.2,na.rm=T), by = .(TransectID,Year)]
+meanDI.n.tran.2 = cover[Native.Status=="N" & DI.T.2>0,mean(DI.T.2,na.rm=T), by = .(TransectID,Year)]
 
 setnames(meanDI.i.tran.2,"V1","meanDI.i.tran.2")
 setnames(meanDI.n.tran.2,"V1","meanDI.n.tran.2")
@@ -462,12 +459,17 @@ cover = merge(cover,meanDI.n.tran.2,by=c('TransectID','Year'),all = T)
 
 ######Something here is breaking my code
 
-#cover[!(is.na(DI.T.1.1)), DIgroup:=cut(DI.T.1.1, breaks=c(0.0,0.2,0.8,1.0), labels=c("Rare","Subordinate","Dominant"))]
-#cover[!(is.na(DI.T.1.2)), DIgroup:=cut(DI.T.1.2, breaks=c(0.0,0.2,0.8,1.0), labels=c("Rare","Subordinate","Dominant"))]
-#cover[!(is.na(DI.T.2)), DIgroup:=cut(DI.T.2, breaks=c(0.0,0.2,0.8,1.0), labels=c("Rare","Subordinate","Dominant"))]
-#cover[!(is.na(DI.T.3)), DIgroup:=cut(DI.T.3, breaks=c(0.0,0.2,0.8,1.0), labels=c("Rare","Subordinate","Dominant"))]
-#cover[!(is.na(DI.T.4)), DIgroup:=cut(DI.T.4, breaks=c(0.0,0.2,0.8,1.0), labels=c("Rare","Subordinate","Dominant"))]
+#cover[!(is.na(DI.T.1.1)), DIgroup:=cut(DI.T.1.1, breaks=c(0.0,0.2,0.7,1.0), labels=c("Rare","Subordinate","Dominant"))]
+#cover[!(is.na(DI.T.1.2)), DIgroup:=cut(DI.T.1.2, breaks=c(0.0,0.2,0.7,1.0), labels=c("Rare","Subordinate","Dominant"))]
+cover[, DIgroup:=cut(DI.T.2, breaks=c(-1,0.2,0.7,1.0), labels=c("Rare","Subordinate","Dominant"))]
+#cover[!(is.na(DI.T.3)), DIgroup:=cut(DI.T.3, breaks=c(0.0,0.2,0.7,1.0), labels=c("Rare","Subordinate","Dominant"))]
+#cover[!(is.na(DI.T.4)), DIgroup:=cut(DI.T.4, breaks=c(0.0,0.2,0.7,1.0), labels=c("Rare","Subordinate","Dominant"))]
 
+
+#Create a initial dominance value each species...first year observed
+DI.init = cover[,.SD[which.min(Year)], by = .(TransectID,SpeciesID)][,.(SpeciesID,TransectID,DIgroup)]
+setnames(DI.init,"DIgroup","DIgroup.init")
+cover = merge(cover,DI.init, by = c("SpeciesID",'TransectID'))
 
 #richness in each group 
 #cover[, sr_domspp := length(unique(Taxon[DIgroup == "Dominant"])), by = .(plot, site_code, year)]
@@ -500,8 +502,123 @@ summary(cover$sr_rare)
 ```
 
 
-```{r Species Characteristics}
+#Lagged Effects
 
+Create lagged variables for the lagged effects models, i.e. how the the prior observed value informs the current value
+
+```{r Lagged variables}
+#Time variant Transect characteristics
+cover[order(Year),VOR.lag:= shift(VOR), by =.(TransectID,SpeciesID)]
+cover[order(Year),Litter.lag:= shift(Litter), by =.(TransectID,SpeciesID)]
+
+#Richness
+cover[order(Year),sr_tran.lag:= shift(sr_tran), by =.(TransectID,SpeciesID)]
+cover[order(Year),sr_mgmt.lag:= shift(sr_mgmt), by =.(TransectID,SpeciesID)]
+cover[order(Year),nr_tran.lag:= shift(nr_tran), by =.(TransectID,SpeciesID)]
+cover[order(Year),nr_mgmt.lag:= shift(nr_mgmt), by =.(TransectID,SpeciesID)]
+cover[order(Year),ir_tran.lag:= shift(ir_tran), by =.(TransectID,SpeciesID)]
+cover[order(Year),ir_mgmt.lag:= shift(ir_mgmt), by =.(TransectID,SpeciesID)]
+
+#Frequency
+cover[order(Year),Freq.T.lag:= shift(Freq.T), by =.(TransectID,SpeciesID)]
+cover[order(Year),Freq.M.lag:= shift(Freq.M), by =.(TransectID,SpeciesID)]
+cover[order(Year),Freq.S.lag:= shift(Freq.S), by =.(TransectID,SpeciesID)]
+cover[order(Year),Freq.all.lag:= shift(Freq.all), by =.(TransectID,SpeciesID)]
+
+cover[order(Year),nf.tran.lag:= shift(nf.tran), by =.(TransectID,SpeciesID)]
+cover[order(Year),nf.mgmt.lag:= shift(nf.mgmt), by =.(TransectID,SpeciesID)]
+cover[order(Year),if.tran.lag:= shift(if.tran), by =.(TransectID,SpeciesID)]
+cover[order(Year),if.mgmt.lag:= shift(if.mgmt), by =.(TransectID,SpeciesID)]
+cover[order(Year),allf.tran.lag:= shift(allf.tran), by =.(TransectID,SpeciesID)]
+cover[order(Year),allf.mgmt.lag:= shift(allf.mgmt), by =.(TransectID,SpeciesID)]
+
+cover[order(Year),indf.n.tran.lag:= shift(indf.n.tran), by =.(TransectID,SpeciesID)]
+cover[order(Year),indf.n.mgmt.lag:= shift(indf.n.mgmt), by =.(TransectID,SpeciesID)]
+cover[order(Year),indf.i.tran.lag:= shift(indf.i.tran), by =.(TransectID,SpeciesID)]
+cover[order(Year),indf.i.mgmt.lag:= shift(indf.i.mgmt), by =.(TransectID,SpeciesID)]
+
+#Cover
+cover[order(Year),cov.1.1.T.lag:= shift(cov.1.1.T), by =.(TransectID,SpeciesID)]
+cover[order(Year),cov.1.2.T.lag:= shift(cov.1.2.T), by =.(TransectID,SpeciesID)]
+cover[order(Year),cov.2.T.lag:= shift(cov.2.T), by =.(TransectID,SpeciesID)]
+cover[order(Year),cov.3.T.lag:= shift(cov.3.T), by =.(TransectID,SpeciesID)]
+cover[order(Year),cov.4.T.lag:= shift(cov.4.T), by =.(TransectID,SpeciesID)]
+
+cover[order(Year),cov.1.1.M.lag:= shift(cov.1.1.M), by =.(TransectID,SpeciesID)]
+cover[order(Year),cov.1.2.M.lag:= shift(cov.1.2.M), by =.(TransectID,SpeciesID)]
+cover[order(Year),cov.2.M.lag:= shift(cov.2.M), by =.(TransectID,SpeciesID)]
+cover[order(Year),cov.3.M.lag:= shift(cov.3.M), by =.(TransectID,SpeciesID)]
+cover[order(Year),cov.4.M.lag:= shift(cov.4.M), by =.(TransectID,SpeciesID)]
+
+#Relative Cover
+cover[order(Year),rel.cov.T.1.1.lag:= shift(rel.cov.T.1.1), by =.(TransectID,SpeciesID)]
+cover[order(Year),rel.cov.T.1.2.lag:= shift(rel.cov.T.1.2), by =.(TransectID,SpeciesID)]
+cover[order(Year),rel.cov.T.2.lag:= shift(rel.cov.T.2), by =.(TransectID,SpeciesID)]
+cover[order(Year),rel.cov.T.3.lag:= shift(rel.cov.T.3), by =.(TransectID,SpeciesID)]
+cover[order(Year),rel.cov.T.4.lag:= shift(rel.cov.T.4), by =.(TransectID,SpeciesID)]
+
+cover[order(Year),rel.cov.i.1.1.lag:= shift(rel.cov.i.1.1), by =.(TransectID,SpeciesID)]
+cover[order(Year),rel.cov.i.1.2.lag:= shift(rel.cov.i.1.2), by =.(TransectID,SpeciesID)]
+cover[order(Year),rel.cov.i.2.lag:= shift(rel.cov.i.2), by =.(TransectID,SpeciesID)]
+cover[order(Year),rel.cov.i.3.lag:= shift(rel.cov.i.3), by =.(TransectID,SpeciesID)]
+cover[order(Year),rel.cov.i.4.lag:= shift(rel.cov.i.4), by =.(TransectID,SpeciesID)]
+
+cover[order(Year),rel.cov.n.1.1.lag:= shift(rel.cov.n.1.1), by =.(TransectID,SpeciesID)]
+cover[order(Year),rel.cov.n.1.2.lag:= shift(rel.cov.n.1.2), by =.(TransectID,SpeciesID)]
+cover[order(Year),rel.cov.n.2.lag:= shift(rel.cov.n.2), by =.(TransectID,SpeciesID)]
+cover[order(Year),rel.cov.n.3.lag:= shift(rel.cov.n.3), by =.(TransectID,SpeciesID)]
+cover[order(Year),rel.cov.n.4.lag:= shift(rel.cov.n.4), by =.(TransectID,SpeciesID)]
+
+#DI
+cover[order(Year),DI.T.1.1.lag:= shift(DI.T.1.1), by =.(TransectID,SpeciesID)]
+cover[order(Year),DI.T.1.2.lag:= shift(DI.T.1.2), by =.(TransectID,SpeciesID)]
+cover[order(Year),DI.T.2.lag:= shift(DI.T.2), by =.(TransectID,SpeciesID)]
+cover[order(Year),DI.T.3.lag:= shift(DI.T.3), by =.(TransectID,SpeciesID)]
+cover[order(Year),DI.T.4.lag:= shift(DI.T.4), by =.(TransectID,SpeciesID)]
+
+cover[order(Year),meanDI.i.tran.2.lag:= shift(meanDI.i.tran.2), by =.(TransectID,SpeciesID)]
+cover[order(Year),meanDI.n.tran.2.lag:= shift(meanDI.n.tran.2), by =.(TransectID,SpeciesID)]
+```
+
+Species Group/Characteristic Calculations with lagged
+```{r Group calcs}
+#The above dt represents mean invasive values or species specific values, so to compare effects broken out by plant groups I need to create new columns for each one: Duration, Type, Legume, Photopath, Range, Distribution.
+
+#Duration
+cover[Freq.T>0,':='(f.T.dur = mean(Freq.T), rel.cov.2.dur = sum(rel.cov.T.2), meanDI.2.dur = mean(DI.T.2)),by = .(Year,Duration,TransectID,Native.Status)]
+cover[cov.2.T==0,r.T.dur:=length(unique(SpeciesID)),by = .(TransectID, Year, Duration, Native.Status)] ##This is causing the NA's to not match up which will be a problem down the road...need to fix
+
+cover[order(Year),':='(f.T.dur.lag = shift(f.T.dur), rel.cov.2.dur.lag = shift(rel.cov.2.dur), meanDI.2.dur.lag = shift(meanDI.2.dur))
+      ,by = .(Duration,TransectID,Native.Status,SpeciesID)]
+cover[order(Year),r.T.dur.lag:=shift(r.T.dur),by = .()]
+
+
+cover[TransectID==2 & SpeciesID==1,]
+
+#Type
+cover[Freq.T>0,':='(f.T.type = mean(Freq.T), rel.cov.2.type = sum(rel.cov.T.2), meanDI.2.type = mean(DI.T.2)),
+      by = .(Year,Type,TransectID,Native.Status)]
+cover[cov.2.T==0,r.T.type:=length(unique(SpeciesID)),by = .(TransectID, Year, Type, Native.Status)]
+
+#Legume
+cover[Freq.T>0,':='(f.T.leg = mean(Freq.T), rel.cov.2.leg = sum(rel.cov.T.2), meanDI.2.leg = mean(DI.T.2)),
+      by = .(Year,Legume,TransectID,Native.Status)]
+cover[cov.2.T==0,r.T.leg:=length(unique(SpeciesID)),by = .(TransectID, Year, Legume, Native.Status)]
+
+#Photopath
+cover[Freq.T>0,':='(f.T.photo = mean(Freq.T), rel.cov.2.photo = sum(rel.cov.T.2), meanDI.2.photo = mean(DI.T.2)),
+      by = .(Year,Photopath,TransectID,Native.Status)]
+cover[cov.2.T==0,r.T.photo:=length(unique(SpeciesID)),by = .(TransectID, Year, Photopath, Native.Status)]
+
+#Range
+cover[Freq.T>0,':='(f.T.range = mean(Freq.T), rel.cov.2.range = sum(rel.cov.T.2), meanDI.2.range = mean(DI.T.2)),
+      by = .(Year,Range,TransectID,Native.Status)]
+cover[cov.2.T==0,r.T.range:=length(unique(SpeciesID)),by = .(TransectID, Year, Range, Native.Status)]
+
+#Distribution
+cover[Freq.T>0,':='(f.T.dist = mean(Freq.T), rel.cov.2.dist = sum(rel.cov.T.2), meanDI.2.dist = mean(DI.T.2)),
+      by = .(Year,Distribution,TransectID,Native.Status)]
+cover[cov.2.T==0,r.T.dist:=length(unique(SpeciesID)),by = .(TransectID, Year, Distribution, Native.Status)]
 ```
 
 
@@ -530,705 +647,4 @@ fwrite(cover.map.2,"/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analy
 
 
 
-
-
-
-# look at N-fixer cover over time
-# change_N_fixer_cover -- not much at all.
-ggplot(data = cover, aes(x = change_N_fixer_cover)) + geom_histogram()+ facet_wrap(~site_code) + theme_bw() +
-  geom_vline(xintercept=c(0,0), color = "blue", linetype="dashed") +
-  labs(x = "Plot-level change in relative abundance yr-to-yr") +  theme_bw() +
-  theme(axis.title.y= element_text(size=14)) + theme(axis.title.x= element_text(size=12)) +
-  theme(axis.text.y = element_text(size = 14)) + 
-  #theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-  theme(axis.text.x = element_text(size=14)) 
-
-ggplot(data = cover, aes(x = N_fixer_cover.yr)) + geom_histogram()+ facet_wrap(~site_code) + theme_bw() +
-  +   geom_vline(xintercept=c(0,0), color = "blue", linetype="dashed") +
-  +   labs(x = "Plot-level change in relative abundance yr-to-yr") +  theme_bw() +
-  +   theme(axis.title.y= element_text(size=14)) + theme(axis.title.x= element_text(size=12)) +
-  +   theme(axis.text.y = element_text(size = 14)) + 
-  +   #theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-  +   theme(axis.text.x = element_text(size=14))
-
-##### This computes dominance over time, which is not what we want: 
-
-## compute average relative abundance (averaged across years.)
-# Relative abundance = abundance of a species in a sampling unit / total abundance of all species in a sampling unit
-# here we need to average across the years.
-
-#I did the following based on plot-years as sampling unit, but we decided it should be defined spatially.
-
-# for TOTAL cover
-# cover[, ave_rel_abundance_over_time := ave(relative_sp_cover.yr), by = .(Taxon, plot, site_code)]
-# hist(cover$ave_rel_abundance_over_time)
-# summary(cover$ave_rel_abundance_over_time) 
-
-#for LIVE cover
-cover[, ave_rel_abundance_over_time.live := ave(relative_sp_cover.yr.live), by = .(Taxon, plot, site_code)]
-hist(cover$ave_rel_abundance_over_time.live)
-summary(cover$ave_rel_abundance_over_time.live) 
-
-## Compute Relative Frequency per spp per plot.
-# "Relative frequency = number of sampling units a species occurred / total number of sampling units" 
-# first calculate the total number of years for a given plot in a site "total # of sampling units"
-cover[, tot.yr := length(unique(year)), by =.(plot, site_code)]
-# to determine which is the most recent year: 
-  # cover[, max.yr := max(year), by =.(plot, site_code)]
-
-# spot check
-cover[site_code == "abisko.se", .(year, plot, tot.yr),]
-cover[site_code == "barta.us", .(year, plot, tot.yr),]
-cover[site_code == "smith.us", .(year, plot, tot.yr),]
-
-#then calculate number of sampling units (years) a species occurred
-# with a list of taxa per plot and year, count the number of records per (species, plot) pair. 
-# so for ex., if the datatable is called dt  
-# dt[,.N, by=.(plot, species)] 
-#will count the records per plot x species and if they only record a species in a plot and year if it's there
-# cover[, .N , by =.(plot, site_code, Taxon)]
-
-# to store this count as part of the cover datatable:
-cover[, Num_year_spp_occur := length(unique(year)), by = .(plot, site_code, Taxon)]
-cover[, Num_recs_spp_plot_site := .N, by = .(plot, site_code, Taxon)]
-#***send this to Ashley to find duplicates
-  # cover[Num_year_spp_occur!=Num_recs_spp_plot_site, ] #812 records with duplicates? 
-   #585 from site_name=="Antisana" & year==2013:
-      # cover[Num_year_spp_occur!=Num_recs_spp_plot_site & site_name=="Antisana" & year==2013,]
-# table(cover[Num_year_spp_occur!=Num_recs_spp_plot_site & site_name=="Antisana" & year==2013, .(site_code, plot, Taxon)])
-# cover[Num_year_spp_occur!=Num_recs_spp_plot_site & site_name=="Antisana" & year==2013 & Taxon=="WERNERIA PUMILA", ]
-# looks like this is repeated bc multiple subplots
-#how many sites have multiple subplots and taxa recorded by it???? anything that would be recorded at the subplot level?
-# the max cover for cover[Num_year_spp_occur!=Num_recs_spp_plot_site & site_name=="Antisana" & year==2013 & Taxon=="WERNERIA PUMILA", ] 
-# is the same
-cover[,Num_subplots:=length(unique(subplot)),.(site_code,plot, Taxon)]
-cover[Num_subplots>1,length(unique(site_code))]
-unique(cover[Num_subplots>1,.(site_code, year)])
-#  site_code year
-#    anti.ec 2013
-#    elkh.us 2007
-#    sgs.us  2007
-#    ucsc.us 2007
-
-#compute relative frequency
-# " Relative frequency = number of sampling units a species occurred / total number of sampling units" 
-cover[, rel_freq.time :=  Num_year_spp_occur/tot.yr, by = .(plot, site_code)]
-#check to make sure we took out duplicates, max should be 1
-hist(cover$rel_freq)
-summary(cover$rel_freq)
-
-## Compute the DI per species <-- at what scale does this apply? the plot over all years? 
-# DI = (average relative abundance + relative frequency)/2
-#FOR LIVE COVER
-cover[, DI.time := (ave_rel_abundance_over_time.live + rel_freq)/2 , by =.(Taxon, plot, site_code)]
-hist(cover$DI.time)
-summary(cover$DI.time)
-
-# # then given them a ranking into different categories? 
-# # to look at changes in those types of species and the impact on productivity?
-# ## sub-ordinate and rare -- how can I compute this? ###########
-# cover[, DIgroup:=cut(DI, breaks=c(0.0,0.2,0.8,1.0), labels=c("Rare","Subordinate","Dominant"))]
-# 
-# #richness in each group
-# cover[, sr_domspp := length(unique(Taxon[DIgroup == "Dominant"])), by = .(plot, site_code, year)]
-# cover[, sr_rarespp := length(unique(Taxon[DIgroup == "Rare"])), by = .(plot, site_code, year)]
-# cover[, sr_subordspp := length(unique(Taxon[DIgroup == "Subordinate"])), by = .(plot, site_code, year)]
-# 
-# summary(cover$sr_domspp)
-# summary(cover$sr_subordspp)
-# summary(cover$sr_rarespp)
-
-# compute change in richness in each group 
-cover[order(year), change_sr_domspp := sr_domspp -shift(sr_domspp), by =.(plot, site_code)]
-cover[order(year), change_sr_rarespp := sr_rarespp -shift(sr_rarespp), by =.(plot, site_code)]
-cover[order(year), change_sr_subordspp := sr_subordspp -shift(sr_subordspp), by =.(plot, site_code)]
-
-#?? compute cover in each group, or is that circular???? compute *CHANGE* in cover from year-to-year 
-
-
-## Do a different cut off for dominance, subordinate and rare:
-cover[, DIgroup2:=cut(DI, breaks=c(0.0,0.2,0.7,1.0), labels=c("Rare","Subordinate","Dominant"))]
-#richness in each group with different cutoff
-cover[, sr_domspp2 := length(unique(Taxon[DIgroup2 == "Dominant"])), by = .(plot, site_code, year)]
-cover[, sr_rarespp2 := length(unique(Taxon[DIgroup2 == "Rare"])), by = .(plot, site_code, year)]
-cover[, sr_subordspp2 := length(unique(Taxon[DIgroup2 == "Subordinate"])), by = .(plot, site_code, year)]
-summary(cover$sr_domspp2)
-
-# compute change in richness in each group for this diff cutoff (though only the dominance one should change)
-cover[order(year), change_sr_domspp2 := sr_domspp2 -shift(sr_domspp2), by =.(plot, site_code)]
-cover[order(year), change_sr_rarespp2 := sr_rarespp2 -shift(sr_rarespp2), by =.(plot, site_code)]
-cover[order(year), change_sr_subordspp2 := sr_subordspp2 -shift(sr_subordspp2), by =.(plot, site_code)]
-
-
-
-```{r Cover Export}
-setwd("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis")
-
-#Save cover file
-fwrite(cover,"/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis/Cover_Analysis.csv")
-
-```
-
-
-#Laura Code
-
-Hugh - remove whole  chunk after pulling relevant code
-
-```{r Laura Setup Code}
-
-#Close graphics and clear local memory
-graphics.off()
-#rm(list=ls())
-
-#load libraries
-require(ggplot2)
-library(plyr)
-library(data.table)
-library(AER)
-library(sandwich)
-library(foreign)
-library(rmarkdown)
-
-
-#setwd("~/Documents/Grad School/Thesis/Prairies/Data And Analysis/Prairie Analysis")
-cover <- fread('full-cover-09-April-2018.csv',na.strings= 'NA')
-
-##CUT
-
-## need to make max_cover NOT a character
-#cover$max_cover <- as.numeric(cover$max_cover)
-
-#########################################################################################
-## Compare Taxon in Live (live==1) or non-live (live == 0) ################################
-##########################################################################################
-## determine how many Taxon are listed as live==0 ##
-table(cover$live==1)
-a <- table(cover$Taxon, cover$live==0)
-head(a)
-# write.csv(a, "live_v_dead_spplist_NutNet.csv")
-
-# It looks like these categories are primarily the "live == 0 " ones;
-# seems like I should NOT include them inthe SR counts?
-        # OTHER ANIMAL DIGGING                            0   47
-        # OTHER ANIMAL DIGGINGS                           0   68
-        # OTHER ANIMAL DROPPINGS                          0   75
-        # OTHER ANT NEST                                  0    1
-        # OTHER CRUST                                     0   13
-        # OTHER DISTURBED SOIL                            0   16
-        # OTHER LIGNOTUBER                                0   11
-        # OTHER LITTER                                    0 1542
-        # OTHER ROCK                                      0  175
-        # OTHER SOIL BIOCRUST                             0    5
-        # OTHER STANDING DEAD                             0    2
-        # OTHER TRIODIA BASEDOWII (DEAD)                  0    5
-        # OTHER UNKNOWN SOIL_CRUST                        0     17
-        # OTHER WOOD                                      0     27
-        #       FUNGI                                       	0   	2
-        #       FUNGI SP.                                   	0	    2
-        #       GROUND                                      	0	   1039
-        #       OTHER WOODY OVERSTORY                       	0	    4
-        
-
-##### TOTAL & TOTAL LIVE COVER MEASURES ########################################
-
-# make a total cover in a plot, site, year
-cover[,totplotcover.yr := sum(max_cover, na.rm=T), by=.(plot, site_code, year)]
-# same for live species only
-cover[,totplotcover.yr.live := sum(max_cover[live=="1"], na.rm=T), by=.(plot, site_code, year)]
-
-
-#Make a relative cover for each species in each plot, site, year
-# based on TOTAL cover (including dead cover)
-cover[,relative_sp_cover.yr := max_cover/totplotcover.yr]
-# same for live species only
-cover[,relative_sp_cover.yr.live := (max_cover*(live=="1"))/totplotcover.yr.live]
-# in some cases, no live species in plot and year, so getting NA since totplotcover.yr.live is zero. Set these to zero.
-cover[is.na(relative_sp_cover.yr.live),relative_sp_cover.yr.live:=0]
-
-
-## FILTER TO LIVE TO COMPUTE SR MEASURES???? ********
-
-######################################################################################################
-### Native vs Non-Native Variables ###################################################################
-#######################################################################################################
-
-# covert Naturalised to INT (This use of Naturalised as a category is from one site)
-cover[local_provenance=="Naturalised", local_provenance:="INT"]
-# convert blank entries to NULL
-cover[local_provenance=="", local_provenance:="NULL"]
-
-# Compute native and non-native richness by plot, site, year
-cover[, sr_INT := length(unique(Taxon[local_provenance=="INT"])), by = .(plot, site_code, year)]
-cover[, sr_NAT := length(unique(Taxon[local_provenance=="NAT"])), by = .(plot, site_code, year)]
-cover[, sr_NULL := length(unique(Taxon[local_provenance=="NULL"])), by = .(plot, site_code, year)]
-cover[, sr_UNK := length(unique(Taxon[local_provenance=="UNK"])), by = .(plot, site_code, year)]
-
-## do first differences (for the marginal efcomb[order(year), changeGround_PAR := Ground_PAR -shift(Ground_PAR), by =.(plot, site_code)]
-cover[order(year), change_sr_INT := sr_INT-shift(sr_INT), by =.(plot, site_code)]
-cover[order(year), change_sr_NAT := sr_NAT-shift(sr_NAT), by =.(plot, site_code)]
-
-cover[order(year), change_sr_NULL := sr_NULL-shift(sr_NULL), by =.(plot, site_code)]
-cover[order(year), change_sr_UNK := sr_NULL-shift(sr_UNK), by =.(plot, site_code)]
-
-# plot them
-hist(cover$change_sr_INT)
-hist(cover$change_sr_NAT)
-hist(cover$change_sr_UNK)
-hist(cover$change_sr_NULL)
-
-## Percent cover of introduced species (non-native to the site) per plot and year  ## 
-## compute total cover of non-natives # local_provenance == INT
-cover[, NonNative_cover.yr := sum(relative_sp_cover.yr[local_provenance=="INT"]), by = .(plot, site_code, year)]
-head(cover)
-
-  #spot check with example
-    arch.nonnativecover = cover[site_code == "arch.us", .(year, plot, NonNative_cover.yr),]
-  # sites we know have a lot of invasives    
-    cover[site_code == "ping.au", .(year, plot, NonNative_cover.yr),]
-    cover[site_code == "pinj.au", .(year, plot, NonNative_cover.yr),]
-    cover[site_code == "smith.us", .(year, plot, NonNative_cover.yr),]
-
-## Compute Native species cover 
-cover[, Native_cover.yr := sum(relative_sp_cover.yr[local_provenance=="NAT"]), by = .(plot, site_code, year)]
-
-##########################################################################################################
-### Annual vs Perennial Variables ########################################################################
-###########################################################################################################
-
-### Now do for an annual and perennial cover
-# Compute richness in annuals and perennials
-cover[, sr_annual := length(unique(Taxon[local_lifespan=="ANNUAL"])), by = .(plot, site_code, year)]
-cover[, sr_peren := length(unique(Taxon[local_lifespan=="PERENNIAL"])), by = .(plot, site_code, year)]
-cover[, sr_null.lspan := length(unique(Taxon[local_lifespan=="NULL"])), by = .(plot, site_code, year)]  # this includes a lot non-live. 
-cover[, sr_biennial := length(unique(Taxon[local_lifespan=="BIENNIAL"])), by = .(plot, site_code, year)]
-cover[, sr_indeter := length(unique(Taxon[local_lifespan=="INDETERMINATE"])), by = .(plot, site_code, year)]
-
-# plot 
-hist(cover$sr_annual)
-summary(cover$sr_annual)
-summary(cover$sr_annual)
-# Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-# 0.00    0.00    1.00    3.13    4.00   23.00 
-hist(cover$sr_peren)
-summary(cover$sr_peren)
-#Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#0.00    4.00    8.00   10.21   14.00   41.00 
-
-# Compute first differences 
-cover[order(year), change_sr_annual := sr_annual-shift(sr_annual), by =.(plot, site_code)]
-cover[order(year), change_sr_peren := sr_peren-shift(sr_peren), by =.(plot, site_code)]
-
-# Plot first differences
-hist(cover$change_sr_annual)
-summary(cover$change_sr_annual)
-hist(cover$change_sr_peren)
-summary(cover$change_sr_peren)
-
-# compute cover by annuals per plot and year
-cover[, AnnualPercentcover.yr := sum(relative_sp_cover.yr[local_lifespan=="ANNUAL"]), by = .(plot, site_code, year)]
-# compute cover by perennial per plot and year
-cover[, PerenPercentcover.yr := sum(relative_sp_cover.yr[local_lifespan=="PERENNIAL"]), by = .(plot, site_code, year)]
-
-hist(cover$PerenPercentcover.yr)
-hist(cover$AnnualPercentcover.yr)
-#######################################################################################################
-### Functional Group variables (e.g., Grass vs Forbs) ####################################################
-#######################################################################################################
-
-## Combine Graminoid and Grass into a single category 
-# Graminoid + Grass = Graminoids
-cover[functional_group == "GRASS" , functional_group:= "GRAMINOID"]
-
-### Richness of grasses, woody, forbs  from the "functional_group" column
-# Grasses & Graminoids
-cover[, sr_graminoid := length(unique(Taxon[functional_group=="GRAMINOID"])), by = .(plot, site_code, year)]
-# forbs
-cover[, sr_forbs := length(unique(Taxon[functional_group=="FORB"])), by = .(plot, site_code, year)]
-# woody
-cover[, sr_woody := length(unique(Taxon[functional_group=="WOODY"])), by = .(plot, site_code, year)]
-# legumes
-cover[, sr_legume := length(unique(Taxon[functional_group=="LEGUME"])), by = .(plot, site_code, year)]
-# Bryophyte
-cover[, sr_bryophyte := length(unique(Taxon[functional_group=="BRYOPHYTE"])), by = .(plot, site_code, year)]
-# Cactus
-cover[, sr_cactus := length(unique(Taxon[functional_group=="CACTUS"])), by = .(plot, site_code, year)]
-# Null
-cover[, sr_null.fctgroup := length(unique(Taxon[functional_group=="NULL"])), by = .(plot, site_code, year)]
-# Non-live
-cover[, sr_non.live := length(unique(Taxon[functional_group=="NON-LIVE"])), by = .(plot, site_code, year)]
-
-## Compute first differences ###
-cover[order(year), change_sr_graminoid := sr_graminoid - shift(sr_graminoid), by =.(plot, site_code)]
-cover[order(year), change_sr_woody := sr_woody - shift(sr_woody), by =.(plot, site_code)]
-#summary(cover$change_sr_woody)
-cover[order(year), change_sr_forbs := sr_forbs -shift(sr_forbs), by =.(plot, site_code)]
-#summary(cover$change_sr_forbs)
-cover[order(year), change_sr_legume := sr_legume -shift(sr_legume), by =.(plot, site_code)]
-cover[order(year), change_sr_bryophyte := sr_bryophyte -shift(sr_bryophyte), by =.(plot, site_code)]
-cover[order(year), change_sr_cactus := sr_cactus  -shift(sr_cactus), by =.(plot, site_code)]
-cover[order(year), change_sr_null.fctgroup := sr_null.fctgroup - shift(sr_null.fctgroup), by =.(plot, site_code)]
-cover[order(year), change_sr_non.live := sr_non.live - shift(sr_non.live), by =.(plot, site_code)]
-
-### Compute over by Functional groups - grasses, woody, forbs, legumes, etc -- per plot and year
-cover[, GrassPercentcover.yr := sum(relative_sp_cover.yr[functional_group=="GRASS"]), by = .(plot, site_code, year)]
-cover[, ForbPercentcover.yr := sum(relative_sp_cover.yr[functional_group=="FORB"]), by = .(plot, site_code, year)]
-cover[, WoodyPercentcover.yr := sum(relative_sp_cover.yr[functional_group=="WOODY"]), by = .(plot, site_code, year)]
-cover[, LegumePercentcover.yr := sum(relative_sp_cover.yr[functional_group=="LEGUME"]), by = .(plot, site_code, year)]
-
-hist(cover$LegumePercentcover.yr)
-plot(cover$LegumePercentcover.yr ~ cover$year)
-lm(cover$LegumePercentcover.yr ~ as.numeric(cover$year))
-# Coefficients:
-#   (Intercept)  as.numeric(cover$year)  
-# 2.107210               -0.001027 
-abline(lm(cover$LegumePercentcover.yr ~ as.numeric(cover$year)))
-
-
-# Lagged Legume cover per year
-cover[order(year), lagged_LegumePercentCover.yr := shift(LegumePercentcover.yr), by =.(plot, site_code)]
-
-##############################################################################################################################
-### N-Fixing Species Variables ##############################################################################################
-##############################################################################################################################
-
-### Number of N-fixer in a plot over time
-cover[, sr_Nfixer := length(unique(Taxon[N_fixer==1])), by = .(plot, site_code, year)]
-cover[, sr_non.Nfixer := length(unique(Taxon[N_fixer==0])), by = .(plot, site_code, year)]
-# what are the plots where there are 0 species that are NOT n-fixers?
-  hist(cover$sr_non.Nfixer)
-  table(cover$sr_non.Nfixer)
-  
-# change in N-fixers in a plot
-cover[order(year), change_sr_Nfixer := sr_Nfixer-shift(sr_Nfixer), by =.(plot, site_code)]
-hist(cover$change_sr_Nfixer)
-summary(cover$change_sr_Nfixer)
-
-# lagged N-fixer richness
-cover[order(year), lagged_sr_Nfixer := shift(sr_Nfixer), by =.(plot, site_code)]
-
-### Percent cover of N-fixers ###
-cover[, N_fixer_cover.yr := sum(relative_sp_cover.yr[N_fixer==1]), by = .(plot, site_code, year)]
-# change in N-fixer cover
-cover[order(year), change_N_fixer_cover := N_fixer_cover.yr - shift(N_fixer_cover.yr), by = .(plot, site_code, year)]
-
-# Lagged N_fixer cover
-cover[order(year), lagged_N_fixer_cover.yr := shift(N_fixer_cover.yr), by =.(plot, site_code)]
-
-plot(cover$lagged_N_fixer_cover.yr ~ cover$year)
-abline(lm(cover$lagged_N_fixer_cover.yr ~ as.numeric(cover$year)))
-lm(cover$lagged_N_fixer_cover.yr ~ as.numeric(cover$year))
-#   Coefficients:
-#     (Intercept)  as.numeric(cover$year)  
-#   2.612394               -0.001279
-
-summary(cover$change_N_fixer_cover)
-# Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-# 0       0       0       0       0       0   14822 
-
-
-###############################################################################
-### Compute site-level richness variables  ##############################
-##########################################################################################
-
-# # average site richness over time
-# cover[, ave_siterich := mean(site_richness, na.rm = TRUE), by = site_code]
-# # average for the change year to year
-# cover[, ave_siterich_change := mean(changerich, na.rm = TRUE), by = site_code]
-# # initial site richness
-# cover[, init_siterich := site_richness[year_trt == 0] ,  by = site_code]
-
-####################################################################################################################
-### Dominance Variables ############################################################################################
-####################################################################################################################
-
-### Do relative abundance of live cover only. 
-# Do SR of live only, throughout?
-### do this for live cover only (discussed w Kim in June)
-
-### Dominance indicator calculation ###
-# Use the dominance indicator metric from Avoilio et al (seperates dominance indication from impact)
-  # DI = (average relative abundance + relative frequency)/2
-    #Relative abundance = abundance of a species a in sampling unit / total abundance of all species in a sampling unit
-    #Relative frequency = number of sampling units a species occurred / total number of sampling units
-# note: ranges from 0-1; Relative abundance can be any measure of abundance. Does not incorporate a measure of impact.
-# There is not a cutoff for "which range from 0-1 = dominant species versus subordinate or rare, in the Avolio et al paper # 
-# so if we want to group species in these groups, we will need to make one (then also should test robustness to that decision)
-
-#for LIVE cover
-cover[, ave_rel_abundance_over_time.live := ave(relative_sp_cover.yr.live), by = .(Taxon, plot, site_code)]
-hist(cover$ave_rel_abundance_over_time.live)
-summary(cover$ave_rel_abundance_over_time.live) 
-
-# relative abundance per species and plot in pre-treatment year (year_trt == 0)
-cover[, rel_abundance_year0 := relative_sp_cover.yr.live[year_trt == 0], by = .(Taxon, plot, site_code)]
-hist(cover$rel_abundance_year0, xlab = "Average relative abundance at a site", main ="")
-summary(cover$rel_abundance_year0)
-
-## Compute Relative Frequency per spp AT THE SITE (defining dominance in space, not time/across years)
-# "Relative frequency = number of sampling units a species occurred / total number of sampling units" 
-# this should be # of plots within a site that the species occured in / total # of plots within a site, for pre-treatment year 
-
-#total # of plots within a site, for pre-treatment year 
-# & to filter to do just on the live species:
-cover[, tot.num.plots := length(unique(plot[year_trt == 0])), by =.(site_code)]
-
-#number of plots within a site, in the pre-treatment year, a species occurred in:
-# & to filter to do just on the live species:
-cover[, tot.num.plots.with.spp := length(unique(plot[year_trt == 0 & live==1])), by =.(site_code, Taxon)]
-
-# test to see if it works
-  abisko.test = cover[site_code == "abisko.se" , ]
-
-#Compute Relative Frequency
-# " Relative frequency = number of sampling units a species occurred / total number of sampling units" 
-cover[, rel_freq.space :=  tot.num.plots.with.spp/tot.num.plots, by = .(plot, site_code)]
-#check to make sure we took out duplicates, max should be 1
-hist(cover$rel_freq.space, xlab = "Frequency at the site in pre-treatment year", main = "Frequency of occurrence")
-summary(cover$rel_freq.space)
-
-## Compute the DI per species 
-# DI = (average relative abundance + relative frequency)/2
-
-#FOR LIVE COVER -- the dead cover will be 0.
-cover[, DI := (rel_abundance_year0 + rel_freq.space)/2 , by =.(Taxon, plot, site_code)]
-
-summary(cover$DI)
-
-## filter to only the live (the dead cover will be 0, which inflates the 0, bc of how we computed stuff above)
-hist(cover[live == 1,DI], xlab = "Dominance indicator (DI)", main = "Dominance indicator metric")
-summary(cover[live == 1,DI])
-
-####### Make Categorical Variables of Dominance too ########
-
-# then given them a ranking into different categories? 
-# to look at changes in those types of species and the impact on productivity?
-## sub-ordinate and rare -- how can I compute this? ###########
-cover[, DIgroup:=cut(DI, breaks=c(0.0,0.2,0.8,1.0), labels=c("Rare","Subordinate","Dominant"))]
-
-#richness in each group 
-#*MAKE SURE ONLY TO DO FOR LIVE 
-cover[, sr_domspp := length(unique(Taxon[DIgroup == "Dominant"])), by = .(plot, site_code, year)]
-cover[, sr_rarespp := length(unique(Taxon[DIgroup == "Rare"])), by = .(plot, site_code, year)]
-cover[, sr_subordspp := length(unique(Taxon[DIgroup == "Subordinate"])), by = .(plot, site_code, year)]
-
-summary(cover$sr_domspp) # max is 2 species that are dominant 
-summary(cover$sr_subordspp) 
-summary(cover$sr_rare) 
-
-# compute change in richness in each group 
-cover[order(year), change_sr_domspp := sr_domspp -shift(sr_domspp), by =.(plot, site_code)]
-cover[order(year), change_sr_rarespp := sr_rarespp -shift(sr_rarespp), by =.(plot, site_code)]
-cover[order(year), change_sr_subordspp := sr_subordspp -shift(sr_subordspp), by =.(plot, site_code)]
-
-summary(cover$change_sr_domspp) 
-# Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-# -1.0000  0.0000  0.0000  0.0012  0.0000  1.0000    3005 
-summary(cover$change_sr_subordspp) 
-# > summary(cover$change_sr_subordspp) 
-# Min.  1st Qu.   Median     Mean  3rd Qu.     Max.     NA's 
-# -13.0000   0.0000   0.0000  -0.0327   0.0000  10.0000     3005 
-
-summary(cover$change_sr_rare) 
-# Min.  1st Qu.   Median     Mean  3rd Qu.     Max.     NA's 
-# -13.0000   0.0000   0.0000  -0.0199   0.0000   7.0000     3005 
-
-# lagged effects of sr in these groups
-cover[order(year), lagged_sr_rarespp := shift(sr_rarespp), by =.(plot, site_code)]
-cover[order(year), lagged_sr_domspp := shift(sr_domspp), by =.(plot, site_code)]
-cover[order(year), lagged_sr_subordspp := shift(sr_subordspp), by =.(plot, site_code)]
-
-
-plot(ave_rel_abundance_over_time.live ~ DI, data= cover)
-abline(lm(ave_rel_abundance_over_time.live ~ DI, data= cover), col = "yellow")
-plot(relative_sp_cover.yr.live ~ DI, data = cover)
-
-
-## Make a variable that captures changes in *cover* of species classified as dominance, rare, subordinate each year 
-# (so we can look at variations from year to year)
-cover[, Dom_cover.yr := sum(relative_sp_cover.yr[DIgroup=="Dominant"]), by = .(plot, site_code, year)]
-cover[, Subord_cover.yr := sum(relative_sp_cover.yr[DIgroup=="Subordinate"]), by = .(plot, site_code, year)]
-cover[, Rare_cover.yr := sum(relative_sp_cover.yr[DIgroup=="Rare"]), by = .(plot, site_code, year)]
-
-hist(cover$Dom_cover.yr)
-hist(cover$Rare_cover.yr)
-hist(cover$Subord_cover.yr)
-plot(cover$Rare_cover.yr, cover$sr_rarespp)
-plot(cover$Dom_cover.yr, cover$sr_rarespp)
-
-# make a change in the relative_sp_cover.yr.live and then look at relationship with DI?
-cover[order(year), change_rel_abundance_time.live := relative_sp_cover.yr.live - shift(relative_sp_cover.yr.live), by =.(plot, site_code)]
-
-plot(change_rel_abundance_time.live ~ DI, data= cover)
-
-#plot this change_rel_abundance_time.live by each DI grouping category
-# need to label each spp as rare, dominate or subordinate to do this, and then put in facet r
-
-#maybe should do this as average change per spp?
-ggplot(data = cover, aes(x = change_rel_abundance_time.live)) + geom_histogram()+ facet_wrap(~site_code) + theme_bw() +
-  geom_vline(xintercept=c(0,0), color = "blue", linetype="dashed") +
-  labs(x = "Plot-level change in relative abundance yr-to-yr") +  theme_bw() +
-  theme(axis.title.y= element_text(size=14)) + theme(axis.title.x= element_text(size=12)) +
-  theme(axis.text.y = element_text(size = 14)) + 
-  #theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-  theme(axis.text.x = element_text(size=14)) 
-
-
-# look at N-fixer cover over time
-# change_N_fixer_cover -- not much at all.
-ggplot(data = cover, aes(x = change_N_fixer_cover)) + geom_histogram()+ facet_wrap(~site_code) + theme_bw() +
-  geom_vline(xintercept=c(0,0), color = "blue", linetype="dashed") +
-  labs(x = "Plot-level change in relative abundance yr-to-yr") +  theme_bw() +
-  theme(axis.title.y= element_text(size=14)) + theme(axis.title.x= element_text(size=12)) +
-  theme(axis.text.y = element_text(size = 14)) + 
-  #theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-  theme(axis.text.x = element_text(size=14)) 
-
-ggplot(data = cover, aes(x = N_fixer_cover.yr)) + geom_histogram()+ facet_wrap(~site_code) + theme_bw() +
-  +   geom_vline(xintercept=c(0,0), color = "blue", linetype="dashed") +
-  +   labs(x = "Plot-level change in relative abundance yr-to-yr") +  theme_bw() +
-  +   theme(axis.title.y= element_text(size=14)) + theme(axis.title.x= element_text(size=12)) +
-  +   theme(axis.text.y = element_text(size = 14)) + 
-  +   #theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-  +   theme(axis.text.x = element_text(size=14))
-
-##### This computes dominance over time, which is not what we want: 
-
-## compute average relative abundance (averaged across years.)
-# Relative abundance = abundance of a species in a sampling unit / total abundance of all species in a sampling unit
-# here we need to average across the years.
-
-#I did the following based on plot-years as sampling unit, but we decided it should be defined spatially.
-
-# for TOTAL cover
-# cover[, ave_rel_abundance_over_time := ave(relative_sp_cover.yr), by = .(Taxon, plot, site_code)]
-# hist(cover$ave_rel_abundance_over_time)
-# summary(cover$ave_rel_abundance_over_time) 
-
-#for LIVE cover
-cover[, ave_rel_abundance_over_time.live := ave(relative_sp_cover.yr.live), by = .(Taxon, plot, site_code)]
-hist(cover$ave_rel_abundance_over_time.live)
-summary(cover$ave_rel_abundance_over_time.live) 
-
-## Compute Relative Frequency per spp per plot.
-# "Relative frequency = number of sampling units a species occurred / total number of sampling units" 
-# first calculate the total number of years for a given plot in a site "total # of sampling units"
-cover[, tot.yr := length(unique(year)), by =.(plot, site_code)]
-# to determine which is the most recent year: 
-  # cover[, max.yr := max(year), by =.(plot, site_code)]
-
-# spot check
-cover[site_code == "abisko.se", .(year, plot, tot.yr),]
-cover[site_code == "barta.us", .(year, plot, tot.yr),]
-cover[site_code == "smith.us", .(year, plot, tot.yr),]
-
-#then calculate number of sampling units (years) a species occurred
-# with a list of taxa per plot and year, count the number of records per (species, plot) pair. 
-# so for ex., if the datatable is called dt  
-# dt[,.N, by=.(plot, species)] 
-#will count the records per plot x species and if they only record a species in a plot and year if it's there
-# cover[, .N , by =.(plot, site_code, Taxon)]
-
-# to store this count as part of the cover datatable:
-cover[, Num_year_spp_occur := length(unique(year)), by = .(plot, site_code, Taxon)]
-cover[, Num_recs_spp_plot_site := .N, by = .(plot, site_code, Taxon)]
-#***send this to Ashley to find duplicates
-  # cover[Num_year_spp_occur!=Num_recs_spp_plot_site, ] #812 records with duplicates? 
-   #585 from site_name=="Antisana" & year==2013:
-      # cover[Num_year_spp_occur!=Num_recs_spp_plot_site & site_name=="Antisana" & year==2013,]
-# table(cover[Num_year_spp_occur!=Num_recs_spp_plot_site & site_name=="Antisana" & year==2013, .(site_code, plot, Taxon)])
-# cover[Num_year_spp_occur!=Num_recs_spp_plot_site & site_name=="Antisana" & year==2013 & Taxon=="WERNERIA PUMILA", ]
-# looks like this is repeated bc multiple subplots
-#how many sites have multiple subplots and taxa recorded by it???? anything that would be recorded at the subplot level?
-# the max cover for cover[Num_year_spp_occur!=Num_recs_spp_plot_site & site_name=="Antisana" & year==2013 & Taxon=="WERNERIA PUMILA", ] 
-# is the same
-cover[,Num_subplots:=length(unique(subplot)),.(site_code,plot, Taxon)]
-cover[Num_subplots>1,length(unique(site_code))]
-unique(cover[Num_subplots>1,.(site_code, year)])
-#  site_code year
-#    anti.ec 2013
-#    elkh.us 2007
-#    sgs.us  2007
-#    ucsc.us 2007
-
-#compute relative frequency
-# " Relative frequency = number of sampling units a species occurred / total number of sampling units" 
-cover[, rel_freq.time :=  Num_year_spp_occur/tot.yr, by = .(plot, site_code)]
-#check to make sure we took out duplicates, max should be 1
-hist(cover$rel_freq)
-summary(cover$rel_freq)
-
-## Compute the DI per species <-- at what scale does this apply? the plot over all years? 
-# DI = (average relative abundance + relative frequency)/2
-#FOR LIVE COVER
-cover[, DI.time := (ave_rel_abundance_over_time.live + rel_freq)/2 , by =.(Taxon, plot, site_code)]
-hist(cover$DI.time)
-summary(cover$DI.time)
-
-# # then given them a ranking into different categories? 
-# # to look at changes in those types of species and the impact on productivity?
-# ## sub-ordinate and rare -- how can I compute this? ###########
-# cover[, DIgroup:=cut(DI, breaks=c(0.0,0.2,0.8,1.0), labels=c("Rare","Subordinate","Dominant"))]
-# 
-# #richness in each group
-# cover[, sr_domspp := length(unique(Taxon[DIgroup == "Dominant"])), by = .(plot, site_code, year)]
-# cover[, sr_rarespp := length(unique(Taxon[DIgroup == "Rare"])), by = .(plot, site_code, year)]
-# cover[, sr_subordspp := length(unique(Taxon[DIgroup == "Subordinate"])), by = .(plot, site_code, year)]
-# 
-# summary(cover$sr_domspp)
-# summary(cover$sr_subordspp)
-# summary(cover$sr_rarespp)
-
-# compute change in richness in each group 
-cover[order(year), change_sr_domspp := sr_domspp -shift(sr_domspp), by =.(plot, site_code)]
-cover[order(year), change_sr_rarespp := sr_rarespp -shift(sr_rarespp), by =.(plot, site_code)]
-cover[order(year), change_sr_subordspp := sr_subordspp -shift(sr_subordspp), by =.(plot, site_code)]
-
-#?? compute cover in each group, or is that circular???? compute *CHANGE* in cover from year-to-year 
-
-
-## Do a different cut off for dominance, subordinate and rare:
-cover[, DIgroup2:=cut(DI, breaks=c(0.0,0.2,0.7,1.0), labels=c("Rare","Subordinate","Dominant"))]
-#richness in each group with different cutoff
-cover[, sr_domspp2 := length(unique(Taxon[DIgroup2 == "Dominant"])), by = .(plot, site_code, year)]
-cover[, sr_rarespp2 := length(unique(Taxon[DIgroup2 == "Rare"])), by = .(plot, site_code, year)]
-cover[, sr_subordspp2 := length(unique(Taxon[DIgroup2 == "Subordinate"])), by = .(plot, site_code, year)]
-summary(cover$sr_domspp2)
-
-# compute change in richness in each group for this diff cutoff (though only the dominance one should change)
-cover[order(year), change_sr_domspp2 := sr_domspp2 -shift(sr_domspp2), by =.(plot, site_code)]
-cover[order(year), change_sr_rarespp2 := sr_rarespp2 -shift(sr_rarespp2), by =.(plot, site_code)]
-cover[order(year), change_sr_subordspp2 := sr_subordspp2 -shift(sr_subordspp2), by =.(plot, site_code)]
-
-## [ Do this for Tim too, plot by treatment and site over time? ###
-# see how -- for rare species -- if their DI score is more driven by the relative abundance or the low frequency #
-# those might be different types of rare spp so it seems like we should not obscure them into one ## ] 
-
-#####################################################################################################################
-### Need to do something to determine, year-to-year, if species are gained or lost or zero change, and if so who. 
-# instead do this in the comb file ##################
-#####################################################################################################################
-
-# df1[, z := y > 0]
-# or DT[, flag := 6500<=to & 6500>=from]
-    # table(DT$flag)
-    # FALSE  TRUE 
-    # 5567  4433 
-
-comb[, rich_increase := changerich>0]
-comb[, rich_decrease := changerich<0]
-
-barplot(prop.table(table(comb$rich_decrease)), main = "richness decrease")
-barplot(prop.table(table(comb$rich_increase)), main = "richness increase")
-
-
-#**** NEED SOMETHING TO DO WITH THE CHANGES FROM YEAR TO YEAR AND HOW TO CHARACTERIZE THEM BY % of DIFFERENT GROUPS?**** 
-# WHATS A 1% richness change and how does that map onto the proportion of spp in these different categories? esp bc 
-# the mechanisms are not mutually exclusive.
-
-
-
-
-
-
-```
 

@@ -37,33 +37,78 @@ options(max.print = 1000) #set print limit for expediency
 levels(cover.climate$Action)
 cover.climate$Action = factor(cover.climate$Action, levels = c("Rest","Burn","Graze","Combo",""))
 
-#Factorize TransectID, SITE_ID and Year 
+#Factorize TransectID, SITE_ID, ObsCode,and Year 
 cover.climate$Year = as.factor(cover.climate$Year)
 cover.climate$TransectID = as.factor(cover.climate$TransectID)
 cover.climate$MGMTUNIT_I = as.factor(cover.climate$MGMTUNIT_I)
 cover.climate$SITE_ID = as.factor(cover.climate$SITE_ID)
+cover.climate$ObsCode = as.factor(cover.climate$ObsCode)
 
 #Remove Transects with blanks for Action, I don't think I will need this for the lagged models
 cover.climate = cover.climate[!Action=="",]
 
+#Because we have limited data, for now remove combo and grazing, so that the fixed model can compile.
+cover.climate = cover.climate[!(Action=="Graze" | Action=="Combo"),]
+
+#Both the fixed effect and lagged effect models require complete panel data, so at least two years of obersvations per measurement unit. With the full data I should be able to subset by Delta=1, but with limited climate data I will need to fix this.
+z = c(cover.climate[,length(unique(Year)),by = TransectID][V1>1,TransectID])
+cover.climate = cover.climate[!(TransectID %in% z),]
+
+#Deal with missing species traits
+cover.climate[is.na(Legume),Legume:=0]
+
+cover.climate[Duration=="Annual, Biennial, Perennial",Duration:="All"]
+cover.climate[Duration=="Annual, Perennial, Biennial",Duration:="All"]
+
+
+
 #Create sub-cover files to match the model analysis. E.g. transect-level analysis should not include species rows, that would create too many replication ir_tran values
 tran.dt       = unique(cover.climate[,.(Year,TransectID,SITE_ID,MGMTUNIT_I,Action,Delta,StartLat,StartLong,Long.Cat,Lat.Cat,ManUnitAcres,ObsCode,
                                           VOR, Litter, sr_tran,
+                                          VOR.lag, Litter.lag, sr_tran.lag,
                                           nr_tran, nf.tran, meanDI.n.tran.2,change_nr_tran, change_nf.tran, indf.n.tran, change_indf.n.tran,
+                                          nr_tran.lag, nf.tran.lag, meanDI.n.tran.2.lag, indf.n.tran.lag,
                                           rel.cov.n.1.1,rel.cov.n.1.2, rel.cov.n.2, rel.cov.n.3, rel.cov.n.4,
+                                          rel.cov.n.1.1.lag,rel.cov.n.1.2.lag, rel.cov.n.2.lag, rel.cov.n.3.lag, rel.cov.n.4.lag,
                                           ir_tran,if.tran,meanDI.i.tran.2,change_ir_tran, change_if.tran,indf.i.tran, change_indf.i.tran,
+                                          ir_tran.lag,if.tran.lag ,meanDI.i.tran.2.lag, indf.i.tran.lag,
                                           rel.cov.i.1.1,rel.cov.i.1.2,rel.cov.i.2,rel.cov.i.3,rel.cov.i.4,
-                                          txx,tn90p, tx90p,rx5.winter,rx5.spring,rx5.summer,rx5.year,fd,gsl,wsdi,csdi,sdii,cdd,cwd,prcptot)])
+                                          rel.cov.i.1.1.lag,rel.cov.i.1.2.lag, rel.cov.i.2.lag, rel.cov.i.3.lag ,rel.cov.i.4.lag,
+                                          txx,tn90p, tx90p,rx5.w,rx5.sp,rx5.sum,rx5.y,fd,gsl,wsdi,csdi,sdii,cdd,cwd,prcpt,
+                                          txx.lag,tn90p.lag, tx90p.lag,rx5.w.lag,rx5.sp.lag,rx5.sum.lag,rx5.y.lag, 
+                                              fd.lag,gsl.lag,wsdi.lag,csdi.lag,sdii.lag,cdd.lag,cwd.lag,prcpt.lag)])
 
-mgmt.dt       =  unique(cover.climate[,.(Year,TransectID,SITE_ID,MGMTUNIT_I, Action, Delta,StartLat,StartLong,Long.Cat,Lat.Cat,ManUnitAcres,ObsCode,
+mgmt.dt       = unique(cover.climate[,.(Year,TransectID,SITE_ID,MGMTUNIT_I, Action, Delta,StartLat,StartLong,Long.Cat,Lat.Cat,ManUnitAcres,ObsCode,
                                           VOR, Litter, sr_mgmt,
-                                          nr_mgmt, nf.mgmt,change_nr_mgmt, change_nf.mgmt,indf.n.mgmt, change_indf.n.mgmt, 
-                                          ir_mgmt,if.mgmt,change_ir_mgmt, change_if.mgmt,indf.i.mgmt, change_indf.i.mgmt, 
-                                          txx,tn90p, tx90p,rx5.winter,rx5.spring,rx5.summer,rx5.year,fd,gsl,wsdi,csdi,sdii,cdd,cwd,prcptot)])
+                                          VOR.lag, Litter.lag, sr_tran.lag,
+                                          nr_mgmt, nf.mgmt,change_nr_mgmt, change_nf.mgmt,indf.n.mgmt, change_indf.n.mgmt,
+                                                   nf.mgmt.lag,indf.n.mgmt.lag, 
+                                          ir_mgmt,if.mgmt,change_ir_mgmt, change_if.mgmt,indf.i.mgmt, change_indf.i.mgmt,
+                                          ir_mgmt.lag,if.mgmt.lag,indf.i.mgmt.lag,  
+                                          txx,tn90p, tx90p,rx5.w,rx5.sp,rx5.sum,rx5.y,fd,gsl,wsdi,csdi,sdii,cdd,cwd,prcpt,
+                                          txx.lag,tn90p.lag, tx90p.lag,rx5.w.lag,rx5.sp.lag,rx5.sum.lag,rx5.y.lag, 
+                                              fd.lag,gsl.lag,wsdi.lag,csdi.lag,sdii.lag,cdd.lag,cwd.lag,prcpt.lag)])
 
-i.species.dt    = cover.climate[Native.Status=="I",]
-n.species.dt    = cover.climate[Native.Status=="N",]
+i.species.dt    = cover.climate[Native.Status=="I" ,]
+n.species.dt    = cover.climate[Native.Status=="N" ,]
 all.species.dt  = cover.climate
+
+#Now create lagged versions of these dt ^ which remove NAs from key areas...I care about abundance metrics and indices, selecting one of each should remove the other NAs as well
+tran.dt.lag = na.omit(tran.dt, cols = c("ir_tran.lag","gsl"))
+mgmt.dt.lag = na.omit(mgmt.dt, cols = c("ir_mgmt.lag","gsl"))
+i.species.dt.lag = na.omit(i.species.dt, cols = c("Freq.T.lag","gsl"))
+n.species.dt.lag    = na.omit(n.species.dt, cols = c("Freq.T.lag","gsl"))
+all.species.dt.lag    = na.omit(all.species.dt, cols = c("Freq.T.lag","gsl"))
+
+
+
+
+
+#Define Log Function
+ihs = function(x) {
+  return(log(x + sqrt(x^2+1)))
+}
+# v.s. log(x+1) <- is defined for a negative x.
 
 ```
 
@@ -139,7 +184,7 @@ e = random unobserved error
 β0 = Per transect intercept
 
 
-#Run Model
+#Exploratory Models
 
 ```{r Invasives-lm}
 #Start with modeling invasive abundance
@@ -172,15 +217,885 @@ ggpairs(x)
 
 ```
 
-###Mixed-effect multivariate models
+####Mixed and lagged-effects multivariate models
 
 The above models are simple linear multivariable linear regressions, but I need to treat variable according to whether they are random or fixed effects.
 
 Create a mixed effect model for each metric of invasive abundance (richness, frequency, total relative cover, and dominance) and for each climate index of interest.
 
-##Start with TXx (max temperature - calculate for year) 
 
-#Txx mixed effects
+
+
+Hugh - check to make sure I'm not using zero values accidentally
+
+#Cluster Analsis
+Selecting grouping for species is hard to do a priori. Use the response data to draw clustering correlations between species to define/justify grouping selection.
+
+First attempt - run agglomerative hierarchical clustering analysis
+
+
+```{r clustering}
+#invasive data preparation - need rows as observations and columns as variables, no NAs, all scaled
+#Create data tables that: preserve each species (creates unique id to avoid duplicates); averages species value (maybe by year)
+
+library(cluster)
+library(purrr)
+library(factoextra)
+
+#All species data - the idea here is to see if species themselve are grouping similarly
+ic.all.df = as.data.frame(cover.climate[Native.Status=="I",.(SpeciesID,Freq.T,cov.2.T,DI.T.2,change_f.tran,change_cov.2.T)])
+ic.all.df = na.omit(ic.all.df)
+is.count = length(unique(ic.all.df$SpeciesID)) #use this late on for clustering
+species = as.character(ic.all.df$SpeciesID)
+ic.all.df$SpeciesID = as.character(ic.all.df$SpeciesID)
+rownames(ic.all.df) = make.names(ic.all.df[[1]], unique = T)
+ic.all.df$SpeciesID <- NULL
+ic.all.df = scale(ic.all.df)
+
+#Agglomerative hierarchical clustering
+# Compute with agnes 
+hc1 <- agnes(ic.all.df, method = "complete")
+# Agglomerative coefficient
+hc1$ac
+
+# vector of methods to compare
+m <- c( "average", "single", "complete", "ward")
+names(m) <- c( "average", "single", "complete", "ward")
+ 
+# function to compute coefficient
+ac <- function(x) {
+  agnes(ic.all.df, method = x)$ac
+}
+#map_dbl(m, ac)      
+
+#Ward’s method gets us the highest agglomerative coefficient. Let us look at its dendogram.
+#hc2 <- agnes(ic.all.df, method = "ward")
+#pltree(hc2, cex = 0.6, hang = -1, main = "Dendrogram of species")
+
+#clust.1 <- cutree(hc2, k = is.count)
+
+#I have made the number of clusters = to the number of species, curious to see if clustering groups them together as such
+#species.clusters = as.data.table(cbind(ic.all.df,clust.1),keep.rownames = T)
+#species.clusters = cbind(species.clusters,species)
+#(species.clusters[order(rn,clust.1)])
+
+#(species.clusters[,unique(species), by = clust.1])
+
+#(species.clusters[,length(unique(species)), by = clust.1]) #This might be useful for grouping
+
+###Now compare the average per species response to look for grouping
+
+#First look at it for all years and actions
+ic.avg.df = cover.climate[Native.Status=="I",.(SpeciesID,change_f.tran,change_cov.2.T)]
+ic.avg.df = na.omit(ic.avg.df)
+ic.avg.df[,f.change:=mean(change_f.tran), by = SpeciesID]
+ic.avg.df[,cov.change:=mean(change_cov.2.T), by = SpeciesID]
+ic.avg.df[,change_f.tran:=NULL]
+ic.avg.df[,change_cov.2.T:=NULL]
+ic.avg.df = as.data.frame(unique(ic.avg.df))
+
+species = as.character(ic.avg.df$SpeciesID)
+ic.avg.df$SpeciesID = as.character(ic.avg.df$SpeciesID)
+rownames(ic.avg.df) = ic.avg.df$SpeciesID
+ic.avg.df$SpeciesID <- NULL
+ic.avg.df = scale(ic.avg.df)
+
+# vector of methods to compare
+m <- c( "average", "single", "complete", "ward")
+names(m) <- c( "average", "single", "complete", "ward")
+ 
+# function to compute coefficient
+ac <- function(x) {
+  agnes(ic.avg.df, method = x)$ac
+}
+#map_dbl(m, ac)      
+
+#Ward’s method gets us the highest agglomerative coefficient. Let us look at its dendogram.
+hc.avg.1 <- agnes(ic.avg.df, method = "ward")
+pltree(hc.avg.1, cex = 0.6, hang = -1, main = "Dendrogram of species")
+
+#create differing numbers of cluster groups
+clust.avg.2 <- cutree(hc.avg.1, k = 2)
+clust.avg.3 <- cutree(hc.avg.1, k = 3)
+clust.avg.4 <- cutree(hc.avg.1, k = 4)
+clust.avg.5 <- cutree(hc.avg.1, k = 5)
+clust.avg.6 <- cutree(hc.avg.1, k = 6)
+
+
+#Now map on species attributes...are there clear patterns to how the species are clustered?
+z=unique(i.species.dt[,.(SpeciesID,Photopath,Legume,Duration, Type, Range, Distribution)])
+z$SpeciesID = as.character(z$SpeciesID)
+
+ic.avg.clust = ic.avg.df
+ic.avg.clust = cbind(ic.avg.clust,SpeciesID =row.names(ic.avg.clust))
+
+ic.avg.clust = merge(ic.avg.clust,z, by = c("SpeciesID"))
+ic.avg.clust$f.change = as.numeric(as.character(ic.avg.clust$f.change))
+ic.avg.clust$cov.change = as.numeric(as.character(ic.avg.clust$cov.change))
+
+###Visualize
+#Taxon
+fviz_cluster(list(data = ic.avg.df, cluster = clust.avg.3), data = ic.avg.clust,
+             show.clust.cent = FALSE, axes = c(1,2), repel = T, geom = c("text"),
+             ellipse = T,  ellipse.type = "convex", ellipse.alpha = 0, labelsize = 7,
+             xlab = "Change in Frequency", ylab = "Change in Cover",main = "Cluster plot - Taxon")+
+  geom_point(data =ic.avg.clust, aes(x=f.change,y=cov.change,colour = Type),size=2) +
+  guides(size = FALSE, shape=FALSE, group = FALSE)
+  
+#Duration
+fviz_cluster(list(data = ic.avg.df, cluster = clust.avg.3), data = ic.avg.clust,
+             show.clust.cent = FALSE, axes = c(1,2), repel = T, geom = c("text"),
+             ellipse = T,  ellipse.type = "convex", ellipse.alpha = 0, labelsize = 7,
+             xlab = "Change in Frequency", ylab = "Change in Cover",main = "Cluster plot - Duration")+
+  geom_point(data =ic.avg.clust, aes(x=f.change,y=cov.change,group = Duration,colour = Duration),size=2) +
+  guides(size = FALSE, shape=FALSE, group = FALSE)
+
+#Photopath
+fviz_cluster(list(data = ic.avg.df, cluster = clust.avg.5), data = ic.avg.clust,
+             show.clust.cent = FALSE, axes = c(1,2), repel = T, geom = c("text"),
+             ellipse = T,  ellipse.type = "convex", ellipse.alpha = 0, labelsize = 7,
+             xlab = "Change in Frequency", ylab = "Change in Cover",main = "Cluster plot - Photopath")+
+  geom_point(data =ic.avg.clust, aes(x=f.change,y=cov.change, group = Photopath, colour = Photopath) ,size=2) +
+  guides(size = FALSE, shape=FALSE, group = FALSE)
+
+#Range
+fviz_cluster(list(data = ic.avg.df, cluster = clust.avg.5), data = ic.avg.clust,
+             show.clust.cent = FALSE, axes = c(1,2), repel = T, geom = c("text"),
+             ellipse = T,  ellipse.type = "convex", ellipse.alpha = 0, labelsize = 7,
+             xlab = "Change in Frequency", ylab = "Change in Cover",main = "Cluster plot - Range")+
+  geom_point(data =ic.avg.clust, aes(x=f.change,y=cov.change, group = Range, colour = Range) ,size=2) +
+  guides(size = FALSE, shape=FALSE, group = FALSE)
+
+#Distribution
+fviz_cluster(list(data = ic.avg.df, cluster = clust.avg.5), data = ic.avg.clust,
+             show.clust.cent = FALSE, axes = c(1,2), repel = T, geom = c("text"),
+             ellipse = T,  ellipse.type = "convex", ellipse.alpha = 0, labelsize = 7,
+             xlab = "Change in Frequency", ylab = "Change in Cover",main = "Cluster plot - Distribution")+
+  geom_point(data =ic.avg.clust, aes(x=f.change,y=cov.change, group = Distribution, colour = Distribution) ,size=2) +
+  guides(size = FALSE, shape=FALSE, group = FALSE)
+  
+  
+#Append cluster designations 
+species.clusters = as.data.table(cbind(ic.avg.df,clust.avg.2),keep.rownames = T)
+species.clusters = cbind(species.clusters,clust.avg.3)
+species.clusters = cbind(species.clusters,clust.avg.4)
+species.clusters = cbind(species.clusters,clust.avg.5)
+species.clusters = cbind(species.clusters,clust.avg.6)
+setnames(species.clusters,"rn","SpeciesID")
+
+
+species.clusters = merge(species.clusters,z, by = c("SpeciesID"))
+
+#Make some tables for quick visualization
+
+#2 clusters
+table(species.clusters$clust.avg.2,species.clusters$Photopath)
+table(species.clusters$Duration,species.clusters$clust.avg.2)
+table(species.clusters$Type,species.clusters$clust.avg.2)
+table(species.clusters$Legume,species.clusters$clust.avg.2)
+
+#3 clusters
+table(species.clusters$Photopath,species.clusters$clust.avg.3)
+table(species.clusters$Duration,species.clusters$clust.avg.3)
+table(species.clusters$Type,species.clusters$clust.avg.3)
+table(species.clusters$Legume,species.clusters$clust.avg.3)
+
+######## CLusters by Species AND Year
+
+#First look at it for all years and actions
+ic.avg.df.2 = cover.climate[Native.Status=="I",.(SpeciesID,Year,change_f.tran,change_cov.2.T)]
+ic.avg.df.2 = na.omit(ic.avg.df.2)
+ic.avg.df.2[,f.change:=mean(change_f.tran), by = .(SpeciesID, Year)]
+ic.avg.df.2[,cov.change:=mean(change_cov.2.T), by = .(SpeciesID, Year)]
+ic.avg.df.2[,change_f.tran:=NULL]
+ic.avg.df.2[,change_cov.2.T:=NULL]
+ic.avg.df.2 = as.data.frame(unique(ic.avg.df.2))
+
+SpeciesID = as.character(ic.avg.df.2$SpeciesID)
+Year = as.character(ic.avg.df.2$Year)
+ic.avg.df.2$SpeciesID = as.character(ic.avg.df.2$SpeciesID)
+rownames(ic.avg.df.2) = paste(ic.avg.df.2$SpeciesID,ic.avg.df.2$Year, sep ="-")
+ic.avg.df.2$SpeciesID <- NULL
+ic.avg.df.2$Year <- NULL
+
+a.1 = length(Year[Year=="2011"])
+a.2 = length(Year[Year=="2012"])+a.1
+a.3 = length(Year[Year=="2013"])+a.2
+a.4 = length(Year[Year=="2014"])+a.3
+a.5 = length(Year[Year=="2015"])+a.4
+a.6 = length(Year[Year=="2016"])+a.5
+a.7 = length(Year[Year=="2017"])+a.6
+a.8 = length(Year[Year=="2018"])+a.7
+
+yr.count = c(0,a.1,a.2,a.3,a.4,a.5,a.6,a.7,a.8)
+
+ic.11 = scale(ic.avg.df.2[1:yr.count[2],])
+ic.12 = scale(ic.avg.df.2[(1+yr.count[3]):yr.count[3],])
+ic.13 = scale(ic.avg.df.2[(1+yr.count[4]):yr.count[4],])
+ic.14 = scale(ic.avg.df.2[(1+yr.count[4]):yr.count[5],])
+ic.15 = scale(ic.avg.df.2[(1+yr.count[5]):yr.count[6],])
+ic.16 = scale(ic.avg.df.2[(1+yr.count[6]):yr.count[7],])
+ic.17 = scale(ic.avg.df.2[(1+yr.count[7]):yr.count[8],])
+ic.18 = scale(ic.avg.df.2[(1+yr.count[8]):yr.count[9],])
+
+ic.avg.df.2 = as.data.frame(rbind(ic.11,ic.12,ic.13,ic.14,ic.15,ic.16,ic.17,ic.18))
+
+ic.avg.df.2 = cbind(ic.avg.df.2,Year,SpeciesID)
+
+#aa = c(row.names(ic.avg.df.2))
+#aa = substr(aa,1,stop = nchar(aa)-5)
+#row.names(ic.avg.df.2) = aa
+
+# vector of methods to compare
+m <- c( "average", "single", "complete", "ward")
+names(m) <- c( "average", "single", "complete", "ward")
+ 
+# function to compute coefficient
+ac <- function(x) {
+  for (i in years){
+  agnes(as.data.frame(as.data.table(ic.avg.df.2)[Year==i,.(f.change,cov.change)]), method = x)$ac
+  }
+}
+#map_dbl(m, ac)      
+
+#Ward’s method gets us the highest agglomerative coefficient. Let us look at its dendogram.
+hc.yr.1=list()
+species.clusters = c()
+for (i in years){
+  hc.yr.1[[i]]=agnes(as.data.frame(as.data.table(ic.avg.df.2)[Year==i,.(f.change,cov.change)]), method = "ward")
+  species.clusters = c(species.clusters,as.data.table(ic.avg.df.2)[Year==i,SpeciesID])
+  }
+pltree(hc.yr.1[[1]], cex = 0.6, hang = -1, main = "Dendrogram of species 2011")
+#Can create others for other years
+
+
+#create differing numbers of cluster groups
+clust.yr.2 = c()
+clust.yr.3 = c()
+clust.yr.4 = c()
+clust.yr.5 = c()
+clust.yr.6 = c()
+
+year.clust = c()
+
+for (i in years){
+clust.yr.2 <- c(clust.yr.2,cutree(hc.yr.1[[i]], k = 2))
+clust.yr.3 <- c(clust.yr.3,cutree(hc.yr.1[[i]], k = 3))
+clust.yr.4 <- c(clust.yr.4,cutree(hc.yr.1[[i]], k = 4))
+clust.yr.5 <- c(clust.yr.5,cutree(hc.yr.1[[i]], k = 5))
+clust.yr.6 <- c(clust.yr.6,cutree(hc.yr.1[[i]], k = 6))
+year.clust = c(year.clust, rep(x = i, times = length(hc.yr.1[[i]]$order)))
+}
+
+#Now map on species attributes...are there clear patterns to how the species are clustered?
+z=unique(i.species.dt[,.(SpeciesID,Photopath,Legume,Duration,Type, Range, Distribution)])
+
+
+ic.yr.clust = ic.avg.df.2
+#ic.yr.clust = cbind(ic.yr.clust,SpeciesID =row.names(ic.avg.clust))
+
+ic.yr.clust = merge(ic.yr.clust,z, by = c("SpeciesID"))
+ic.yr.clust$f.change = as.numeric(as.character(ic.yr.clust$f.change))
+ic.yr.clust$cov.change = as.numeric(as.character(ic.yr.clust$cov.change))
+
+years = as.numeric(as.character((years)))
+
+
+#Combine years for all cluster combinations to get an average sense
+ic.yr.dt = as.data.table(ic.avg.df.2)
+ic.yr.dt$clust.2 = clust.yr.2
+ic.yr.dt$clust.3 = clust.yr.3
+ic.yr.dt$clust.4 = clust.yr.4
+ic.yr.dt$clust.5 = clust.yr.5
+ic.yr.dt$clust.6 = clust.yr.6
+
+ic.yr.dt$SpeciesID = as.numeric(as.character(ic.yr.dt$SpeciesID))
+
+ic.yr.dt = merge(ic.yr.dt,z, by = "SpeciesID")
+
+ic.yr.dt[,length(clust.2),by = Type]
+
+#Plot Type
+ggplot(data = ic.yr.dt[,.(count = .N),by = .(Type, clust.2,Year)], aes(x=Type, y = count))+
+  geom_bar(aes(fill = factor(clust.2)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
+  facet_wrap(~Year,ncol = 4)+
+  labs(title="Type by Two Clusters",x ="Type", y = "Cluster Count")
+
+ggplot(data = ic.yr.dt[,.(count = .N),by = .(Type, clust.3,Year)], aes(x=Type, y = count))+
+  geom_bar(aes(fill = factor(clust.3)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
+  facet_wrap(~Year,ncol = 4)+
+  labs(title="Type by Three Clusters",x ="Type", y = "Cluster Count")
+
+ggplot(data = ic.yr.dt[,.(count = .N),by = .(Type, clust.4,Year)], aes(x=Type, y = count))+
+  geom_bar(aes(fill = factor(clust.4)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
+  facet_wrap(~Year,ncol = 4)+
+  labs(title="Type by Four Clusters",x ="Type", y = "Cluster Count")
+
+ggplot(data = ic.yr.dt[,.(count = .N),by = .(Type, clust.5,Year)], aes(x=Type, y = count))+
+  geom_bar(aes(fill = factor(clust.5)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
+  facet_wrap(~Year,ncol = 4)+
+  labs(title="Type by Five Clusters",x ="Type", y = "Cluster Count")
+
+ggplot(data = ic.yr.dt[,.(count = .N),by = .(Type, clust.6,Year)], aes(x=Type, y = count))+
+  geom_bar(aes(fill = factor(clust.6)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
+  facet_wrap(~Year,ncol = 4)+
+  labs(title="Type by Six Clusters",x ="Type", y = "Cluster Count")
+
+#Plot Duration
+ggplot(data = ic.yr.dt[Duration=="Annual"|Duration=="Perennial",.(count = .N),by = .(Duration, clust.2,Year)], aes(x=Duration, y = count))+
+  geom_bar(aes(fill = factor(clust.2)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
+  facet_wrap(~Year,ncol = 4)+
+  labs(title="Duration by Two Clusters",x ="Duration", y = "Cluster Count")
+
+ggplot(data = ic.yr.dt[Duration=="Annual"|Duration=="Perennial",.(count = .N),by = .(Duration, clust.3,Year)], aes(x=Duration, y = count))+
+  geom_bar(aes(fill = factor(clust.3)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
+  facet_wrap(~Year,ncol = 4)+
+  labs(title="Duration by Three Clusters",x ="Duration", y = "Cluster Count")
+
+ggplot(data = ic.yr.dt[Duration=="Annual"|Duration=="Perennial",.(count = .N),by = .(Duration, clust.4,Year)], aes(x=Duration, y = count))+
+  geom_bar(aes(fill = factor(clust.4)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
+  facet_wrap(~Year,ncol = 4)+
+  labs(title="Duration by Four Clusters",x ="Duration", y = "Cluster Count")
+
+ggplot(data = ic.yr.dt[Duration=="Annual"|Duration=="Perennial",.(count = .N),by = .(Duration, clust.5,Year)], aes(x=Duration, y = count))+
+  geom_bar(aes(fill = factor(clust.5)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
+  facet_wrap(~Year,ncol = 4)+
+  labs(title="Duration by Five Clusters",x ="Duration", y = "Cluster Count")
+
+ggplot(data = ic.yr.dt[Duration=="Annual"|Duration=="Perennial",.(count = .N),by = .(Duration, clust.6,Year)], aes(x=Duration, y = count))+
+  geom_bar(aes(fill = factor(clust.6)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
+  facet_wrap(~Year,ncol = 4)+
+  labs(title="Duration by Six Clusters",x ="Duration", y = "Cluster Count")
+
+#Plot Photopath
+##Not enough
+
+#Plot Legume
+ggplot(data = ic.yr.dt[,.(count = .N),by = .(Legume, clust.2,Year)], aes(x=Legume, y = count))+
+  geom_bar(aes(fill = factor(clust.2)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
+  facet_wrap(~Year,ncol = 4)+
+  labs(title="Legume by Two Clusters",x ="Legume", y = "Cluster Count")
+
+ggplot(data = ic.yr.dt[,.(count = .N),by = .(Legume, clust.3,Year)], aes(x=Legume, y = count))+
+  geom_bar(aes(fill = factor(clust.3)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
+  facet_wrap(~Year,ncol = 4)+
+  labs(title="Legume by Three Clusters",x ="Legume", y = "Cluster Count")
+
+ggplot(data = ic.yr.dt[,.(count = .N),by = .(Legume, clust.4,Year)], aes(x=Legume, y = count))+
+  geom_bar(aes(fill = factor(clust.4)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
+  facet_wrap(~Year,ncol = 4)+
+  labs(title="Legume by Four Clusters",x ="Legume", y = "Cluster Count")
+
+ggplot(data = ic.yr.dt[,.(count = .N),by = .(Legume, clust.5,Year)], aes(x=Legume, y = count))+
+  geom_bar(aes(fill = factor(clust.5)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
+  facet_wrap(~Year,ncol = 4)+
+  labs(title="Legume by Five Clusters",x ="Legume", y = "Cluster Count")
+
+ggplot(data = ic.yr.dt[,.(count = .N),by = .(Legume, clust.6,Year)], aes(x=Legume, y = count))+
+  geom_bar(aes(fill = factor(clust.6)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
+  facet_wrap(~Year,ncol = 4)+
+  labs(title="Legume by Six Clusters",x ="Legume", y = "Cluster Count")
+
+ #Plot Range
+ggplot(data = ic.yr.dt[,.(count = .N),by = .(Range, clust.2,Year)], aes(x=Range, y = count))+
+  geom_bar(aes(fill = factor(clust.2)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
+  facet_wrap(~Year,ncol = 4)+
+  labs(title="Range by Two Clusters",x ="Range", y = "Cluster Count")
+
+ggplot(data = ic.yr.dt[,.(count = .N),by = .(Range, clust.3,Year)], aes(x=Range, y = count))+
+  geom_bar(aes(fill = factor(clust.3)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
+  facet_wrap(~Year,ncol = 4)+
+  labs(title="Range by Three Clusters",x ="Range", y = "Cluster Count")
+
+ggplot(data = ic.yr.dt[,.(count = .N),by = .(Range, clust.4,Year)], aes(x=Range, y = count))+
+  geom_bar(aes(fill = factor(clust.4)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
+  facet_wrap(~Year,ncol = 4)+
+  labs(title="Range by Four Clusters",x ="Range", y = "Cluster Count")
+
+ggplot(data = ic.yr.dt[,.(count = .N),by = .(Range, clust.5,Year)], aes(x=Range, y = count))+
+  geom_bar(aes(fill = factor(clust.5)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
+  facet_wrap(~Year,ncol = 4)+
+  labs(title="Range by Five Clusters",x ="Range", y = "Cluster Count")
+
+ggplot(data = ic.yr.dt[,.(count = .N),by = .(Range, clust.6,Year)], aes(x=Range, y = count))+
+  geom_bar(aes(fill = factor(clust.6)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
+  facet_wrap(~Year,ncol = 4)+
+  labs(title="Range by Six Clusters",x ="Range", y = "Cluster Count")
+
+#Plot Distribution
+ggplot(data = ic.yr.dt[,.(count = .N),by = .(Distribution, clust.2,Year)], aes(x=Distribution, y = count))+
+  geom_bar(aes(fill = factor(clust.2)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
+  facet_wrap(~Year,ncol = 4)+
+  labs(title="Distribution by Two Clusters",x ="Distribution", y = "Cluster Count")
+
+ggplot(data = ic.yr.dt[,.(count = .N),by = .(Distribution, clust.3,Year)], aes(x=Distribution, y = count))+
+  geom_bar(aes(fill = factor(clust.3)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
+  facet_wrap(~Year,ncol = 4)+
+  labs(title="Distribution by Three Clusters",x ="Distribution", y = "Cluster Count")
+
+ggplot(data = ic.yr.dt[,.(count = .N),by = .(Distribution, clust.4,Year)], aes(x=Distribution, y = count))+
+  geom_bar(aes(fill = factor(clust.4)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
+  facet_wrap(~Year,ncol = 4)+
+  labs(title="Distribution by Four Clusters",x ="Distribution", y = "Cluster Count")
+
+ggplot(data = ic.yr.dt[,.(count = .N),by = .(Distribution, clust.5,Year)], aes(x=Distribution, y = count))+
+  geom_bar(aes(fill = factor(clust.5)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
+  facet_wrap(~Year,ncol = 4)+
+  labs(title="Distribution by Five Clusters",x ="Distribution", y = "Cluster Count")
+
+ggplot(data = ic.yr.dt[,.(count = .N),by = .(Distribution, clust.6,Year)], aes(x=Distribution, y = count))+
+  geom_bar(aes(fill = factor(clust.6)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
+  facet_wrap(~Year,ncol = 4)+
+  labs(title="Distribution by Six Clusters",x ="Distribution", y = "Cluster Count")
+
+
+###Visualize
+##3 Clusters
+
+#Taxon
+for (i in 1:length(years)) {
+Taxon = fviz_cluster(list(data = ic.avg.df.2[ic.avg.df.2$Year==years[i],1:2], cluster = clust.yr.3[(yr.count[i]+1):yr.count[i+1]]), 
+             data = ic.yr.clust[ic.yr.clust$Year==years[i],], show.clust.cent = FALSE, axes = c(1,2), repel = T, geom = c("text"),
+             ellipse = T,  ellipse.type = "convex", ellipse.alpha = 0, labelsize = 7,
+             xlab = "Change in Frequency", ylab = "Change in Cover",main = "Cluster plot - Taxon")+
+  geom_point(data = ic.yr.clust[ic.yr.clust$Year==years[i],], aes(x=f.change,y=cov.change,colour = Type),size=2) +
+  guides(size = FALSE, shape=FALSE, group = FALSE)
+print(Taxon)
+  
+#Duration
+Duration = fviz_cluster(list(data = ic.avg.df.2[ic.avg.df.2$Year==years[i],1:2], cluster = clust.yr.3[(yr.count[i]+1):yr.count[i+1]]), 
+             data = ic.yr.clust[ic.yr.clust$Year==years[i],], show.clust.cent = FALSE, axes = c(1,2), repel = T, geom = c("text"),
+             ellipse = T,  ellipse.type = "convex", ellipse.alpha = 0, labelsize = 7,
+             xlab = "Change in Frequency", ylab = "Change in Cover",main = "Cluster plot - Duration")+
+  geom_point(data = ic.yr.clust[ic.yr.clust$Year==years[i],], aes(x=f.change,y=cov.change,group = Duration,colour = Duration),size=2) +
+  guides(size = FALSE, shape=FALSE, group = FALSE)
+print(Duration)
+
+#Photopath
+Photo = fviz_cluster(list(data = ic.avg.df.2[ic.avg.df.2$Year==years[i],1:2], cluster = clust.yr.3[(yr.count[i]+1):yr.count[i+1]]), 
+             data = ic.yr.clust[ic.yr.clust$Year==years[i],], show.clust.cent = FALSE, axes = c(1,2), repel = T, geom = c("text"),
+             ellipse = T,  ellipse.type = "convex", ellipse.alpha = 0, labelsize = 7,
+             xlab = "Change in Frequency", ylab = "Change in Cover",main = "Cluster plot - Photopath")+
+  geom_point(data = ic.yr.clust[ic.yr.clust$Year==years[i],], aes(x=f.change,y=cov.change, group = Photopath, colour = Photopath) ,size=2) +
+  guides(size = FALSE, shape=FALSE, group = FALSE)
+print(Photo)
+}
+
+```
+
+#Multiple Indices Model
+Create comprehensive FE models which incorporate multiple climate indices into single model.
+
+##Transect
+###Drought Model
+####Fixed Effects
+```{r indices-fe}
+#IR
+ind.ir.1 = felm(ir_tran ~ nr_tran + nr_tran.lag + VOR + VOR.lag + Action +
+                          cdd + sdii + gsl + cwd + wsdi + prcpt.lag +
+                          Action:gsl + Action:sdii
+                | TransectID, data = tran.dt, exactDOF='rM')
+
+summary(ind.ir.1,robust = TRUE, cluster = TRUE)
+
+##Hugh run each one with obscode as a random effect
+
+#IF
+ind.if.1 = felm(if.tran ~ nr_tran + nr_tran.lag + VOR + VOR.lag + Action +
+                          cdd + sdii + gsl + cwd + wsdi + prcpt.lag +
+                          Action:gsl + Action:sdii
+                | TransectID, data = tran.dt)
+
+summary(ind.if.1)
+
+#Relative Cover
+ind.irc.1 = felm(rel.cov.i.2 ~ nr_tran + nr_tran.lag + Action + 
+                          cdd + sdii + gsl + cwd + wsdi + prcpt.lag +
+                          Action:gsl + Action:sdii
+                | TransectID, data = tran.dt, exactDOF='rM')
+
+summary(ind.irc.1,robust = TRUE, cluster = TRUE)
+
+#Dominance 
+ind.iDI.1 = felm(meanDI.i.tran.2 ~ nr_tran + nr_tran.lag  + Action + 
+                          cdd + sdii + gsl + cwd + wsdi + prcpt.lag +
+                          Action:gsl + Action:sdii
+                | TransectID, data = tran.dt)
+
+summary(ind.iDI.1)
+
+
+
+library(texreg)
+####### Using texreg for storing model output - examples ######
+# Example of texreg with two models - give it a list of models, give titles, etc. Here, for example, these models are called  
+my.table = texreg(list(ind.ir.1), 
+                    custom.model.names=c("IR Drought Mod"))
+#   
+#   screenreg(list(clust.res.PlotFEs.SiteYear.Levels,
+#                  clust.res.PlotFEs.SiteYear.Levels.groundPAR),       # object with results from clx
+#             custom.model.names=c("Base mod", "another mod"),
+#             omit.coef=c("(site_code)|(newplotid)"))  # object from estimation (unclustered) for # BIC
+#   
+#   htmlreg(list(clust.res.PlotFEs.SiteYear.Levels,
+#                clust.res.PlotFEs.SiteYear.Levels.groundPAR),       # object with results from clx
+#           custom.model.names=c("Base mod", "another mod"),
+#           omit.coef=c("(site_code)|(newplotid)"),
+#           file="~/Desktop/lauratable.html")
+
+#Plotting
+plain <- ggplot(all.results, aes(x = Model, y = Est, fill = Model))
+
+
+
+## plain graphic with no data
+plain <- ggplot(ind.ir.1, aes(x = Model, y = Est, fill = Model)) +
+  geom_bar(stat = "identity", color= "black", position=position_dodge()) +
+  ylim(-0.5, 0.3) +
+  geom_hline(yintercept=0, linetype="dashed", color = "black", size = 1.5) +
+  geom_errorbar(aes(ymin= Est- (SE*1.96), ymax=Est + (SE*1.96)), width=.2, position=position_dodge(.9)) +  
+  theme_bw() +
+  theme(axis.text.y = element_text(size = 30, face = "bold")) + 
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  theme(axis.text.x = element_text(size=30, face = "italic")) + 
+  labs(x = "Model", y = "Estimate for log(richness) effect size") +
+  theme(axis.title.y= element_text(size=30)) + 
+  theme(axis.title.x= element_text(size=30)) +
+  labs(title = "Log-Log Model Results") + 
+  theme(plot.title = element_text(hjust = 0.5)) + 
+  theme(plot.title = element_text(face="bold", size = 18))
+        
+plain + scale_fill_brewer(palette="Greys")
+      
+## graphic with data for job talk
+all.results$Model <- as.factor(all.results$Model)
+
+p_res <- ggplot(all.results, aes(x = Model, y = Est, fill = Model)) +
+  geom_bar(stat = "identity", color= "black", 
+                    position=position_dodge()) +
+           ylim(-0.5, 0.3) +
+             geom_hline(yintercept=0, linetype="dashed", color = "black", size = 1.5) +
+             geom_errorbar(aes(ymin= Est- (SE*1.96), ymax=Est + (SE*1.96)), width=.2,
+                         position=position_dodge(.9)) +  
+             theme_bw() +
+             theme(axis.text.y = element_text(size = 30, face = "bold")) + 
+             theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+             theme(axis.text.x = element_text(size=30, face = "italic")) + 
+             labs(x = "Model", y = "Estimate for log(richness) effect size") +
+             theme(axis.title.y= element_text(size=30)) + theme(axis.title.x= element_text(size=30)) +
+             labs(title = "Log-Log Model Results") + theme(plot.title = element_text(hjust = 0.5)) + 
+             theme(plot.title = element_text(face="bold", size = 18))
+          
+  # p_res + scale_fill_brewer(palette="Greys")
+cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+#model.1 <- "#D55E00"
+#p_res +  scale_colour_manual(values = model.1)
+
+p_res + scale_fill_manual(values=cbPalette[c(7,6,1,2)]) +  theme(legend.title=element_text(size=30), legend.text=element_text(size=30))
+
+```
+
+####Lagged
+```{r indices-le}
+
+#IR
+ind.ir.1.lag = felm(ir_tran ~ ir_tran.lag + nr_tran + Action +
+                          cdd + sdii + gsl + cwd + wsdi + prcpt.lag +
+                          Action:gsl + Action:sdii
+                , data = tran.dt.lag, exactDOF='rM')
+
+summary(ind.ir.1.lag,robust = TRUE, cluster = TRUE)
+
+##Hugh run each one with obscode as a random effect
+
+#IF
+ind.if.1.lag = felm(if.tran ~ if.tran.lag + nr_tran + nr_tran.lag + Action +
+                          cdd + sdii + gsl + cwd + wsdi + prcpt.lag +
+                          Action:gsl + Action:sdii, 
+                    data = tran.dt.lag, exactDOF='rM')
+
+summary(ind.if.1.lag,robust = TRUE, cluster = TRUE)
+
+#Relative Cover
+ind.irc.1.lag = felm(ihs(rel.cov.i.2) ~ rel.cov.i.2.lag + nr_tran + nr_tran.lag + Action + 
+                          cdd + sdii + gsl + cwd + wsdi + prcpt.lag +
+                          Action:gsl + Action:sdii
+                , data = tran.dt.lag, exactDOF='rM')
+
+summary(ind.irc.1.lag,robust = TRUE, cluster = TRUE)
+
+#Dominance 
+ind.iDI.1.lag = felm(meanDI.i.tran.2 ~ meanDI.i.tran.2.lag  + nr_tran.lag  + Action + 
+                          cdd + sdii + gsl + cwd + wsdi + prcpt.lag +
+                          Action:gsl + Action:sdii
+                , data = tran.dt.lag,  exactDOF='rM')
+
+summary(ind.iDI.1.lag,robust = TRUE, cluster = TRUE)
+
+```
+
+
+###Growing Season Model
+####Fixed Effects
+```{r indices-fe}
+#IR
+ind.ir.1 = felm(ir_tran ~ nr_tran.lag + VOR.lag + Action +
+                gsl + rx5.w + sdii + cwd + cdd + prcpt.lag +
+                Action:gsl + Action:sdii + Action:cwd
+                | TransectID, data = tran.dt, exactDOF='rM')
+
+summary(ind.ir.1,robust = TRUE, cluster = TRUE)
+
+##Hugh run each one with obscode as a random effect
+
+#IF
+ind.if.1 = felm(ihs(if.tran) ~ nr_tran.lag + VOR.lag + Action +
+                gsl + rx5.w + sdii + cwd + cdd + prcpt.lag +
+                Action:gsl + Action:sdii + Action:cwd
+                | TransectID, data = tran.dt, exactDOF='rM')
+
+summary(ind.if.1)
+
+#Relative Cover
+ind.irc.1 = felm(ihs(rel.cov.i.2) ~ nr_tran.lag + VOR.lag + Action +
+                gsl + rx5.w + sdii + cwd + cdd + prcpt.lag +
+                Action:gsl + Action:sdii + Action:cwd
+                | TransectID, data = tran.dt, exactDOF='rM')
+
+summary(ind.irc.1,robust = TRUE, cluster = TRUE)
+
+#Dominance 
+ind.iDI.1 = felm(ihs(meanDI.i.tran.2) ~ nr_tran.lag + VOR.lag + Action +
+                gsl + rx5.w + sdii + cwd + cdd + prcpt.lag +
+                Action:gsl + Action:sdii + Action:cwd
+                | TransectID, data = tran.dt, exactDOF='rM')
+
+summary(ind.iDI.1)
+
+#Visualizing
+coefs_ir.1 = broom::tidy(ind.ir.1, conf.int = T)
+coefs_if.1 = broom::tidy(ind.if.1, conf.int = T)
+coefs_irc.1 = broom::tidy(ind.irc.1, conf.int = T)
+coefs_iDI.1 = broom::tidy(ind.iDI.1, conf.int = T)
+
+#IR
+ggplot(data = coefs_ir.1,aes(x=term, y=estimate, ymin=conf.low, ymax=conf.high)) +
+  geom_pointrange() +
+  coord_flip() +
+  labs(Title = "Effects on Invasive Richness") +
+  geom_hline(yintercept = 0, col = "orange") +
+  ylim(-0.3, 0.3 ) +
+  labs(
+    title = "Effects on Invasive Richness"
+    ) +
+  theme(axis.title.x = element_blank(),axis.title.y = element_blank())
+
+#IF
+ggplot(data = coefs_if.1,aes(x=term, y=estimate, ymin=conf.low, ymax=conf.high)) +
+  geom_pointrange() +
+  coord_flip() +
+  labs(Title = "Effects on Invasive Frequency") +
+  geom_hline(yintercept = 0, col = "orange") +
+  ylim(-0.1, 0.1 ) +
+  labs(
+    title = "Effects on Invasive Frequency"
+    ) +
+  theme(axis.title.x = element_blank(),axis.title.y = element_blank())
+
+#IRC
+ggplot(data = coefs_irc.1,aes(x=term, y=estimate, ymin=conf.low, ymax=conf.high)) +
+  geom_pointrange() +
+  coord_flip() +
+  labs(Title = "Effects on Invasive Relative Cover") +
+  geom_hline(yintercept = 0, col = "orange") +
+  ylim(-0.1, 0.1 ) +
+  labs(
+    title = "Effects on Invasive Relative Cover"
+    ) +
+  theme(axis.title.x = element_blank(),axis.title.y = element_blank())
+
+#IDI
+ggplot(data = coefs_iDI.1,aes(x=term, y=estimate, ymin=conf.low, ymax=conf.high)) +
+  geom_pointrange() +
+  coord_flip() +
+  labs(Title = "Effects on Invasive Dominance") +
+  geom_hline(yintercept = 0, col = "orange") +
+  ylim(-0.1, 0.1 ) +
+  labs(
+    title = "Effects on Invasive Dominance"
+    ) +
+  theme(axis.title.x = element_blank(),axis.title.y = element_blank())
+
+```
+
+####Lagged
+```{r indices-le}
+
+#IR
+ind.ir.1.lag = felm(ir_tran ~ ir_tran.lag + nr_tran.lag + VOR.lag + Action +
+                gsl + rx5.w + sdii + cwd + cdd + prcpt.lag +
+                Action:gsl + Action:sdii + Action:cwd
+                , data = tran.dt, exactDOF='rM')
+
+summary(ind.ir.1.lag,robust = TRUE, cluster = TRUE)
+
+##Hugh run each one with obscode as a random effect
+
+#IF
+ind.if.1.lag = felm(if.tran ~ if.tran.lag + nr_tran.lag + VOR.lag + Action +
+                gsl + rx5.w + sdii + cwd + cdd + prcpt.lag +
+                Action:gsl + Action:sdii + Action:cwd
+                , data = tran.dt, exactDOF='rM')
+
+summary(ind.if.1.lag,robust = TRUE, cluster = TRUE)
+
+#Relative Cover
+ind.irc.1.lag = felm(ihs(rel.cov.i.2) ~ rel.cov.i.2.lag + nr_tran.lag + VOR.lag + Action +
+                gsl + rx5.w + sdii + cwd + cdd + prcpt.lag +
+                Action:gsl + Action:sdii + Action:cwd
+                , data = tran.dt, exactDOF='rM')
+
+summary(ind.irc.1.lag,robust = TRUE, cluster = TRUE)
+
+#Dominance 
+ind.iDI.1.lag = felm(meanDI.i.tran.2 ~ meanDI.i.tran.2.lag  + nr_tran.lag + VOR.lag + Action +
+                gsl + rx5.w + sdii + cwd + cdd + prcpt.lag +
+                Action:gsl + Action:sdii + Action:cwd
+                , data = tran.dt, exactDOF='rM')
+
+summary(ind.iDI.1.lag,robust = TRUE, cluster = TRUE)
+
+#Visualizing
+coefs_ir.lag.1 = broom::tidy(ind.ir.1.lag, conf.int = T)
+coefs_if.lag.1 = broom::tidy(ind.if.1.lag, conf.int = T)
+coefs_irc.lag.1 = broom::tidy(ind.irc.1.lag, conf.int = T)
+coefs_iDI.lag.1 = broom::tidy(ind.iDI.1.lag, conf.int = T)
+
+#IR
+ggplot(data = coefs_ir.lag.1,aes(x=term, y=estimate, ymin=conf.low, ymax=conf.high)) +
+  geom_pointrange() +
+  coord_flip() +
+  labs(Title = "Effects on Invasive Richness") +
+  geom_hline(yintercept = 0, col = "orange") +
+  ylim(-0.3, 0.3 ) +
+  labs(
+    title = "Effects on Invasive Richness"
+    ) +
+  theme(axis.title.x = element_blank(),axis.title.y = element_blank())
+
+#IF
+ggplot(data = coefs_if.lag.1,aes(x=term, y=estimate, ymin=conf.low, ymax=conf.high)) +
+  geom_pointrange() +
+  coord_flip() +
+  labs(Title = "Effects on Invasive Frequency") +
+  geom_hline(yintercept = 0, col = "orange") +
+  ylim(-0.5, 0.5 ) +
+  labs(
+    title = "Effects on Invasive Frequency"
+    ) +
+  theme(axis.title.x = element_blank(),axis.title.y = element_blank())
+
+#IRC
+ggplot(data = coefs_irc.lag.1,aes(x=term, y=estimate, ymin=conf.low, ymax=conf.high)) +
+  geom_pointrange() +
+  coord_flip() +
+  labs(Title = "Effects on Invasive Relative Cover") +
+  geom_hline(yintercept = 0, col = "orange") +
+  ylim(-0.1, 0.1 ) +
+  labs(
+    title = "Effects on Invasive Relative Cover"
+    ) +
+  theme(axis.title.x = element_blank(),axis.title.y = element_blank())
+
+#IDI
+ggplot(data = coefs_iDI.lag.1,aes(x=term, y=estimate, ymin=conf.low, ymax=conf.high)) +
+  geom_pointrange() +
+  coord_flip() +
+  labs(Title = "Effects on Invasive Dominance") +
+  geom_hline(yintercept = 0, col = "orange") +
+  ylim(-0.1, 0.1 ) +
+  labs(
+    title = "Effects on Invasive Dominance"
+    ) +
+  theme(axis.title.x = element_blank(),axis.title.y = element_blank())
+
+
+
+```
+
+##Species
+###Fixed effects
+```{r indices-fe-sp}
+#IF
+ind.iSf.1 = felm(Freq.T ~ nr_tran + nr_tran.lag + Action +
+                          cdd + sdii + gsl + cwd + wsdi + prcpt.lag +
+                          Action:gsl + Action:sdii
+                | TransectID, data = i.species.dt[])
+
+summary(ind.iSf.1)
+
+#Relative Cover
+ind.iSrc.1 = felm(rel.cov.T.2 ~ nr_tran + nr_tran.lag + Action + 
+                          cdd + sdii + gsl + cwd + wsdi + prcpt.lag +
+                          Action:gsl + Action:sdii
+                | TransectID, data = i.species.dt, exactDOF='rM')
+
+summary(ind.iSrc.1,robust = TRUE, cluster = TRUE)
+
+#Dominance 
+ind.iSDI.1 = felm(DI.T.2 ~ nr_tran + nr_tran.lag  + Action + 
+                          cdd + sdii + gsl + cwd + wsdi + prcpt.lag +
+                          Action:gsl + Action:sdii
+                | TransectID, data = i.species.dt)
+
+summary(ind.iSDI.1)
+
+```
+
+###Lagged
+```{r indices-le-sp}
+#IR
+ind.ir.1.lag = felm(ir_tran ~ ir_tran.lag + nr_tran + Action +
+                          cdd + sdii + gsl + cwd + wsdi + prcpt.lag +
+                          Action:gsl + Action:sdii
+                , data = i.species.dt.lag, exactDOF='rM')
+
+summary(ind.ir.1.lag,robust = TRUE, cluster = TRUE)
+
+##Hugh run each one with obscode as a random effect
+
+#IF
+ind.if.1.lag = felm(if.tran ~ if.tran.lag + nr_tran + nr_tran.lag + Action +
+                          cdd + sdii + gsl + cwd + wsdi + prcpt.lag +
+                          Action:gsl + Action:sdii, 
+                    data = i.species.dt.lag, exactDOF='rM')
+
+summary(ind.if.1.lag,robust = TRUE, cluster = TRUE)
+
+#Relative Cover
+ind.irc.1.lag = felm(rel.cov.i.2 ~ rel.cov.i.2.lag + nr_tran + nr_tran.lag + Action + 
+                          cdd + sdii + gsl + cwd + wsdi + prcpt.lag +
+                          Action:gsl + Action:sdii
+                , data = i.species.dt.lag, exactDOF='rM')
+
+summary(ind.irc.1.lag,robust = TRUE, cluster = TRUE)
+
+#Dominance 
+ind.iDI.1.lag = felm(meanDI.i.tran.2 ~ meanDI.i.tran.2.lag + nr_tran + nr_tran.lag  + Action + 
+                          cdd + sdii + gsl + cwd + wsdi + prcpt.lag +
+                          Action:gsl + Action:sdii
+                , data = i.species.dt.lag,  exactDOF='rM')
+
+summary(ind.iDI.1.lag,robust = TRUE, cluster = TRUE)
+
+```
+
+# TXx (max temperature) 
+
+##Transect
+
+###Mixed effects
 ```{r Invasives-ME-TXX}
 
 ###Explore linear relationship between TXx and Abundance 
@@ -207,14 +1122,24 @@ par(mfrow=c(1,1)) # Change back to 1 x 1
 
 AIC(txx.if.lm.1)
 
+#Relative Cover
+txx.rel.cov.lm.1 = lm(rel.cov.i.2 ~ 1 + txx, data = tran.dt)
+
+summary(txx.rel.cov.lm.1)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(txx.rel.cov.lm.1)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(txx.rel.cov.lm.1)
 
 #Mean DI
-txx.DI.lm.1 = lm( meanDI.I_tran ~ 1 + txx, data = tran.dt)
+txx.DI.lm.1 = lm( meanDI.I_tran.2 ~ 1 + txx, data = tran.dt)
 
 summary(txx.DI.lm.1)
 
 par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
-plot(txx.if.lm.1)
+plot(txx.DI.lm.1)
 par(mfrow=c(1,1)) # Change back to 1 x 1
 
 AIC(txx.DI.lm.1)
@@ -245,13 +1170,24 @@ par(mfrow=c(1,1)) # Change back to 1 x 1
 
 AIC(txx.if.lm.2)
 
+#Relative Cover
+txx.rel.cov.lm.2 = lm(rel.cov.i.2 ~ Action + txx, data = tran.dt)
+
+summary(txx.rel.cov.lm.2)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(txx.rel.cov.lm.2)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(txx.rel.cov.lm.2)
+
 #Mean DI
 txx.DI.lm.2 = lm( meanDI.I_tran ~ Action + txx, data = tran.dt)
 
 summary(txx.DI.lm.2)
 
 par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
-plot(txx.if.lm.2)
+plot(txx.DI.lm.2)
 par(mfrow=c(1,1)) # Change back to 1 x 1
 
 AIC(txx.DI.lm.2)
@@ -282,13 +1218,24 @@ par(mfrow=c(1,1)) # Change back to 1 x 1
 
 AIC(txx.if.lm.3)
 
+#Relative Cover
+txx.rel.cov.lm.3 = lm(rel.cov.i.2 ~ Action + txx + Action*txx, data = tran.dt)
+
+summary(txx.rel.cov.lm.3)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(txx.rel.cov.lm.3)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(txx.rel.cov.lm.3)
+
 #Mean DI
 txx.DI.lm.3 = lm( meanDI.I_tran ~ Action + txx + Action*txx, data = tran.dt)
 
 summary(txx.DI.lm.3)
 
 par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
-plot(txx.if.lm.3)
+plot(txx.DI.lm.3)
 par(mfrow=c(1,1)) # Change back to 1 x 1
 
 AIC(txx.DI.lm.3)
@@ -297,14 +1244,20 @@ AIC(txx.DI.lm.3)
 
 #########################Now consider transect as a fixed effect, create a strong global model
 
-#### First with the Lme4 package
-
 #For discussion with Laura...data is limited by years we have climate data for an missing the 2019 data which will give us more years. That being said, there still is not a lot of variabiation in action type - see lines below. I imagine if looked at some sort of management frequency this would be less of an issue.
+
 tran.dt[,length(unique(Year)),by=Action]
 
 tran.dt[,length(unique(Action)),by=Year]
 
 tran.dt[,length(unique(Action)),by=.(Year,SITE_ID)]
+
+#Also, I have not filtered the data to only include transects with two years worth of data. This does not appear to affect the rank deficiency issue
+
+tran.dt[,length(unique(TransectID))]
+tran.dt[Delta==1,length(unique(TransectID))] #substantially fewer transects, most of this is a product of incomplete climate data and missing 2019 data
+
+#### First with the Lme4 package
 
 #IR
 txx.ir.lmer.1 = lmer(ir_tran ~ Action*txx + txx + VOR + nr_tran + (1|SITE_ID), data = tran.dt)
@@ -316,6 +1269,11 @@ txx.if.lmer.1 = lmer(if.tran ~  txx + SITE_ID + VOR + nr_tran + Action*txx + (1|
 
 summary(txx.if.lmer.1)
 
+#Relative Cover
+txx.rel.cov.lmer.1 = lmer(rel.cov.i.2 ~  txx + SITE_ID + VOR + nr_tran + Action*txx + (1|ObsCode), data = tran.dt)
+
+summary(txx.rel.cov.lmer.1)
+
 #Mean DI
 txx.DI.lmer.1 = lmer( meanDI.I_tran ~ txx + SITE_ID + VOR + nr_tran + Action:txx + (1|ObsCode), data = tran.dt)
 
@@ -325,93 +1283,1180 @@ summary(txx.DI.lmer.1)
 ###Now with LFE package
 
 #IR
-txx.ir.flm.1 = felm(ir_tran ~ Action:txx + txx + VOR + nr_tran + ObsCode | SITE_ID, data = tran.dt)
-summary(txx.ir.flm.1)
+txx.ir.flm.1 = felm(ir_tran ~ Action:txx + txx + ObsCode + VOR + nr_tran | SITE_ID, data = tran.dt,exactDOF='rM')
+summary(txx.ir.flm.1, robust = TRUE, cluster = TRUE)
 
-txx.ir.flm.2 = felm(ir_tran ~ Action:txx + txx | TransectID, data = tran.dt) #rank-deficient
-summary(txx.ir.flm.2)
+txx.ir.flm.2 = felm(ir_tran ~ Action:txx + txx | TransectID, data = tran.dt,exactDOF='rM') #rank-deficient
+summary(txx.ir.flm.2, robust = TRUE, cluster = TRUE)
 
-txx.ir.flm.3 = felm(ir_tran ~ Action:txx + txx | SITE_ID + ObsCode, data = tran.dt) #Ru
-summary(txx.ir.flm.3)
+txx.ir.flm.3 = felm(ir_tran ~ Action:txx + txx | SITE_ID + Year, data = tran.dt,exactDOF='rM') 
+summary(txx.ir.flm.3, robust = TRUE, cluster = TRUE)
+
+#Model Diagnostics
+qqnorm(residuals(txx.ir.flm.1), ylab = 'Residuals')+
+qqline(residuals(txx.ir.flm.1))
 
 #IF
-txx.if.flm.1 = felm(if.tran ~ Action:txx + txx + VOR + nr_tran + ObsCode | SITE_ID, data = tran.dt)
-summary(txx.if.flm.1)
+txx.if.flm.1 = felm(if.tran ~ Action:txx + txx + VOR + nr_tran + ObsCode | SITE_ID, data = tran.dt,exactDOF='rM')
+summary(txx.if.flm.1, robust = TRUE, cluster = TRUE)
+
+#Relative Cover
+txx.rel.cov.flm.1 = felm(rel.cov.i.2 ~ Action:txx + txx + VOR + nr_tran + ObsCode | SITE_ID, data = tran.dt,exactDOF='rM')
+summary(txx.if.flm.1, robust = TRUE, cluster = TRUE)
 
 #DI
-txx.di.flm.1 = felm(meanDI.i.tran.2 ~ Action:txx + txx + VOR + nr_tran + ObsCode | SITE_ID, data = tran.dt)
-summary(txx.if.flm.1)
+txx.di.flm.1 = felm(meanDI.i.tran.2 ~ Action:txx + txx + VOR + nr_tran + ObsCode | SITE_ID, data = tran.dt,exactDOF='rM')
+summary(txx.if.flm.1, robust = TRUE, cluster = TRUE)
 
 
 ```
 
-#Txx Lagged Effects
+###Txx Lagged Effects
+```{r Invasives-LE-txx}
+#IR
+tff.ir.lag.lm.1 = lm(ir_tran ~ Action*txx + VOR.lag + nr_tran.lag + ir_tran.lag + ObsCode, data = tran.dt)
+summary(tff.ir.lag.lm.1)
+
+#IF
+tff.if.lag.lm.1 = lm(if.tran ~ Action*txx + VOR.lag + nr_tran.lag + if.tran.lag + ObsCode, data = tran.dt)
+summary(tff.if.lag.lm.1)
+
+#Relative Cover
+tff.rc.lag.lm.1 = lm(rel.cov.i.2 ~ Action*txx + VOR.lag + nr_tran.lag + rel.cov.i.2.lag + ObsCode, data = tran.dt)
+summary(tff.rc.lag.lm.1)
+
+#DI
+tff.DI.lag.lm.1 = lm(meanDI.i.tran.2 ~ Action*txx + VOR.lag + nr_tran.lag + meanDI.i.tran.2.lag + ObsCode, data = tran.dt)
+summary(tff.rc.lag.lm.1)
+
+```
+
+##Species Level
+Instead of looking at the treatment effects on mean invasive abundance, look at the effect on EACH invasive species (can subset this later)
+
+Because the effects will be highly species dependent, we need to consider each species as effectively it's own panel...so 
+
+###Mixed effects
+```{r Invasives-ME-TXX}
+
+#With LFE package
+
+#IF
+txx.iSf.flm.1 = felm(Freq.T ~ Action:txx + txx + VOR + nr_tran + ObsCode | TransectID + SpeciesID, data = i.species.dt,exactDOF='rM')
+summary(txx.if.flm.1, robust = TRUE, cluster = TRUE)
+
+#Relative Cover
+txx.iSrc.flm.1 = felm(rel.cov.T.2 ~ Action:txx + txx + VOR + ObsCode | SITE_ID + SpeciesID, data = i.species.dt,exactDOF='rM')
+summary(txx.if.flm.1, robust = TRUE, cluster = TRUE)
+
+#DI
+txx.iSDI.flm.1 = felm(DI.T.2 ~ Action:txx + txx + VOR + ObsCode | SITE_ID + SpeciesID, data = i.species.dt,exactDOF='rM')
+summary(txx.iS.DI.flm.1, robust = TRUE, cluster = TRUE)
+```
+
+###Lagged Effects
 ```{r Invasives-LE-txx}
 
+#IF
+txx.iSf.lag.lm.1 = lm(Freq.T ~ Action*txx + VOR.lag + nr_tran.lag + Freq.T.lag + ObsCode, data = i.species.dt)
+summary(txx.iSf.lag.lm.1)
+
+#Relative Cover
+txx.iSrc.lag.lm.1 = lm(rel.cov.T.2 ~ Action*txx + VOR.lag + nr_tran.lag + rel.cov.T.2.lag + ObsCode, data = i.species.dt)
+summary(txx.iSrc.lag.lm.1)
+
+#DI
+txx.iSDI.lag.lm.1 = lm(meanDI.i.tran.2 ~ Action*txx + VOR.lag + nr_tran.lag + meanDI.i.tran.2.lag + ObsCode, data = i.species.dt)
+summary(txx.iSDI.lag.lm.1)
+
 ```
 
 
 
-#Now create a model for TN90p. 
+# wsdi 
 
-This is a monthly value for the percentage of days when TN > 90th percentile. I care about these values for the whole of winter, create a new value which either add or average these values for the winter months. 
+##Transect
 
-```{r Model Set 3 - Invasives-TN90p}
+###Basic
+```{r Inv-wsdi-basic}
 
-#Explore linear relationship between tn90p and Abundance (IR)
+###Explore linear relationship between wsdi and Abundance 
 
-tn90p.lm.1 = lm(ir_tran ~ 1 + val.mth, data = tran.dt)
+#IR
+wsdi.ir.lm.1 = lm(ir_tran ~ 1 + wsdi, data = tran.dt)
 
-summary(tn90p.lm.1)
+summary(wsdi.ir.lm.1)
 
 par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
-plot(tn90p.lm.1)
+plot(wsdi.ir.lm.1)
 par(mfrow=c(1,1)) # Change back to 1 x 1
 
-AIC(tn90p.lm.1)
+AIC(wsdi.ir.lm.1)
 
-#Add more independent variables to this regression
-tn90p.lm.2 = lm(ir_tran ~ Action + val.mth, data = tran.dt)
+#F
+wsdi.if.lm.1 = lm(if.tran ~ 1 + wsdi, data = tran.dt)
 
-summary(tn90p.lm.2)
+summary(wsdi.if.lm.1)
 
-par(mfrow=c(2,2)) #
-plot(tn90p.lm.2) # This looks pretty weird, what's going on here?
-par(mfrow=c(1,1)) 
-AIC(tn90p.lm.2)
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(wsdi.if.lm.1)
+par(mfrow=c(1,1)) # Change back to 1 x 1
 
-#Add some interaction to the model
-tn90p.lm.3 = lm(ir_tran ~  Action + val.mth + Action*val.mth, data = tran.dt)
+AIC(wsdi.if.lm.1)
 
-summary(tn90p.lm.3)
+#Relative Cover
+wsdi.rel.cov.lm.1 = lm(rel.cov.i.2 ~ 1 + wsdi, data = tran.dt)
 
-par(mfrow=c(2,2)) #
-plot(tn90p.lm.3) # This looks pretty weird, what's going on here?
-par(mfrow=c(1,1)) 
-AIC(tn90p.lm.3)
+summary(wsdi.rel.cov.lm.1)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(wsdi.rel.cov.lm.1)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(wsdi.rel.cov.lm.1)
+
+#Mean DI
+wsdi.DI.lm.1 = lm( meanDI.i.tran.2 ~ 1 + wsdi, data = tran.dt)
+
+summary(wsdi.DI.lm.1)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(wsdi.DI.lm.1)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(wsdi.DI.lm.1)
 
 
 
-#Now consider transect as a fixed effect, create a strong global model
-tn90p.lm.4 = lmer(formula = ir_tran ~  Action + val.mth + as.factor(TransectID) + VOR +  Action*val.mth + (1|ObsCode), 
-                data = tran.dt)
+###Add more independent variables to this regression
 
-summary(tn90p.lm.4)
+#IR
+wsdi.ir.lm.2 = lm(ir_tran ~ Action + wsdi, data = tran.dt)
 
-tn90p.flm.4 = felm(ir_tran ~   val.mth + Action | TransectID,  
-                data = tran.dt)
+summary(wsdi.ir.lm.2)
 
-summary(tn90p.flm.4)
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(wsdi.ir.lm.2)
+par(mfrow=c(1,1)) # Change back to 1 x 1
 
-par(mfrow=c(2,2)) #
-plot(tn90p.lm.4) 
-par(mfrow=c(1,1)) 
-AIC(tn90p.lm.4)
+AIC(wsdi.ir.lm.2)
+
+#F
+wsdi.if.lm.2 = lm(if.tran ~ Action + wsdi, data = tran.dt)
+
+summary(wsdi.if.lm.2)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(wsdi.if.lm.2)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(wsdi.if.lm.2)
+
+#Relative Cover
+wsdi.rel.cov.lm.2 = lm(rel.cov.i.2 ~ Action + wsdi, data = tran.dt)
+
+summary(wsdi.rel.cov.lm.2)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(wsdi.rel.cov.lm.2)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(wsdi.rel.cov.lm.2)
+
+#Mean DI
+wsdi.DI.lm.2 = lm( meanDI.i.tran.2 ~ Action + wsdi, data = tran.dt)
+
+summary(wsdi.DI.lm.2)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(wsdi.DI.lm.2)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(wsdi.DI.lm.2)
+
+```
+
+###Mixed effects
+
+```{r inv-wsd-ME}
+###LFE Mixed Effects Models
+
+##IR
+  #Basic
+wsdi.ir.flm.1 = felm(ir_tran ~ Action*wsdi | TransectID, 
+                     data = tran.dt,exactDOF='rM')
+
+summary(wsdi.ir.flm.1, robust = TRUE, cluster = TRUE)
+
+  #With additional same year effects
+wsdi.ir.flm.2 = felm(ir_tran ~ Action*wsdi + ObsCode + VOR + nr_tran | TransectID, 
+                     data = tran.dt,exactDOF='rM')
+
+summary(wsdi.ir.flm.2, robust = TRUE, cluster = TRUE)
+
+  #With lagged effects
+wsdi.ir.flm.3 = felm(ir_tran ~ Action*wsdi + ObsCode + VOR + nr_tran + wsdi.lag + prcpt + prcpt.lag | TransectID, 
+                     data = tran.dt,exactDOF='rM')
+
+summary(wsdi.ir.flm.3, robust = TRUE, cluster = TRUE)
+
+
+##IF
+  #Basic
+wsdi.if.flm.1 = felm(if.tran ~ Action*wsdi | TransectID, 
+                     data = tran.dt,exactDOF='rM')
+
+summary(wsdi.if.flm.1, robust = TRUE, cluster = TRUE)
+
+  #With additional same year effects
+wsdi.if.flm.2 = felm(if.tran ~ Action*wsdi + VOR + nr_tran + ObsCode | TransectID, 
+                     data = tran.dt,exactDOF='rM')
+
+summary(wsdi.if.flm.2, robust = TRUE, cluster = TRUE)
+
+  #With lagged effects
+wsdi.if.flm.3 = felm(if.tran ~ Action*wsdi  + VOR + nr_tran + ObsCode + wsdi.lag + prcpt + prcpt.lag | TransectID, 
+                     data = tran.dt,exactDOF='rM')
+
+summary(wsdi.if.flm.3, robust = TRUE, cluster = TRUE)
+
+##Relative Cover
+  #Basic
+wsdi.rc.flm.1 = felm(rel.cov.i.2 ~ Action*wsdi | TransectID, 
+                     data = tran.dt,exactDOF='rM')
+
+summary(wsdi.rc.flm.1, robust = TRUE, cluster = TRUE)
+
+  #With additional same year effects
+wsdi.rc.flm.2 = felm(rel.cov.i.2 ~ Action*wsdi + VOR + nr_tran + ObsCode | TransectID, 
+                     data = tran.dt,exactDOF='rM')
+
+summary(wsdi.rc.flm.2, robust = TRUE, cluster = TRUE)
+
+  #With lagged effects
+wsdi.rc.flm.3 = felm(rel.cov.i.2 ~ Action*wsdi + VOR + nr_tran + ObsCode + wsdi.lag + prcpt + prcpt.lag | TransectID, 
+                     data = tran.dt,exactDOF='rM')
+
+summary(wsdi.rc.flm.3, robust = TRUE, cluster = TRUE)
+
+
+##DI
+  #Basic
+wsdi.di.flm.1 = felm(meanDI.i.tran.2 ~ Action*wsdi | TransectID, 
+                     data = tran.dt,exactDOF='rM')
+
+summary(wsdi.if.flm.1, robust = TRUE, cluster = TRUE)
+
+  #With additional same year effects
+wsdi.di.flm.2 = felm(meanDI.i.tran.2 ~ Action*wsdi + VOR + nr_tran + ObsCode | TransectID, 
+                     data = tran.dt,exactDOF='rM')
+
+summary(wsdi.if.flm.2, robust = TRUE, cluster = TRUE)
+
+  #With lagged effects
+wsdi.di.flm.3 = felm(meanDI.i.tran.2 ~ Action*wsdi + VOR + nr_tran + ObsCode ++ wsdi.lag + prcpt + prcpt.lag | TransectID, 
+                     data = tran.dt,exactDOF='rM')
+
+summary(wsdi.if.flm.3, robust = TRUE, cluster = TRUE)
+
+```
+
+###Lagged Effects
+```{r Inv-wsdi-le}
+#IR
+wsdi.ir.lag.1 = felm(ir_tran ~ Action*wsdi + VOR + nr_tran + ir_tran.lag + ObsCode, data = tran.dt)
+summary(wsdi.ir.lag.1)
+
+#IF
+wsdi.if.lag.1 = lm(if.tran ~ Action*wsdi + VOR + nr_tran + if.tran.lag + ObsCode, data = tran.dt)
+summary(wsdi.if.lag.1)
+
+#Relative Cover
+wsdi.rc.lag.1 = lm(rel.cov.i.2 ~ Action*wsdi + VOR + nr_tran + rel.cov.i.2.lag + ObsCode, data = tran.dt)
+summary(wsdi.rc.lag.1)
+
+#DI
+wsdi.DI.lag.1 = lm(meanDI.i.tran.2 ~ Action*wsdi + VOR + nr_tran + meanDI.i.tran.2.lag + ObsCode, data = tran.dt)
+summary(wsdi.DI.lag.1)
+
+```
+
+##Species Level
+Instead of looking at the treatment effects on mean invasive abundance, look at the effect on EACH invasive species (can subset this later)
+
+Because the effects will be highly species dependent, we need to consider each species as effectively it's own panel...so 
+
+###Mixed effects
+```{r Inv-wsdi-me-sp}
+#IF
+wsdi.iSf.flm.1 = felm(Freq.T ~ Action*wsdi  + VOR + nr_tran + ObsCode | TransectID + SpeciesID, 
+                      data = i.species.dt,exactDOF='rM')
+
+summary(wsdi.iSf.flm.1, robust = TRUE, cluster = TRUE)
+
+#Relative Cover
+wsdi.iSrc.flm.1 = felm(rel.cov.T.2 ~ Action*wsdi + VOR + ObsCode | TransectID + SpeciesID, 
+                       data = i.species.dt,exactDOF='rM')
+
+summary(wsdi.if.flm.1, robust = TRUE, cluster = TRUE)
+
+#DI
+wsdi.iSDI.flm.1 = felm(DI.T.2 ~ Action*wsdi + VOR + ObsCode | SITE_ID + SpeciesID, 
+                       data = i.species.dt,exactDOF='rM')
+
+summary(wsdi.iSDI.flm.1, robust = TRUE, cluster = TRUE)
+```
+
+###Lagged effects
+```{r Inv-wsdi-le-sp}
+#IF
+wsdi.iSf.flm.lag.1 = felm(Freq.T ~ Action*wsdi  + VOR + nr_tran + ObsCode | TransectID + SpeciesID, 
+                      data = i.species.dt,exactDOF='rM')
+
+summary(wsdi.iSf.flm.lag.1, robust = TRUE, cluster = TRUE)
+
+#Relative Cover
+wsdi.iSrc.flm.lag.1 = felm(rel.cov.T.2 ~ Action*wsdi + VOR + ObsCode | TransectID + SpeciesID, 
+                       data = i.species.dt,exactDOF='rM')
+
+summary(wsdi.if.flm.lag.1, robust = TRUE, cluster = TRUE)
+
+#DI
+wsdi.iSDI.flm.lag.1 = felm(DI.T.2 ~ Action*wsdi + VOR + ObsCode | SITE_ID + SpeciesID, 
+                       data = i.species.dt,exactDOF='rM')
+
+summary(wsdi.iSDI.flm.lag.1, robust = TRUE, cluster = TRUE)
+
+
+```
+
+# TN90p
+
+##Transect
+
+###Mixed effects
+```{r Invasives-ME-tn90p}
+
+###Explore linear relationship between tn90p and Abundance 
+
+#IR
+tn90p.ir.lm.1 = lm(ir_tran ~ 1 + tn90p, data = tran.dt)
+
+summary(tn90p.ir.lm.1)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(tn90p.ir.lm.1)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(tn90p.ir.lm.1)
+
+#F
+tn90p.if.lm.1 = lm(if.tran ~ 1 + tn90p, data = tran.dt)
+
+summary(tn90p.if.lm.1)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(tn90p.if.lm.1)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(tn90p.if.lm.1)
+
+#Relative Cover
+tn90p.rel.cov.lm.1 = lm(rel.cov.i.2 ~ 1 + tn90p, data = tran.dt)
+
+summary(tn90p.rel.cov.lm.1)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(tn90p.rel.cov.lm.1)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(tn90p.rel.cov.lm.1)
+
+#Mean DI
+tn90p.DI.lm.1 = lm( meanDI.I_tran ~ 1 + tn90p, data = tran.dt)
+
+summary(tn90p.DI.lm.1)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(tn90p.DI.lm.1)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(tn90p.DI.lm.1)
+
+
+
+###Add more independent variables to this regression
+
+#IR
+tn90p.ir.lm.2 = lm(ir_tran ~ Action + tn90p, data = tran.dt)
+
+summary(tn90p.ir.lm.2)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(tn90p.ir.lm.2)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(tn90p.ir.lm.2)
+
+#F
+tn90p.if.lm.2 = lm(if.tran ~ Action + tn90p, data = tran.dt)
+
+summary(tn90p.if.lm.2)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(tn90p.if.lm.2)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(tn90p.if.lm.2)
+
+#Relative Cover
+tn90p.rel.cov.lm.2 = lm(rel.cov.i.2 ~ Action + tn90p, data = tran.dt)
+
+summary(tn90p.rel.cov.lm.2)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(tn90p.rel.cov.lm.2)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(tn90p.rel.cov.lm.2)
+
+#Mean DI
+tn90p.DI.lm.2 = lm( meanDI.I_tran ~ Action + tn90p, data = tran.dt)
+
+summary(tn90p.DI.lm.2)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(tn90p.DI.lm.2)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(tn90p.DI.lm.2)
+
+
+
+####Add some interaction to the model
+
+#IR
+tn90p.ir.lm.3 = lm(ir_tran ~ Action + tn90p + Action*tn90p, data = tran.dt)
+
+summary(tn90p.ir.lm.3)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(tn90p.ir.lm.3)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(tn90p.ir.lm.3)
+
+#F
+tn90p.if.lm.3 = lm(if.tran ~ Action + tn90p + Action*tn90p, data = tran.dt)
+
+summary(tn90p.if.lm.3)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(tn90p.if.lm.3)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(tn90p.if.lm.3)
+
+#Relative Cover
+tn90p.rel.cov.lm.3 = lm(rel.cov.i.2 ~ Action + tn90p + Action*tn90p, data = tran.dt)
+
+summary(tn90p.rel.cov.lm.3)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(tn90p.rel.cov.lm.3)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(tn90p.rel.cov.lm.3)
+
+#Mean DI
+tn90p.DI.lm.3 = lm( meanDI.I_tran ~ Action + tn90p + Action*tn90p, data = tran.dt)
+
+summary(tn90p.DI.lm.3)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(tn90p.DI.lm.3)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(tn90p.DI.lm.3)
+
+
+
+#########################Now consider transect as a fixed effect, create a strong global model
+
+#For discussion with Laura...data is limited by years we have climate data for an missing the 2019 data which will give us more years. That being said, there still is not a lot of variabiation in action type - see lines below. I imagine if looked at some sort of management frequency this would be less of an issue.
+
+tran.dt[,length(unique(Year)),by=Action]
+
+tran.dt[,length(unique(Action)),by=Year]
+
+tran.dt[,length(unique(Action)),by=.(Year,SITE_ID)]
+
+#Also, I have not filtered the data to only include transects with two years worth of data. This does not appear to affect the rank deficiency issue
+
+tran.dt[,length(unique(TransectID))]
+tran.dt[Delta==1,length(unique(TransectID))] #substantially fewer transects, most of this is a product of incomplete climate data and missing 2019 data
+
+#### First with the Lme4 package
+
+#IR
+tn90p.ir.lmer.1 = lmer(ir_tran ~ Action*tn90p + tn90p + VOR + nr_tran + (1|SITE_ID), data = tran.dt)
+
+summary(tn90p.ir.lmer.1)
+
+#F
+tn90p.if.lmer.1 = lmer(if.tran ~  tn90p + SITE_ID + VOR + nr_tran + Action*tn90p + (1|ObsCode), data = tran.dt)
+
+summary(tn90p.if.lmer.1)
+
+#Relative Cover
+tn90p.rel.cov.lmer.1 = lmer(rel.cov.i.2 ~  tn90p + SITE_ID + VOR + nr_tran + Action*tn90p + (1|ObsCode), data = tran.dt)
+
+summary(tn90p.rel.cov.lmer.1)
+
+#Mean DI
+tn90p.DI.lmer.1 = lmer( meanDI.I_tran ~ tn90p + SITE_ID + VOR + nr_tran + Action:tn90p + (1|ObsCode), data = tran.dt)
+
+summary(tn90p.DI.lmer.1)
+
+
+###Now with LFE package
+
+#IR
+tn90p.ir.flm.1 = felm(ir_tran ~ Action:tn90p + tn90p + ObsCode + VOR + nr_tran | SITE_ID, data = tran.dt,exactDOF='rM')
+summary(tn90p.ir.flm.1, robust = TRUE, cluster = TRUE)
+
+tn90p.ir.flm.2 = felm(ir_tran ~ Action:tn90p + tn90p | TransectID, data = tran.dt,exactDOF='rM') #rank-deficient
+summary(tn90p.ir.flm.2, robust = TRUE, cluster = TRUE)
+
+tn90p.ir.flm.3 = felm(ir_tran ~ Action:tn90p + tn90p | SITE_ID + Year, data = tran.dt,exactDOF='rM') 
+summary(tn90p.ir.flm.3, robust = TRUE, cluster = TRUE)
+
+#Model Diagnostics
+qqnorm(residuals(tn90p.ir.flm.1), ylab = 'Residuals')+
+qqline(residuals(tn90p.ir.flm.1))
+
+#IF
+tn90p.if.flm.1 = felm(if.tran ~ Action:tn90p + tn90p + VOR + nr_tran + ObsCode | SITE_ID, data = tran.dt,exactDOF='rM')
+summary(tn90p.if.flm.1, robust = TRUE, cluster = TRUE)
+
+#Relative Cover
+tn90p.rel.cov.flm.1 = felm(rel.cov.i.2 ~ Action:tn90p + tn90p + VOR + nr_tran + ObsCode | SITE_ID, data = tran.dt,exactDOF='rM')
+summary(tn90p.if.flm.1, robust = TRUE, cluster = TRUE)
+
+#DI
+tn90p.di.flm.1 = felm(meanDI.i.tran.2 ~ Action:tn90p + tn90p + VOR + nr_tran + ObsCode | SITE_ID, data = tran.dt,exactDOF='rM')
+summary(tn90p.if.flm.1, robust = TRUE, cluster = TRUE)
+
+
+```
+
+####tn90p Lagged Effects
+```{r Invasives-LE-tn90p}
+#IR
+tff.ir.lag.lm.1 = lm(ir_tran ~ Action*tn90p + VOR.lag + nr_tran.lag + ir_tran.lag + ObsCode, data = tran.dt)
+summary(tff.ir.lag.lm.1)
+
+#IF
+tff.if.lag.lm.1 = lm(if.tran ~ Action*tn90p + VOR.lag + nr_tran.lag + if.tran.lag + ObsCode, data = tran.dt)
+summary(tff.if.lag.lm.1)
+
+#Relative Cover
+tff.rc.lag.lm.1 = lm(rel.cov.i.2 ~ Action*tn90p + VOR.lag + nr_tran.lag + rel.cov.i.2.lag + ObsCode, data = tran.dt)
+summary(tff.rc.lag.lm.1)
+
+#DI
+tff.DI.lag.lm.1 = lm(meanDI.i.tran.2 ~ Action*tn90p + VOR.lag + nr_tran.lag + meanDI.i.tran.2.lag + ObsCode, data = tran.dt)
+summary(tff.rc.lag.lm.1)
+
+```
+
+##Species Level
+Instead of looking at the treatment effects on mean invasive abundance, look at the effect on EACH invasive species (can subset this later)
+
+Because the effects will be highly species dependent, we need to consider each species as effectively it's own panel...so 
+
+###Mixed effects
+```{r Invasives-ME-tn90p}
+
+#With LFE package
+
+#IF
+tn90p.iSf.flm.1 = felm(Freq.T ~ Action:tn90p + tn90p + VOR + nr_tran + ObsCode | TransectID + SpeciesID, data = i.species.dt,exactDOF='rM')
+summary(tn90p.if.flm.1, robust = TRUE, cluster = TRUE)
+
+#Relative Cover
+tn90p.iSrc.flm.1 = felm(rel.cov.T.2 ~ Action:tn90p + tn90p + VOR + ObsCode | SITE_ID + SpeciesID, data = i.species.dt,exactDOF='rM')
+summary(tn90p.if.flm.1, robust = TRUE, cluster = TRUE)
+
+#DI
+tn90p.iSDI.flm.1 = felm(DI.T.2 ~ Action:tn90p + tn90p + VOR + ObsCode | SITE_ID + SpeciesID, data = i.species.dt,exactDOF='rM')
+summary(tn90p.iS.DI.flm.1, robust = TRUE, cluster = TRUE)
+```
+
+###Lagged Effects
+```{r Invasives-LE-tn90p}
+
+#IF
+tn90p.iSf.lag.lm.1 = lm(Freq.T ~ Action*tn90p + VOR.lag + nr_tran.lag + Freq.T.lag + ObsCode, data = i.species.dt)
+summary(tn90p.iSf.lag.lm.1)
+
+#Relative Cover
+tn90p.iSrc.lag.lm.1 = lm(rel.cov.T.2 ~ Action*tn90p + VOR.lag + nr_tran.lag + rel.cov.T.2.lag + ObsCode, data = i.species.dt)
+summary(tn90p.iSrc.lag.lm.1)
+
+#DI
+tn90p.iSDI.lag.lm.1 = lm(meanDI.i.tran.2 ~ Action*tn90p + VOR.lag + nr_tran.lag + meanDI.i.tran.2.lag + ObsCode, data = i.species.dt)
+summary(tn90p.iSDI.lag.lm.1)
 
 ```
 
 
-#
+# fd
+
+##Transect
+
+###Mixed effects
+```{r Invasives-ME-fd}
+
+###Explore linear relationship between fd and Abundance 
+
+#IR
+fd.ir.lm.1 = lm(ir_tran ~ 1 + fd, data = tran.dt)
+
+summary(fd.ir.lm.1)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(fd.ir.lm.1)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(fd.ir.lm.1)
+
+#F
+fd.if.lm.1 = lm(if.tran ~ 1 + fd, data = tran.dt)
+
+summary(fd.if.lm.1)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(fd.if.lm.1)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(fd.if.lm.1)
+
+#Relative Cover
+fd.rel.cov.lm.1 = lm(rel.cov.i.2 ~ 1 + fd, data = tran.dt)
+
+summary(fd.rel.cov.lm.1)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(fd.rel.cov.lm.1)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(fd.rel.cov.lm.1)
+
+#Mean DI
+fd.DI.lm.1 = lm( meanDI.I_tran ~ 1 + fd, data = tran.dt)
+
+summary(fd.DI.lm.1)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(fd.DI.lm.1)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(fd.DI.lm.1)
 
 
-Write out a long logic portion of the methods, so the model and what indices
+
+###Add more independent variables to this regression
+
+#IR
+fd.ir.lm.2 = lm(ir_tran ~ Action + fd, data = tran.dt)
+
+summary(fd.ir.lm.2)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(fd.ir.lm.2)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(fd.ir.lm.2)
+
+#F
+fd.if.lm.2 = lm(if.tran ~ Action + fd, data = tran.dt)
+
+summary(fd.if.lm.2)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(fd.if.lm.2)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(fd.if.lm.2)
+
+#Relative Cover
+fd.rel.cov.lm.2 = lm(rel.cov.i.2 ~ Action + fd, data = tran.dt)
+
+summary(fd.rel.cov.lm.2)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(fd.rel.cov.lm.2)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(fd.rel.cov.lm.2)
+
+#Mean DI
+fd.DI.lm.2 = lm( meanDI.I_tran ~ Action + fd, data = tran.dt)
+
+summary(fd.DI.lm.2)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(fd.DI.lm.2)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(fd.DI.lm.2)
+
+
+
+####Add some interaction to the model
+
+#IR
+fd.ir.lm.3 = lm(ir_tran ~ Action + fd + Action*fd, data = tran.dt)
+
+summary(fd.ir.lm.3)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(fd.ir.lm.3)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(fd.ir.lm.3)
+
+#F
+fd.if.lm.3 = lm(if.tran ~ Action + fd + Action*fd, data = tran.dt)
+
+summary(fd.if.lm.3)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(fd.if.lm.3)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(fd.if.lm.3)
+
+#Relative Cover
+fd.rel.cov.lm.3 = lm(rel.cov.i.2 ~ Action + fd + Action*fd, data = tran.dt)
+
+summary(fd.rel.cov.lm.3)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(fd.rel.cov.lm.3)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(fd.rel.cov.lm.3)
+
+#Mean DI
+fd.DI.lm.3 = lm( meanDI.I_tran ~ Action + fd + Action*fd, data = tran.dt)
+
+summary(fd.DI.lm.3)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(fd.DI.lm.3)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(fd.DI.lm.3)
+
+
+
+#########################Now consider transect as a fixed effect, create a strong global model
+
+#For discussion with Laura...data is limited by years we have climate data for an missing the 2019 data which will give us more years. That being said, there still is not a lot of variabiation in action type - see lines below. I imagine if looked at some sort of management frequency this would be less of an issue.
+
+tran.dt[,length(unique(Year)),by=Action]
+
+tran.dt[,length(unique(Action)),by=Year]
+
+tran.dt[,length(unique(Action)),by=.(Year,SITE_ID)]
+
+#Also, I have not filtered the data to only include transects with two years worth of data. This does not appear to affect the rank deficiency issue
+
+tran.dt[,length(unique(TransectID))]
+tran.dt[Delta==1,length(unique(TransectID))] #substantially fewer transects, most of this is a product of incomplete climate data and missing 2019 data
+
+#### First with the Lme4 package
+
+#IR
+fd.ir.lmer.1 = lmer(ir_tran ~ Action*fd + fd + VOR + nr_tran + (1|SITE_ID), data = tran.dt)
+
+summary(fd.ir.lmer.1)
+
+#F
+fd.if.lmer.1 = lmer(if.tran ~  fd + SITE_ID + VOR + nr_tran + Action*fd + (1|ObsCode), data = tran.dt)
+
+summary(fd.if.lmer.1)
+
+#Relative Cover
+fd.rel.cov.lmer.1 = lmer(rel.cov.i.2 ~  fd + SITE_ID + VOR + nr_tran + Action*fd + (1|ObsCode), data = tran.dt)
+
+summary(fd.rel.cov.lmer.1)
+
+#Mean DI
+fd.DI.lmer.1 = lmer( meanDI.I_tran ~ fd + SITE_ID + VOR + nr_tran + Action:fd + (1|ObsCode), data = tran.dt)
+
+summary(fd.DI.lmer.1)
+
+
+###Now with LFE package
+
+#IR
+fd.ir.flm.1 = felm(ir_tran ~ Action:fd + fd + ObsCode + VOR + nr_tran | SITE_ID, data = tran.dt,exactDOF='rM')
+summary(fd.ir.flm.1, robust = TRUE, cluster = TRUE)
+
+fd.ir.flm.2 = felm(ir_tran ~ Action:fd + fd | TransectID, data = tran.dt,exactDOF='rM') #rank-deficient
+summary(fd.ir.flm.2, robust = TRUE, cluster = TRUE)
+
+fd.ir.flm.3 = felm(ir_tran ~ Action:fd + fd | SITE_ID + Year, data = tran.dt,exactDOF='rM') 
+summary(fd.ir.flm.3, robust = TRUE, cluster = TRUE)
+
+#Model Diagnostics
+qqnorm(residuals(fd.ir.flm.1), ylab = 'Residuals')+
+qqline(residuals(fd.ir.flm.1))
+
+#IF
+fd.if.flm.1 = felm(if.tran ~ Action:fd + fd + VOR + nr_tran + ObsCode | SITE_ID, data = tran.dt,exactDOF='rM')
+summary(fd.if.flm.1, robust = TRUE, cluster = TRUE)
+
+#Relative Cover
+fd.rel.cov.flm.1 = felm(rel.cov.i.2 ~ Action:fd + fd + VOR + nr_tran + ObsCode | SITE_ID, data = tran.dt,exactDOF='rM')
+summary(fd.if.flm.1, robust = TRUE, cluster = TRUE)
+
+#DI
+fd.di.flm.1 = felm(meanDI.i.tran.2 ~ Action:fd + fd + VOR + nr_tran + ObsCode | SITE_ID, data = tran.dt,exactDOF='rM')
+summary(fd.if.flm.1, robust = TRUE, cluster = TRUE)
+
+
+```
+
+####fd Lagged Effects
+```{r Invasives-LE-fd}
+#IR
+tff.ir.lag.lm.1 = lm(ir_tran ~ Action*fd + VOR.lag + nr_tran.lag + ir_tran.lag + ObsCode, data = tran.dt)
+summary(tff.ir.lag.lm.1)
+
+#IF
+tff.if.lag.lm.1 = lm(if.tran ~ Action*fd + VOR.lag + nr_tran.lag + if.tran.lag + ObsCode, data = tran.dt)
+summary(tff.if.lag.lm.1)
+
+#Relative Cover
+tff.rc.lag.lm.1 = lm(rel.cov.i.2 ~ Action*fd + VOR.lag + nr_tran.lag + rel.cov.i.2.lag + ObsCode, data = tran.dt)
+summary(tff.rc.lag.lm.1)
+
+#DI
+tff.DI.lag.lm.1 = lm(meanDI.i.tran.2 ~ Action*fd + VOR.lag + nr_tran.lag + meanDI.i.tran.2.lag + ObsCode, data = tran.dt)
+summary(tff.rc.lag.lm.1)
+
+```
+
+##Species Level
+Instead of looking at the treatment effects on mean invasive abundance, look at the effect on EACH invasive species (can subset this later)
+
+Because the effects will be highly species dependent, we need to consider each species as effectively it's own panel...so 
+
+###Mixed effects
+```{r Invasives-ME-fd}
+
+#With LFE package
+
+#IF
+fd.iSf.flm.1 = felm(Freq.T ~ Action:fd + fd + VOR + nr_tran + ObsCode | TransectID + SpeciesID, data = i.species.dt,exactDOF='rM')
+summary(fd.if.flm.1, robust = TRUE, cluster = TRUE)
+
+#Relative Cover
+fd.iSrc.flm.1 = felm(rel.cov.T.2 ~ Action:fd + fd + VOR + ObsCode | SITE_ID + SpeciesID, data = i.species.dt,exactDOF='rM')
+summary(fd.if.flm.1, robust = TRUE, cluster = TRUE)
+
+#DI
+fd.iSDI.flm.1 = felm(DI.T.2 ~ Action:fd + fd + VOR + ObsCode | SITE_ID + SpeciesID, data = i.species.dt,exactDOF='rM')
+summary(fd.iS.DI.flm.1, robust = TRUE, cluster = TRUE)
+```
+
+###Lagged Effects
+```{r Invasives-LE-fd}
+
+#IF
+fd.iSf.lag.lm.1 = lm(Freq.T ~ Action*fd + VOR.lag + nr_tran.lag + Freq.T.lag + ObsCode, data = i.species.dt)
+summary(fd.iSf.lag.lm.1)
+
+#Relative Cover
+fd.iSrc.lag.lm.1 = lm(rel.cov.T.2 ~ Action*fd + VOR.lag + nr_tran.lag + rel.cov.T.2.lag + ObsCode, data = i.species.dt)
+summary(fd.iSrc.lag.lm.1)
+
+#DI
+fd.iSDI.lag.lm.1 = lm(meanDI.i.tran.2 ~ Action*fd + VOR.lag + nr_tran.lag + meanDI.i.tran.2.lag + ObsCode, data = i.species.dt)
+summary(fd.iSDI.lag.lm.1)
+
+```
+
+
+# gsl
+
+##Transect
+
+###Mixed effects
+```{r Invasives-ME-gsl}
+
+###Explore linear relationship between gsl and Abundance 
+
+#IR
+gsl.ir.lm.1 = lm(ir_tran ~ 1 + gsl, data = tran.dt)
+
+summary(gsl.ir.lm.1)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(gsl.ir.lm.1)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(gsl.ir.lm.1)
+
+#F
+gsl.if.lm.1 = lm(if.tran ~ 1 + gsl, data = tran.dt)
+
+summary(gsl.if.lm.1)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(gsl.if.lm.1)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(gsl.if.lm.1)
+
+#Relative Cover
+gsl.rel.cov.lm.1 = lm(rel.cov.i.2 ~ 1 + gsl, data = tran.dt)
+
+summary(gsl.rel.cov.lm.1)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(gsl.rel.cov.lm.1)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(gsl.rel.cov.lm.1)
+
+#Mean DI
+gsl.DI.lm.1 = lm( meanDI.I.tran.2 ~ 1 + gsl, data = tran.dt)
+
+summary(gsl.DI.lm.1)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(gsl.DI.lm.1)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(gsl.DI.lm.1)
+
+
+
+###Add more independent variables to this regression
+
+#IR
+gsl.ir.lm.2 = lm(ir_tran ~ Action + gsl, data = tran.dt)
+
+summary(gsl.ir.lm.2)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(gsl.ir.lm.2)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(gsl.ir.lm.2)
+
+#F
+gsl.if.lm.2 = lm(if.tran ~ Action + gsl, data = tran.dt)
+
+summary(gsl.if.lm.2)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(gsl.if.lm.2)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(gsl.if.lm.2)
+
+#Relative Cover
+gsl.rel.cov.lm.2 = lm(rel.cov.i.2 ~ Action + gsl, data = tran.dt)
+
+summary(gsl.rel.cov.lm.2)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(gsl.rel.cov.lm.2)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(gsl.rel.cov.lm.2)
+
+#Mean DI
+gsl.DI.lm.2 = lm( meanDI.I.tran.2 ~ Action + gsl, data = tran.dt)
+
+summary(gsl.DI.lm.2)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(gsl.DI.lm.2)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(gsl.DI.lm.2)
+
+
+
+####Add some interaction to the model
+
+#IR
+gsl.ir.lm.3 = lm(ir_tran ~ Action + gsl + Action*gsl, data = tran.dt)
+
+summary(gsl.ir.lm.3)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(gsl.ir.lm.3)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(gsl.ir.lm.3)
+
+#F
+gsl.if.lm.3 = lm(if.tran ~ Action + gsl + Action*gsl, data = tran.dt)
+
+summary(gsl.if.lm.3)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(gsl.if.lm.3)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(gsl.if.lm.3)
+
+#Relative Cover
+gsl.rel.cov.lm.3 = lm(rel.cov.i.2 ~ Action + gsl + Action*gsl, data = tran.dt)
+
+summary(gsl.rel.cov.lm.3)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(gsl.rel.cov.lm.3)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(gsl.rel.cov.lm.3)
+
+#Mean DI
+gsl.DI.lm.3 = lm( meanDI.I.tran.2 ~ Action + gsl + Action*gsl, data = tran.dt)
+
+summary(gsl.DI.lm.3)
+
+par(mfrow=c(2,2)) # Change the panel layout to 2 x 2
+plot(gsl.DI.lm.3)
+par(mfrow=c(1,1)) # Change back to 1 x 1
+
+AIC(gsl.DI.lm.3)
+
+
+
+#########################Now consider transect as a fixed effect, create a strong global model
+
+
+#IR
+gsl.ir.lmer.1 = lmer(ir_tran ~ Action*gsl + gsl + VOR + nr_tran + (1|SITE_ID), data = tran.dt)
+
+summary(gsl.ir.lmer.1)
+
+#F
+gsl.if.lmer.1 = lmer(if.tran ~  gsl + SITE_ID + VOR + nr_tran + Action*gsl + (1|ObsCode), data = tran.dt)
+
+summary(gsl.if.lmer.1)
+
+#Relative Cover
+gsl.rel.cov.lmer.1 = lmer(rel.cov.i.2 ~  gsl + SITE_ID + VOR + nr_tran + Action*gsl + (1|ObsCode), data = tran.dt)
+
+summary(gsl.rel.cov.lmer.1)
+
+#Mean DI
+gsl.DI.lmer.1 = lmer( meanDI.I.tran.2 ~ gsl + SITE_ID + VOR + nr_tran + Action:gsl + (1|ObsCode), data = tran.dt)
+
+summary(gsl.DI.lmer.1)
+
+
+###Now with LFE package
+
+#IR
+gsl.ir.flm.1 = felm(ir_tran ~ Action:gsl + gsl + ObsCode + VOR + nr_tran | SITE_ID, data = tran.dt,exactDOF='rM')
+summary(gsl.ir.flm.1, robust = TRUE, cluster = TRUE)
+
+gsl.ir.flm.2 = felm(ir_tran ~ Action:gsl + gsl | TransectID, data = tran.dt,exactDOF='rM') #rank-deficient
+summary(gsl.ir.flm.2, robust = TRUE, cluster = TRUE)
+
+gsl.ir.flm.3 = felm(ir_tran ~ Action:gsl + gsl | SITE_ID + Year, data = tran.dt,exactDOF='rM') 
+summary(gsl.ir.flm.3, robust = TRUE, cluster = TRUE)
+
+#Model Diagnostics
+qqnorm(residuals(gsl.ir.flm.1), ylab = 'Residuals')+
+qqline(residuals(gsl.ir.flm.1))
+
+#IF
+gsl.if.flm.1 = felm(if.tran ~ Action:gsl + gsl + VOR + nr_tran + ObsCode | SITE_ID, data = tran.dt,exactDOF='rM')
+summary(gsl.if.flm.1, robust = TRUE, cluster = TRUE)
+
+#Relative Cover
+gsl.rel.cov.flm.1 = felm(rel.cov.i.2 ~ Action:gsl + gsl + VOR + nr_tran + ObsCode | SITE_ID, data = tran.dt,exactDOF='rM')
+summary(gsl.if.flm.1, robust = TRUE, cluster = TRUE)
+
+#DI
+gsl.di.flm.1 = felm(meanDI.i.tran.2 ~ Action:gsl + gsl + VOR + nr_tran + ObsCode | SITE_ID, data = tran.dt,exactDOF='rM')
+summary(gsl.if.flm.1, robust = TRUE, cluster = TRUE)
+
+
+```
+
+####gsl Lagged Effects
+```{r Invasives-LE-gsl}
+#IR
+tff.ir.lag.lm.1 = lm(ir_tran ~ Action*gsl + VOR.lag + nr_tran.lag + ir_tran.lag + ObsCode, data = tran.dt)
+summary(tff.ir.lag.lm.1)
+
+#IF
+tff.if.lag.lm.1 = lm(if.tran ~ Action*gsl + VOR.lag + nr_tran.lag + if.tran.lag + ObsCode, data = tran.dt)
+summary(tff.if.lag.lm.1)
+
+#Relative Cover
+tff.rc.lag.lm.1 = lm(rel.cov.i.2 ~ Action*gsl + VOR.lag + nr_tran.lag + rel.cov.i.2.lag + ObsCode, data = tran.dt)
+summary(tff.rc.lag.lm.1)
+
+#DI
+tff.DI.lag.lm.1 = lm(meanDI.i.tran.2 ~ Action*gsl + VOR.lag + nr_tran.lag + meanDI.i.tran.2.lag + ObsCode, data = tran.dt)
+summary(tff.rc.lag.lm.1)
+
+```
+
+##Species Level
+Instead of looking at the treatment effects on mean invasive abundance, look at the effect on EACH invasive species (can subset this later)
+
+Because the effects will be highly species dependent, we need to consider each species as effectively it's own panel...so 
+
+###Mixed effects
+```{r Invasives-ME-gsl}
+
+#With LFE package
+
+#IF
+gsl.iSf.flm.1 = felm(Freq.T ~ Action:gsl + gsl + VOR + nr_tran + ObsCode | TransectID + SpeciesID, data = i.species.dt,exactDOF='rM')
+summary(gsl.if.flm.1, robust = TRUE, cluster = TRUE)
+
+#Relative Cover
+gsl.iSrc.flm.1 = felm(rel.cov.T.2 ~ Action:gsl + gsl + VOR + ObsCode | SITE_ID + SpeciesID, data = i.species.dt,exactDOF='rM')
+summary(gsl.if.flm.1, robust = TRUE, cluster = TRUE)
+
+#DI
+gsl.iSDI.flm.1 = felm(DI.T.2 ~ Action:gsl + gsl + VOR + ObsCode | SITE_ID + SpeciesID, data = i.species.dt,exactDOF='rM')
+summary(gsl.iS.DI.flm.1, robust = TRUE, cluster = TRUE)
+```
+
+###Lagged Effects
+```{r Invasives-LE-gsl}
+
+#IF
+gsl.iSf.lag.lm.1 = lm(Freq.T ~ Action*gsl + VOR.lag + nr_tran.lag + Freq.T.lag + ObsCode, data = i.species.dt)
+summary(gsl.iSf.lag.lm.1)
+
+#Relative Cover
+gsl.iSrc.lag.lm.1 = lm(rel.cov.T.2 ~ Action*gsl + VOR.lag + nr_tran.lag + rel.cov.T.2.lag + ObsCode, data = i.species.dt)
+summary(gsl.iSrc.lag.lm.1)
+
+#DI
+gsl.iSDI.lag.lm.1 = lm(meanDI.i.tran.2 ~ Action*gsl + VOR.lag + nr_tran.lag + meanDI.i.tran.2.lag + ObsCode, data = i.species.dt)
+summary(gsl.iSDI.lag.lm.1)
+
+```
+
+
+
