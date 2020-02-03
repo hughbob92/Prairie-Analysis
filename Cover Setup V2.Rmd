@@ -33,18 +33,24 @@ rm(list=ls())
 setwd("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data/Original Data")
 library(data.table)
 library(stringr)
-data.raw = data.table(read.csv("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data/Original Data/Plot_protC_Species_50plots_20190313.csv",header = T))
+
+#Two data dumps: 2008 - 2018 and 2019, merge them together after checking formatting
+data.raw.1 = data.table(read.csv("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data/Original Data/Plot_protC_Species_50plots_20190313.csv",header = T))
+data.raw.2 = data.table(read.csv("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data/Original Data/2019_plot_species_crosstab.csv",header = T))
+
+
 ```
 
 
 ```{r Data Manipulation}
-class(data.raw)
-data.raw
+#Merge two data dumps after subsetting relevant data....HUGH correct when Daren sends VOR and Litter Data
+data.raw = rbind(data.raw.1, data.raw.2)
+
 
 #First create a single identifier for the observer combinations
 data.raw[,unique(PrimObs)] #Checking primary observers for spelling errors, none
-data.raw[,unique(SecObs)] #''
-#obs.com = data.frame(UniqueObs=paste(data.raw[,PrimObs],data.raw[,SecObs]),RowOrder = 1:length(data.raw[,PrimObs])) #concatenate, choosing to only use the primary observer
+#data.raw[,unique(SecObs)] # Secondary Observers is unlikely to matter and adds many more groups, just focus on primary
+
 obs.code = data.frame(UniqueObs = data.raw[,unique(PrimObs)], ObsCode = 1:length(data.raw[,unique(PrimObs)]))
 #Observers = merge(obs.com,obs.code,by="UniqueObs", all=FALSE)
 #Observers = as.data.table(Observers[order(Observers$RowOrder),])
@@ -60,7 +66,7 @@ cover.data[,VOR:=rowMeans(.SD,na.rm = T),.SDcols =c('VOR_E','VOR_N','VOR_S','VOR
 cover.data[,Litter:=rowMeans(.SD,na.rm = T),.SDcols =c('Litter5','Litter10','Litter15','Litter20','Litter25')]
       
 cover.data.long= data.table(melt(cover.data,id=c("TransectID","MonDate","Year","ObsCode","SpeciesID","VOR","Litter"),measure=4:(ncol(cover.data)-13),variable.name="Plot",value.name="Cover"))
-cover.data.long
+#print(cover.data.long)
 
 #Plots here are redundant because there are two types of Protocol measurements included. Make this into two distinct id variables
 
@@ -68,11 +74,12 @@ all.plots =data.frame(Plot = unique(cover.data.long[,Plot]),PlotID = c(0,rep(1:2
 cover.data.long= merge(cover.data.long,all.plots,by="Plot", all=FALSE)
 cover.data.long=cover.data.long[,.(TransectID,MonDate,Year,PlotID,Protocol,ObsCode,VOR,Litter,SpeciesID,Cover)]
 
-cover.data.long 
 #In the following section I noticed a few errors in the binning - fixing there
 ##RUN FOLLOWING CODE CHUNK TOO
 
 ## If a species does not occur in any plots in a transect for a year it will not show up in the data. When I am calculating changes in frequency or cover between years I need these values to be included as zeros. The following code creates a list of all species found in a transect per year and then isolates species which are not found in particular years but are found in others...Because I am not doing plot level analysis, I will add one plots worth of each species for each transect and year with a blank cover value, which will translate to a 0
+
+#HUGH...revisit this based on discussion with Laura
 
 library(plyr)
 
@@ -1022,10 +1029,21 @@ cover = merge(cover,z,by="TransectID")
 #####Merge in Species Info
 species.dat = as.data.table(readxl::read_xlsx("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Species Traits and Range/Plant Reference List.xlsx",sheet = "Plant Reference",skip=1))
 
-species.dat = species.dat[,.(SpeciesID,Species.Cat,Inclusion.Cat,Indicator,Native.Status,Duration, Type, Legume, Photopath, Range, Distribution)] #add in more as I complete plant trait data
+species.dat = species.dat[,.(SpeciesID,Species.Cat,Inclusion.Cat,Indicator,Ind.class,Native.Status,Duration, Type, Legume, Photopath, Range, Distribution)] #add in more as I complete plant trait data
 species.dat$SpeciesID=as.numeric(species.dat$SpeciesID)
 #cover[,length(unique(SpeciesID))]
 #species.dat[,length(unique(SpeciesID))]
+
+#Some renaming should be  done here...HUGH-consider collapsing into 3 categories: annual, perennial, mix...or isolating annual mixes as well
+species.dat[Duration=="Annual, Biennial, Perennial",Duration:="All"]
+species.dat[Duration=="Annual, Perennial, Biennial",Duration:="All"]
+species.dat[Duration=="Annual, Biennial",Duration:="Annual/Biennial"]
+species.dat[Duration=="Biennial, Annual",Duration:="Annual/Biennial"]
+species.dat[Duration=="Perennial, Biennial",Duration:="Perennial/Biennial"]
+species.dat[Duration=="Biennial, Perennial",Duration:="Perennial/Biennial"]
+species.dat[Duration=="Annual, Perennial",Duration:="Annual/Perennial"]
+species.dat[Duration=="Perennial, Annual",Duration:="Annual/Perennial"]
+
 cover = merge(cover, species.dat, by = c("SpeciesID"))
 
 #remove unnecessary merge remnants and correct names

@@ -3,6 +3,7 @@ title: "Model_v1"
 output: html_document
 ---
 
+#Setup
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
@@ -57,52 +58,265 @@ cover.climate = cover.climate[!(TransectID %in% z),]
 #Deal with missing species traits
 cover.climate[is.na(Legume),Legume:=0]
 
-cover.climate[Duration=="Annual, Biennial, Perennial",Duration:="All"]
-cover.climate[Duration=="Annual, Perennial, Biennial",Duration:="All"]
-
-
-
 #Create sub-cover files to match the model analysis. E.g. transect-level analysis should not include species rows, that would create too many replication ir_tran values
+
 tran.dt       = unique(cover.climate[,.(Year,TransectID,SITE_ID,MGMTUNIT_I,Action,Delta,StartLat,StartLong,Long.Cat,Lat.Cat,ManUnitAcres,ObsCode,
-                                          VOR, Litter, sr_tran,
-                                          VOR.lag, Litter.lag, sr_tran.lag,
-                                          nr_tran, nf.tran, meanDI.n.tran.2,change_nr_tran, change_nf.tran, indf.n.tran, change_indf.n.tran,
+                                          VOR,VOR.lag, Litter, Litter.lag, sr_tran,sr_tran.lag,
+                                        
+                                          nr_tran, nf.tran, meanDI.n.tran.2, change_nf.tran, indf.n.tran, change_indf.n.tran,
                                           nr_tran.lag, nf.tran.lag, meanDI.n.tran.2.lag, indf.n.tran.lag,
                                           rel.cov.n.1.1,rel.cov.n.1.2, rel.cov.n.2, rel.cov.n.3, rel.cov.n.4,
                                           rel.cov.n.1.1.lag,rel.cov.n.1.2.lag, rel.cov.n.2.lag, rel.cov.n.3.lag, rel.cov.n.4.lag,
-                                          ir_tran,if.tran,meanDI.i.tran.2,change_ir_tran, change_if.tran,indf.i.tran, change_indf.i.tran,
+                                          ind_nr_tran,ind_n1r_tran, ind_n2r_tran, ind_nr_tran.lag, ind_n1r_tran.lag, ind_n2r_tran.lag,
+                                          indf.n1.tran, indf.n2.tran, indf.n1.tran.lag, indf.n2.tran.lag,
+                                          rel.cov.ind.n.2, rel.cov.ind.n1.2, rel.cov.ind.n2.2, rel.cov.ind.n.2.lag, rel.cov.ind.n1.2.lag, rel.cov.ind.n2.2.lag,
+                                          meanDI.ind.n.tran.2, meanDI.ind.n1.tran.2, meanDI.ind.n2.tran.2, meanDI.ind.n.tran.2.lag, meanDI.ind.n1.tran.2.lag, meanDI.ind.n2.tran.2.lag,
+                                        
+                                          ir_tran,if.tran,meanDI.i.tran.2, change_if.tran,indf.i.tran, change_indf.i.tran,
                                           ir_tran.lag,if.tran.lag ,meanDI.i.tran.2.lag, indf.i.tran.lag,
                                           rel.cov.i.1.1,rel.cov.i.1.2,rel.cov.i.2,rel.cov.i.3,rel.cov.i.4,
                                           rel.cov.i.1.1.lag,rel.cov.i.1.2.lag, rel.cov.i.2.lag, rel.cov.i.3.lag ,rel.cov.i.4.lag,
+                                          ind_ir_tran,ind_i1r_tran, ind_i2r_tran, ind_ir_tran.lag, ind_i1r_tran.lag, ind_i2r_tran.lag,
+                                          indf.i1.tran, indf.i2.tran, indf.i1.tran.lag, indf.i2.tran.lag,
+                                          rel.cov.ind.i.2, rel.cov.ind.i1.2, rel.cov.ind.i2.2, rel.cov.ind.i.2.lag, rel.cov.ind.i1.2.lag, rel.cov.ind.i2.2.lag,
+                                          meanDI.ind.i.tran.2, meanDI.ind.i1.tran.2, meanDI.ind.i2.tran.2, meanDI.ind.i.tran.2.lag, meanDI.ind.i1.tran.2.lag, meanDI.ind.i2.tran.2.lag,
+                                        
                                           txx,tn90p, tx90p,rx5.w,rx5.sp,rx5.sum,rx5.y,fd,gsl,wsdi,csdi,sdii,cdd,cwd,prcpt,
                                           txx.lag,tn90p.lag, tx90p.lag,rx5.w.lag,rx5.sp.lag,rx5.sum.lag,rx5.y.lag, 
                                               fd.lag,gsl.lag,wsdi.lag,csdi.lag,sdii.lag,cdd.lag,cwd.lag,prcpt.lag)])
 
+#U don't foresee doing a management analysis, but in case here is an un-updated dt
 mgmt.dt       = unique(cover.climate[,.(Year,TransectID,SITE_ID,MGMTUNIT_I, Action, Delta,StartLat,StartLong,Long.Cat,Lat.Cat,ManUnitAcres,ObsCode,
                                           VOR, Litter, sr_mgmt,
                                           VOR.lag, Litter.lag, sr_tran.lag,
-                                          nr_mgmt, nf.mgmt,change_nr_mgmt, change_nf.mgmt,indf.n.mgmt, change_indf.n.mgmt,
+                                          nr_mgmt, nf.mgmt, change_nf.mgmt,indf.n.mgmt, change_indf.n.mgmt,
                                                    nf.mgmt.lag,indf.n.mgmt.lag, 
-                                          ir_mgmt,if.mgmt,change_ir_mgmt, change_if.mgmt,indf.i.mgmt, change_indf.i.mgmt,
+                                          ir_mgmt,if.mgmt, change_if.mgmt,indf.i.mgmt, change_indf.i.mgmt,
                                           ir_mgmt.lag,if.mgmt.lag,indf.i.mgmt.lag,  
                                           txx,tn90p, tx90p,rx5.w,rx5.sp,rx5.sum,rx5.y,fd,gsl,wsdi,csdi,sdii,cdd,cwd,prcpt,
                                           txx.lag,tn90p.lag, tx90p.lag,rx5.w.lag,rx5.sp.lag,rx5.sum.lag,rx5.y.lag, 
                                               fd.lag,gsl.lag,wsdi.lag,csdi.lag,sdii.lag,cdd.lag,cwd.lag,prcpt.lag)])
+#update this as needed
+group.dt       = unique(cover.climate[,.(Year,TransectID,SITE_ID,MGMTUNIT_I,Action,Delta,StartLat,StartLong,Long.Cat,Lat.Cat,ManUnitAcres,ObsCode,
+                                          VOR, Litter, sr_tran, VOR.lag, Litter.lag, sr_tran.lag,
+                                          Duration,Type, Photopath,Legume, Range, Distribution, Native.Status, Ind.class, Indicator,
+                                         
+                                          r.T.dur, r.T.dur.lag, r.T.type, r.T.type.lag, r.T.leg, r.T.leg.lag, r.T.photo, r.T.photo.lag, r.T.range,r.T.range.lag,r.T.dist,r.T.dist.lag,
+                                          f.T.dur,f.T.dur.lag,f.T.type,f.T.type.lag,f.T.leg, f.T.leg.lag, f.T.photo, f.T.photo.lag,
+                                            f.T.range, f.T.range.lag, f.T.dist, f.T.dist.lag,
+                                          rel.cov.2.dur, rel.cov.2.dur.lag, rel.cov.2.type, rel.cov.2.type.lag, rel.cov.2.leg, rel.cov.2.leg.lag,
+                                            rel.cov.2.photo, rel.cov.2.photo.lag, rel.cov.2.range, rel.cov.2.range.lag, rel.cov.2.dist, rel.cov.2.dist.lag,
+                                          meanDI.2.dur, meanDI.2.dur.lag, meanDI.2.type, meanDI.2.type.lag, meanDI.2.leg, meanDI.2.leg.lag,
+                                            meanDI.2.photo, meanDI.2.photo.lag, meanDI.2.range, meanDI.2.range.lag, meanDI.2.dist, meanDI.2.dist.lag,
+                                         
+                                          r.ind.dur, f.ind.dur, rel.cov.2.ind.dur, meanDI.2.ind.dur,
+                                          r.indlvl.dur,f.indlvl.dur, rel.cov.2.indlvl.dur, meanDI.2.indlvl.dur,
+                                          r.ind.type, f.ind.type, rel.cov.2.ind.type, meanDI.2.ind.type,
+                                          r.indlvl.type,f.indlvl.type, rel.cov.2.indlvl.type, meanDI.2.indlvl.type,
+                                          r.ind.leg, f.ind.leg, rel.cov.2.ind.leg, meanDI.2.ind.leg,
+                                          r.indlvl.leg,f.indlvl.leg, rel.cov.2.indlvl.leg, meanDI.2.indlvl.leg,
+                                          r.ind.photo, f.ind.photo, rel.cov.2.ind.photo, meanDI.2.ind.photo,
+                                          r.indlvl.photo,f.indlvl.photo, rel.cov.2.indlvl.photo, meanDI.2.indlvl.photo,
+                                          r.ind.range, f.ind.range, rel.cov.2.ind.range, meanDI.2.ind.range,
+                                          r.indlvl.range,f.indlvl.range, rel.cov.2.indlvl.range, meanDI.2.indlvl.range,
+                                          r.ind.dist, f.ind.dist, rel.cov.2.ind.dist, meanDI.2.ind.dist,
+                                          r.indlvl.dist,f.indlvl.dist, rel.cov.2.indlvl.dist, meanDI.2.indlvl.dist,
+                                         
+                                          nr_tran, nf.tran, meanDI.n.tran.2, change_nf.tran, indf.n.tran, change_indf.n.tran,
+                                          nr_tran.lag, nf.tran.lag, meanDI.n.tran.2.lag, indf.n.tran.lag,
+                                          rel.cov.n.1.1,rel.cov.n.1.2, rel.cov.n.2, rel.cov.n.3, rel.cov.n.4,
+                                          rel.cov.n.1.1.lag,rel.cov.n.1.2.lag, rel.cov.n.2.lag, rel.cov.n.3.lag, rel.cov.n.4.lag,
+                                          ind_nr_tran,ind_n1r_tran, ind_n2r_tran, ind_nr_tran.lag, ind_n1r_tran.lag, ind_n2r_tran.lag,
+                                          indf.n1.tran, indf.n2.tran, indf.n1.tran.lag, indf.n2.tran.lag,
+                                          rel.cov.ind.n.2, rel.cov.ind.n1.2, rel.cov.ind.n2.2, rel.cov.ind.n.2.lag, rel.cov.ind.n1.2.lag, rel.cov.ind.n2.2.lag,
+                                          meanDI.ind.n.tran.2, meanDI.ind.n1.tran.2, meanDI.ind.n2.tran.2, meanDI.ind.n.tran.2.lag, meanDI.ind.n1.tran.2.lag, meanDI.ind.n2.tran.2.lag,
+                                        
+                                          ir_tran,if.tran,meanDI.i.tran.2, change_if.tran,indf.i.tran, change_indf.i.tran,
+                                          ir_tran.lag,if.tran.lag ,meanDI.i.tran.2.lag, indf.i.tran.lag,
+                                          rel.cov.i.1.1,rel.cov.i.1.2,rel.cov.i.2,rel.cov.i.3,rel.cov.i.4,
+                                          rel.cov.i.1.1.lag,rel.cov.i.1.2.lag, rel.cov.i.2.lag, rel.cov.i.3.lag ,rel.cov.i.4.lag,
+                                          ind_ir_tran,ind_i1r_tran, ind_i2r_tran, ind_ir_tran.lag, ind_i1r_tran.lag, ind_i2r_tran.lag,
+                                          indf.i1.tran, indf.i2.tran, indf.i1.tran.lag, indf.i2.tran.lag,
+                                          rel.cov.ind.i.2, rel.cov.ind.i1.2, rel.cov.ind.i2.2, rel.cov.ind.i.2.lag, rel.cov.ind.i1.2.lag, rel.cov.ind.i2.2.lag,
+                                          meanDI.ind.i.tran.2, meanDI.ind.i1.tran.2, meanDI.ind.i2.tran.2, meanDI.ind.i.tran.2.lag, meanDI.ind.i1.tran.2.lag, meanDI.ind.i2.tran.2.lag, 
+                                         
+                                         txx,tn90p, tx90p,rx5.w,rx5.sp,rx5.sum,rx5.y,fd,gsl,wsdi,csdi,sdii,cdd,cwd,prcpt,
+                                          txx.lag,tn90p.lag, tx90p.lag,rx5.w.lag,rx5.sp.lag,rx5.sum.lag,rx5.y.lag, 
+                                              fd.lag,gsl.lag,wsdi.lag,csdi.lag,sdii.lag,cdd.lag,cwd.lag,prcpt.lag)])
 
+#########This is for checking how to break this out so I don't have duplicate values when I model, can remove later if needed
+unique(group.dt[TransectID==57 & Year==2010,.(Native.Status,Duration,Ind.class, Indicator,r.T.dur,r.T.dur.lag,f.T.dur,f.T.dur.lag,rel.cov.2.dur,meanDI.2.dur)])
+
+unique(group.dt[TransectID==57 & Year==2010,.(Native.Status,Duration,Type,r.T.dur,r.T.dur.lag,f.T.dur,f.T.dur.lag,rel.cov.2.dur,meanDI.2.dur)])
+
+unique(group.dt[TransectID==57 & Year==2011,.(Native.Status,Duration,Type,Photopath,Legume,Range,Distribution,r.T.dur,r.T.dur.lag,f.T.dur,f.T.dur.lag,rel.cov.2.dur,meanDI.2.dur,r.T.type,f.T.type,rel.cov.2.type,meanDI.2.type,r.T.photo,f.T.photo,rel.cov.2.photo,meanDI.2.photo,r.T.leg,f.T.leg,rel.cov.2.leg,meanDI.2.leg,r.T.range,f.T.range,rel.cov.2.range,meanDI.2.range,r.T.dist,f.T.dist,rel.cov.2.dist,meanDI.2.dist)])
+
+group.dt[TransectID==57 & Year==2010,.(length(unique(Duration))),by=Native.Status][,sum(V1)]
+unique(group.dt[TransectID==57 & Year==2010,.(r.T.dur,r.T.dur.lag,f.T.dur,Native.Status,Duration)])[,length(Native.Status)]
+
+group.dt[TransectID==57 & Year==2010,.(length(unique(Type))),by=Native.Status][,sum(V1)]
+unique(group.dt[TransectID==57 & Year==2010,.(r.T.type,r.T.type.lag,Native.Status,Type)])[,length(Native.Status)]
+
+group.dt[TransectID==57 & Year==2010,.(length(unique(Photopath))),by=Native.Status][,sum(V1)]
+unique(group.dt[TransectID==57 & Year==2010,.(r.T.photo,r.T.photo.lag,Native.Status,Photopath)])[,length(Native.Status)]
+
+group.dt[TransectID==57 & Year==2010,.(length(unique(Legume))),by=Native.Status][,sum(V1)]
+unique(group.dt[TransectID==57 & Year==2010,.(r.T.leg,r.T.leg.lag,Native.Status,Legume)])[,length(Native.Status)]
+
+group.dt[TransectID==57 & Year==2010,.(length(unique(Range))),by=Native.Status][,sum(V1)]
+unique(group.dt[TransectID==57 & Year==2010,.(r.T.range,r.T.range.lag,Native.Status,Range)])[,length(Native.Status)]
+
+group.dt[TransectID==57 & Year==2010,.(length(unique(Distribution))),by=Native.Status][,sum(V1)]
+unique(group.dt[TransectID==57 & Year==2010,.(r.T.dist,r.T.dist.lag,Native.Status,Distribution)])[,length(Native.Status)]
+#########
+
+variables = colnames(group.dt) 
+
+group.names = as.data.table(cbind(as.character(expression(
+                                            dur.dt, ind.dur.dt, indlvl.dur.dt, type.dt,ind.type.dt, indlvl.type.dt, leg.dt,ind.leg.dt, indlvl.leg.dt, 
+                                            photo.dt, ind.photo.dt, indlvl.photo.dt, range.dt, ind.range.dt, indlvl.range.dt, dist.dt, ind.dist.dt, indlvl.dist.dt)),
+                                as.character(expression(
+                                            dur.dt.lag, ind.dur.dt.lag, indlvl.dur.dt.lag, type.dt.lag,ind.type.dt.lag, indlvl.type.dt.lag, leg.dt.lag,ind.leg.dt.lag, indlvl.leg.dt.lag, 
+                                            photo.dt.lag, ind.photo.dt.lag, indlvl.photo.dt.lag, range.dt.lag, ind.range.dt.lag, indlvl.range.dt.lag, 
+                                            dist.dt.lag, ind.dist.dt.lag, indlvl.dist.dt.lag)),
+                                 as.character(expression(
+                                            i.dur.dt, i.ind.dur.dt, i.indlvl.dur.dt, i.type.dt, i.ind.type.dt, i.indlvl.type.dt, i.leg.dt, i.ind.leg.dt, i.indlvl.leg.dt, 
+                                            i.photo.dt, i.ind.photo.dt, i.indlvl.photo.dt, i.range.dt, i.ind.range.dt, i.indlvl.range.dt, i.dist.dt, i.ind.dist.dt, i.indlvl.dist.dt)),
+                                 as.character(expression(
+                                            i.dur.dt.lag, i.ind.dur.dt.lag, i.indlvl.dur.dt.lag, i.type.dt.lag, i.ind.type.dt.lag, i.indlvl.type.dt.lag,
+                                            i.leg.dt.lag, i.ind.leg.dt.lag, i.indlvl.leg.dt.lag, i.photo.dt.lag, i.ind.photo.dt.lag, i.indlvl.photo.dt.lag, 
+                                            i.range.dt.lag, i.ind.range.dt.lag, i.indlvl.range.dt.lag, i.dist.dt.lag, i.ind.dist.dt.lag, i.indlvl.dist.dt.lag)),
+                                  as.character(expression(
+                                            n.dur.dt, n.ind.dur.dt, n.indlvl.dur.dt, n.type.dt, n.ind.type.dt, n.indlvl.type.dt, n.leg.dt, n.ind.leg.dt, n.indlvl.leg.dt, 
+                                            n.photo.dt, n.ind.photo.dt, n.indlvl.photo.dt, n.range.dt, n.ind.range.dt, n.indlvl.range.dt, n.dist.dt, n.ind.dist.dt, n.indlvl.dist.dt)),
+                                 as.character(expression(
+                                            n.dur.dt.lag, n.ind.dur.dt.lag, n.indlvl.dur.dt.lag, n.type.dt.lag, n.ind.type.dt.lag, n.indlvl.type.dt.lag,
+                                            n.leg.dt.lag, n.ind.leg.dt.lag, n.indlvl.leg.dt.lag, n.photo.dt.lag, n.ind.photo.dt.lag, n.indlvl.photo.dt.lag, 
+                                            n.range.dt.lag, n.ind.range.dt.lag, n.indlvl.range.dt.lag, n.dist.dt.lag, n.ind.dist.dt.lag, n.indlvl.dist.dt.lag)),
+                                rep(as.character(expression(
+                                            Duration, Type, Legume, Photopath, Range, Distribution)),each = 3), #repeat 3 times because 3 measures per group with indicator metric added
+                                matrix(as.character(expression(
+                                            r.T.dur, r.T.dur.lag, f.T.dur,f.T.dur.lag,rel.cov.2.dur, rel.cov.2.dur.lag,meanDI.2.dur, meanDI.2.dur.lag,
+                                            r.ind.dur, r.ind.dur.lag, f.ind.dur, f.ind.dur.lag, rel.cov.2.ind.dur, rel.cov.2.ind.dur.lag, meanDI.2.ind.dur,meanDI.2.ind.dur.lag,
+                                            r.indlvl.dur,r.indlvl.dur.lag,f.indlvl.dur,f.indlvl.dur.lag, rel.cov.2.indlvl.dur,rel.cov.2.indlvl.dur.lag, 
+                                            meanDI.2.indlvl.dur,meanDI.2.indlvl.dur.lag,
+                                          
+                                            r.T.type, r.T.type.lag, f.T.type,f.T.type.lag,rel.cov.2.type, rel.cov.2.type.lag,meanDI.2.type, meanDI.2.type.lag,
+                                            r.ind.type, r.ind.type.lag, f.ind.type, f.ind.type.lag, rel.cov.2.ind.type, rel.cov.2.ind.type.lag, meanDI.2.ind.type,meanDI.2.ind.type.lag,
+                                            r.indlvl.type,r.indlvl.type.lag,f.indlvl.type,f.indlvl.type.lag, rel.cov.2.indlvl.type,rel.cov.2.indlvl.type.lag, 
+                                            meanDI.2.indlvl.type,meanDI.2.indlvl.type.lag,
+                                            
+                                            r.T.leg, r.T.leg.lag, f.T.leg,f.T.leg.lag,rel.cov.2.leg, rel.cov.2.leg.lag,meanDI.2.leg, meanDI.2.leg.lag,
+                                            r.ind.leg, r.ind.leg.lag, f.ind.leg, f.ind.leg.lag, rel.cov.2.ind.leg, rel.cov.2.ind.leg.lag, meanDI.2.ind.leg,meanDI.2.ind.leg.lag,
+                                            r.indlvl.leg,r.indlvl.leg.lag,f.indlvl.leg,f.indlvl.leg.lag, rel.cov.2.indlvl.leg,rel.cov.2.indlvl.leg.lag, 
+                                            meanDI.2.indlvl.leg,meanDI.2.indlvl.leg.lag,    
+                                            
+                                            r.T.photo, r.T.photo.lag, f.T.photo,f.T.photo.lag,rel.cov.2.photo, rel.cov.2.photo.lag,meanDI.2.photo, meanDI.2.photo.lag,
+                                            r.ind.photo, r.ind.photo.lag, f.ind.photo, f.ind.photo.lag, rel.cov.2.ind.photo, rel.cov.2.ind.photo.lag, 
+                                            meanDI.2.ind.photo,meanDI.2.ind.photo.lag,r.indlvl.photo,r.indlvl.photo.lag,f.indlvl.photo,f.indlvl.photo.lag, 
+                                            rel.cov.2.indlvl.photo,rel.cov.2.indlvl.photo.lag, meanDI.2.indlvl.photo,meanDI.2.indlvl.photo.lag,
+                                            
+                                            r.T.range, r.T.range.lag, f.T.range,f.T.range.lag,rel.cov.2.range, rel.cov.2.range.lag,meanDI.2.range, meanDI.2.range.lag,
+                                            r.ind.range, r.ind.range.lag, f.ind.range, f.ind.range.lag, rel.cov.2.ind.range, rel.cov.2.ind.range.lag, 
+                                            meanDI.2.ind.range,meanDI.2.ind.range.lag, r.indlvl.range,r.indlvl.range.lag,f.indlvl.range,f.indlvl.range.lag, 
+                                            rel.cov.2.indlvl.range,rel.cov.2.indlvl.range.lag,meanDI.2.indlvl.range,meanDI.2.indlvl.range.lag,
+                                            
+                                            r.T.dist, r.T.dist.lag, f.T.dist,f.T.dist.lag,rel.cov.2.dist, rel.cov.2.dist.lag,meanDI.2.dist, meanDI.2.dist.lag,
+                                            r.ind.dist, r.ind.dist.lag, f.ind.dist, f.ind.dist.lag, rel.cov.2.ind.dist, rel.cov.2.ind.dist.lag, meanDI.2.ind.dist,meanDI.2.ind.dist.lag,
+                                            r.indlvl.dist,r.indlvl.dist.lag,f.indlvl.dist,f.indlvl.dist.lag, rel.cov.2.indlvl.dist,rel.cov.2.indlvl.dist.lag, 
+                                            meanDI.2.indlvl.dist,meanDI.2.indlvl.dist.lag)),
+                                       
+                                      ncol =8, byrow = T),
+                                rep("Year",times=18),
+                                rep("TransectID",times=18),
+                                rep("Native.Status",times=18),
+                                rep("Ind.class", times = 18),
+                                rep("Indicator", times = 18)
+                    ))
+
+#Create loop to make specific group dt's.
+group.list = list()
+#name.list = list() For checking
+
+#All
+for (k in 1:3){
+    for (i in 1:(group.names[,length(V1)]/3)){
+      z = as.character(group.names[k + ((i-1)*(group.names[,length(V1)]/6)),.SD, .SDcols=c(7:(ncol(group.names)-3),ncol(group.names)-3+k)])
+      #name.list[[k + ((i-1)*(group.names[,length(V1)]/6))]] = z
+      group.list[[k + ((i-1)*(group.names[,length(V1)]/6))]] = merge(tran.dt,unique(cover.climate[,z,with=FALSE] 
+        [!(is.na(eval(parse(text=(as.character(group.names[k + ((i-1)*(group.names[,length(V1)]/6)),V10])))))),]),by=c('Year','TransectID'))
+  }
+}
+
+#All lag
+for (i in 1:group.names[,length(V1)]) {
+  group.list[[i+group.names[,length(V1)]]] = group.list[[i]][!is.na(eval(parse(text=(as.character(group.names[i,V9]))))),]
+  }
+
+
+#Invasive
+  for (k in 1:3){
+    for (i in 1:(group.names[,length(V1)]/3)){
+      z = as.character(group.names[k + ((i-1)*(group.names[,length(V1)]/6)),.SD, .SDcols=c(7:(ncol(group.names)-3),ncol(group.names)-3+k)])
+      group.list[[k + ((i-1)*(group.names[,length(V1)]/6)) + (group.names[,length(V1)]*2)]] =
+        merge(tran.dt,unique(cover.climate[Native.Status=="I",z,with=FALSE] 
+        [!(is.na(eval(parse(text=(as.character(group.names[k + ((i-1)*(group.names[,length(V1)]/6)),V10])))))),]),by=c('Year','TransectID'))
+      #name.list[[k + ((i-1)*(group.names[,length(V1)]/6)) + (group.names[,length(V1)]*1)]] = z
+  }
+}
+
+
+#Invasive Lag
+for (i in 1:group.names[,length(V1)]) {
+  group.list[[i+(group.names[,length(V1)]*3)]] = group.list[[i+(group.names[,length(V1)]*2)]][!is.na(eval(parse(text=(as.character(group.names[i,V9]))))),]
+}
+
+#Native
+  for (k in 1:3){
+    for (i in 1:(group.names[,length(V1)]/3)){
+      z = as.character(group.names[k + ((i-1)*(group.names[,length(V1)]/6)),.SD, .SDcols=c(7:(ncol(group.names)-3),ncol(group.names)-3+k)])
+      group.list[[k + ((i-1)*(group.names[,length(V1)]/6)) + (group.names[,length(V1)]*4)]] = merge(tran.dt,unique(cover.climate[Native.Status=="N",z,with=FALSE] 
+        [!(is.na(eval(parse(text=(as.character(group.names[k + ((i-1)*(group.names[,length(V1)]/6)),V10])))))),]),by=c('Year','TransectID'))
+      #name.list[[k + ((i-1)*(group.names[,length(V1)]/6)) + (group.names[,length(V1)]*2)]] = z
+  }
+}
+
+#Native Lag
+for (i in 1:group.names[,length(V1)]) {
+  group.list[[i+(group.names[,length(V1)]*5)]] = group.list[[i+(group.names[,length(V1)]*4)]][!is.na(eval(parse(text=(as.character(group.names[i,V9]))))),]
+}
+
+#Name the list elements
+names(group.list) = c(group.names$V1,group.names$V2, group.names$V3,group.names$V4,group.names$V5, group.names$V6)
+
+
+#Something is off with the naming of the list, write a loop to check for errors
+naming.check.data = c()
+for (i in 1:length(group.list)){
+  zz = names(group.list[[i]])[134]
+  naming.check.data = c(naming.check.data, zz)
+}
+
+naming.check = cbind(names(group.list), naming.check.data)
+
+#Not averaged at transcet level
 i.species.dt    = cover.climate[Native.Status=="I" ,]
 n.species.dt    = cover.climate[Native.Status=="N" ,]
+ind.i.species.dt = cover.climate[Ind.class == "I" ,]
+ind.n.species.dt = cover.climate[Ind.class == "N" ,]
+ind.i1.species.dt = cover.climate[Indicator=="I1" ,]
+ind.n1.species.dt = cover.climate[Indicator=="N1"  ,]
 all.species.dt  = cover.climate
 
 #Now create lagged versions of these dt ^ which remove NAs from key areas...I care about abundance metrics and indices, selecting one of each should remove the other NAs as well
 tran.dt.lag = na.omit(tran.dt, cols = c("ir_tran.lag","gsl"))
-mgmt.dt.lag = na.omit(mgmt.dt, cols = c("ir_mgmt.lag","gsl"))
+#mgmt.dt.lag = na.omit(mgmt.dt, cols = c("ir_mgmt.lag","gsl"))
 i.species.dt.lag = na.omit(i.species.dt, cols = c("Freq.T.lag","gsl"))
 n.species.dt.lag    = na.omit(n.species.dt, cols = c("Freq.T.lag","gsl"))
 all.species.dt.lag    = na.omit(all.species.dt, cols = c("Freq.T.lag","gsl"))
 
 
-
-
+###Define Functions
 
 #Define Log Function
 ihs = function(x) {
@@ -110,7 +324,11 @@ ihs = function(x) {
 }
 # v.s. log(x+1) <- is defined for a negative x.
 
-```
+#Function which allows me to more elegantly include characters from a vector in loops
+eval.as = function(x) {
+  return(parse(text=(as.character(x))))
+}
+``` 
 
 #Index Key:
 Yearly:
@@ -175,6 +393,7 @@ put in transect as a factor
 
 Other time-dependent independent variables to consider: transect diversity/SR, particularly native sr; legume presence; transect productivity (VOR)
     
+
 #Model Formula
 Aji = β0 + β1Mij + β2Dij + β3Cij + β4Tij+ β5Yij+ β6Oij  + β7MDCit + Vio + Vi1Tij + Vi2Yij + Vi3Oit + eij
 
@@ -182,6 +401,7 @@ Where:
 ij =  per transect measurement per year
 e = random unobserved error
 β0 = Per transect intercept
+
 
 
 #Exploratory Models
@@ -228,12 +448,11 @@ Create a mixed effect model for each metric of invasive abundance (richness, fre
 
 Hugh - check to make sure I'm not using zero values accidentally
 
+
 #Cluster Analsis
 Selecting grouping for species is hard to do a priori. Use the response data to draw clustering correlations between species to define/justify grouping selection.
 
 First attempt - run agglomerative hierarchical clustering analysis
-
-
 ```{r clustering}
 #invasive data preparation - need rows as observations and columns as variables, no NAs, all scaled
 #Create data tables that: preserve each species (creates unique id to avoid duplicates); averages species value (maybe by year)
@@ -332,48 +551,6 @@ ic.avg.clust = cbind(ic.avg.clust,SpeciesID =row.names(ic.avg.clust))
 ic.avg.clust = merge(ic.avg.clust,z, by = c("SpeciesID"))
 ic.avg.clust$f.change = as.numeric(as.character(ic.avg.clust$f.change))
 ic.avg.clust$cov.change = as.numeric(as.character(ic.avg.clust$cov.change))
-
-###Visualize
-#Taxon
-fviz_cluster(list(data = ic.avg.df, cluster = clust.avg.3), data = ic.avg.clust,
-             show.clust.cent = FALSE, axes = c(1,2), repel = T, geom = c("text"),
-             ellipse = T,  ellipse.type = "convex", ellipse.alpha = 0, labelsize = 7,
-             xlab = "Change in Frequency", ylab = "Change in Cover",main = "Cluster plot - Taxon")+
-  geom_point(data =ic.avg.clust, aes(x=f.change,y=cov.change,colour = Type),size=2) +
-  guides(size = FALSE, shape=FALSE, group = FALSE)
-  
-#Duration
-fviz_cluster(list(data = ic.avg.df, cluster = clust.avg.3), data = ic.avg.clust,
-             show.clust.cent = FALSE, axes = c(1,2), repel = T, geom = c("text"),
-             ellipse = T,  ellipse.type = "convex", ellipse.alpha = 0, labelsize = 7,
-             xlab = "Change in Frequency", ylab = "Change in Cover",main = "Cluster plot - Duration")+
-  geom_point(data =ic.avg.clust, aes(x=f.change,y=cov.change,group = Duration,colour = Duration),size=2) +
-  guides(size = FALSE, shape=FALSE, group = FALSE)
-
-#Photopath
-fviz_cluster(list(data = ic.avg.df, cluster = clust.avg.5), data = ic.avg.clust,
-             show.clust.cent = FALSE, axes = c(1,2), repel = T, geom = c("text"),
-             ellipse = T,  ellipse.type = "convex", ellipse.alpha = 0, labelsize = 7,
-             xlab = "Change in Frequency", ylab = "Change in Cover",main = "Cluster plot - Photopath")+
-  geom_point(data =ic.avg.clust, aes(x=f.change,y=cov.change, group = Photopath, colour = Photopath) ,size=2) +
-  guides(size = FALSE, shape=FALSE, group = FALSE)
-
-#Range
-fviz_cluster(list(data = ic.avg.df, cluster = clust.avg.5), data = ic.avg.clust,
-             show.clust.cent = FALSE, axes = c(1,2), repel = T, geom = c("text"),
-             ellipse = T,  ellipse.type = "convex", ellipse.alpha = 0, labelsize = 7,
-             xlab = "Change in Frequency", ylab = "Change in Cover",main = "Cluster plot - Range")+
-  geom_point(data =ic.avg.clust, aes(x=f.change,y=cov.change, group = Range, colour = Range) ,size=2) +
-  guides(size = FALSE, shape=FALSE, group = FALSE)
-
-#Distribution
-fviz_cluster(list(data = ic.avg.df, cluster = clust.avg.5), data = ic.avg.clust,
-             show.clust.cent = FALSE, axes = c(1,2), repel = T, geom = c("text"),
-             ellipse = T,  ellipse.type = "convex", ellipse.alpha = 0, labelsize = 7,
-             xlab = "Change in Frequency", ylab = "Change in Cover",main = "Cluster plot - Distribution")+
-  geom_point(data =ic.avg.clust, aes(x=f.change,y=cov.change, group = Distribution, colour = Distribution) ,size=2) +
-  guides(size = FALSE, shape=FALSE, group = FALSE)
-  
   
 #Append cluster designations 
 species.clusters = as.data.table(cbind(ic.avg.df,clust.avg.2),keep.rownames = T)
@@ -430,8 +607,8 @@ a.8 = length(Year[Year=="2018"])+a.7
 yr.count = c(0,a.1,a.2,a.3,a.4,a.5,a.6,a.7,a.8)
 
 ic.11 = scale(ic.avg.df.2[1:yr.count[2],])
-ic.12 = scale(ic.avg.df.2[(1+yr.count[3]):yr.count[3],])
-ic.13 = scale(ic.avg.df.2[(1+yr.count[4]):yr.count[4],])
+ic.12 = scale(ic.avg.df.2[(1+yr.count[2]):yr.count[3],])
+ic.13 = scale(ic.avg.df.2[(1+yr.count[3]):yr.count[4],])
 ic.14 = scale(ic.avg.df.2[(1+yr.count[4]):yr.count[5],])
 ic.15 = scale(ic.avg.df.2[(1+yr.count[5]):yr.count[6],])
 ic.16 = scale(ic.avg.df.2[(1+yr.count[6]):yr.count[7],])
@@ -461,10 +638,12 @@ ac <- function(x) {
 #Ward’s method gets us the highest agglomerative coefficient. Let us look at its dendogram.
 hc.yr.1=list()
 species.clusters = c()
-for (i in years){
-  hc.yr.1[[i]]=agnes(as.data.frame(as.data.table(ic.avg.df.2)[Year==i,.(f.change,cov.change)]), method = "ward")
-  species.clusters = c(species.clusters,as.data.table(ic.avg.df.2)[Year==i,SpeciesID])
-  }
+Years = as.character(unique(ic.avg.df.2$Year))
+for (i in 1:length(Years)){
+  hc.yr.1[[i]]=agnes(as.data.frame(as.data.table(ic.avg.df.2)[Year==Years[i],.(f.change,cov.change)]), method = "ward")
+  species.clusters = c(species.clusters,as.data.table(ic.avg.df.2)[Year==Years[i],SpeciesID])
+}
+
 pltree(hc.yr.1[[1]], cex = 0.6, hang = -1, main = "Dendrogram of species 2011")
 #Can create others for other years
 
@@ -478,7 +657,7 @@ clust.yr.6 = c()
 
 year.clust = c()
 
-for (i in years){
+for (i in 1:length(Years)){
 clust.yr.2 <- c(clust.yr.2,cutree(hc.yr.1[[i]], k = 2))
 clust.yr.3 <- c(clust.yr.3,cutree(hc.yr.1[[i]], k = 3))
 clust.yr.4 <- c(clust.yr.4,cutree(hc.yr.1[[i]], k = 4))
@@ -498,8 +677,7 @@ ic.yr.clust = merge(ic.yr.clust,z, by = c("SpeciesID"))
 ic.yr.clust$f.change = as.numeric(as.character(ic.yr.clust$f.change))
 ic.yr.clust$cov.change = as.numeric(as.character(ic.yr.clust$cov.change))
 
-years = as.numeric(as.character((years)))
-
+#years = as.numeric(as.character((years)))
 
 #Combine years for all cluster combinations to get an average sense
 ic.yr.dt = as.data.table(ic.avg.df.2)
@@ -515,288 +693,437 @@ ic.yr.dt = merge(ic.yr.dt,z, by = "SpeciesID")
 
 ic.yr.dt[,length(clust.2),by = Type]
 
-#Plot Type
-ggplot(data = ic.yr.dt[,.(count = .N),by = .(Type, clust.2,Year)], aes(x=Type, y = count))+
-  geom_bar(aes(fill = factor(clust.2)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
-  facet_wrap(~Year,ncol = 4)+
-  labs(title="Type by Two Clusters",x ="Type", y = "Cluster Count")
-
-ggplot(data = ic.yr.dt[,.(count = .N),by = .(Type, clust.3,Year)], aes(x=Type, y = count))+
-  geom_bar(aes(fill = factor(clust.3)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
-  facet_wrap(~Year,ncol = 4)+
-  labs(title="Type by Three Clusters",x ="Type", y = "Cluster Count")
-
-ggplot(data = ic.yr.dt[,.(count = .N),by = .(Type, clust.4,Year)], aes(x=Type, y = count))+
-  geom_bar(aes(fill = factor(clust.4)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
-  facet_wrap(~Year,ncol = 4)+
-  labs(title="Type by Four Clusters",x ="Type", y = "Cluster Count")
-
-ggplot(data = ic.yr.dt[,.(count = .N),by = .(Type, clust.5,Year)], aes(x=Type, y = count))+
-  geom_bar(aes(fill = factor(clust.5)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
-  facet_wrap(~Year,ncol = 4)+
-  labs(title="Type by Five Clusters",x ="Type", y = "Cluster Count")
-
-ggplot(data = ic.yr.dt[,.(count = .N),by = .(Type, clust.6,Year)], aes(x=Type, y = count))+
-  geom_bar(aes(fill = factor(clust.6)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
-  facet_wrap(~Year,ncol = 4)+
-  labs(title="Type by Six Clusters",x ="Type", y = "Cluster Count")
-
-#Plot Duration
-ggplot(data = ic.yr.dt[Duration=="Annual"|Duration=="Perennial",.(count = .N),by = .(Duration, clust.2,Year)], aes(x=Duration, y = count))+
-  geom_bar(aes(fill = factor(clust.2)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
-  facet_wrap(~Year,ncol = 4)+
-  labs(title="Duration by Two Clusters",x ="Duration", y = "Cluster Count")
-
-ggplot(data = ic.yr.dt[Duration=="Annual"|Duration=="Perennial",.(count = .N),by = .(Duration, clust.3,Year)], aes(x=Duration, y = count))+
-  geom_bar(aes(fill = factor(clust.3)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
-  facet_wrap(~Year,ncol = 4)+
-  labs(title="Duration by Three Clusters",x ="Duration", y = "Cluster Count")
-
-ggplot(data = ic.yr.dt[Duration=="Annual"|Duration=="Perennial",.(count = .N),by = .(Duration, clust.4,Year)], aes(x=Duration, y = count))+
-  geom_bar(aes(fill = factor(clust.4)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
-  facet_wrap(~Year,ncol = 4)+
-  labs(title="Duration by Four Clusters",x ="Duration", y = "Cluster Count")
-
-ggplot(data = ic.yr.dt[Duration=="Annual"|Duration=="Perennial",.(count = .N),by = .(Duration, clust.5,Year)], aes(x=Duration, y = count))+
-  geom_bar(aes(fill = factor(clust.5)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
-  facet_wrap(~Year,ncol = 4)+
-  labs(title="Duration by Five Clusters",x ="Duration", y = "Cluster Count")
-
-ggplot(data = ic.yr.dt[Duration=="Annual"|Duration=="Perennial",.(count = .N),by = .(Duration, clust.6,Year)], aes(x=Duration, y = count))+
-  geom_bar(aes(fill = factor(clust.6)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
-  facet_wrap(~Year,ncol = 4)+
-  labs(title="Duration by Six Clusters",x ="Duration", y = "Cluster Count")
-
-#Plot Photopath
-##Not enough
-
-#Plot Legume
-ggplot(data = ic.yr.dt[,.(count = .N),by = .(Legume, clust.2,Year)], aes(x=Legume, y = count))+
-  geom_bar(aes(fill = factor(clust.2)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
-  facet_wrap(~Year,ncol = 4)+
-  labs(title="Legume by Two Clusters",x ="Legume", y = "Cluster Count")
-
-ggplot(data = ic.yr.dt[,.(count = .N),by = .(Legume, clust.3,Year)], aes(x=Legume, y = count))+
-  geom_bar(aes(fill = factor(clust.3)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
-  facet_wrap(~Year,ncol = 4)+
-  labs(title="Legume by Three Clusters",x ="Legume", y = "Cluster Count")
-
-ggplot(data = ic.yr.dt[,.(count = .N),by = .(Legume, clust.4,Year)], aes(x=Legume, y = count))+
-  geom_bar(aes(fill = factor(clust.4)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
-  facet_wrap(~Year,ncol = 4)+
-  labs(title="Legume by Four Clusters",x ="Legume", y = "Cluster Count")
-
-ggplot(data = ic.yr.dt[,.(count = .N),by = .(Legume, clust.5,Year)], aes(x=Legume, y = count))+
-  geom_bar(aes(fill = factor(clust.5)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
-  facet_wrap(~Year,ncol = 4)+
-  labs(title="Legume by Five Clusters",x ="Legume", y = "Cluster Count")
-
-ggplot(data = ic.yr.dt[,.(count = .N),by = .(Legume, clust.6,Year)], aes(x=Legume, y = count))+
-  geom_bar(aes(fill = factor(clust.6)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
-  facet_wrap(~Year,ncol = 4)+
-  labs(title="Legume by Six Clusters",x ="Legume", y = "Cluster Count")
-
- #Plot Range
-ggplot(data = ic.yr.dt[,.(count = .N),by = .(Range, clust.2,Year)], aes(x=Range, y = count))+
-  geom_bar(aes(fill = factor(clust.2)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
-  facet_wrap(~Year,ncol = 4)+
-  labs(title="Range by Two Clusters",x ="Range", y = "Cluster Count")
-
-ggplot(data = ic.yr.dt[,.(count = .N),by = .(Range, clust.3,Year)], aes(x=Range, y = count))+
-  geom_bar(aes(fill = factor(clust.3)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
-  facet_wrap(~Year,ncol = 4)+
-  labs(title="Range by Three Clusters",x ="Range", y = "Cluster Count")
-
-ggplot(data = ic.yr.dt[,.(count = .N),by = .(Range, clust.4,Year)], aes(x=Range, y = count))+
-  geom_bar(aes(fill = factor(clust.4)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
-  facet_wrap(~Year,ncol = 4)+
-  labs(title="Range by Four Clusters",x ="Range", y = "Cluster Count")
-
-ggplot(data = ic.yr.dt[,.(count = .N),by = .(Range, clust.5,Year)], aes(x=Range, y = count))+
-  geom_bar(aes(fill = factor(clust.5)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
-  facet_wrap(~Year,ncol = 4)+
-  labs(title="Range by Five Clusters",x ="Range", y = "Cluster Count")
-
-ggplot(data = ic.yr.dt[,.(count = .N),by = .(Range, clust.6,Year)], aes(x=Range, y = count))+
-  geom_bar(aes(fill = factor(clust.6)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
-  facet_wrap(~Year,ncol = 4)+
-  labs(title="Range by Six Clusters",x ="Range", y = "Cluster Count")
-
-#Plot Distribution
-ggplot(data = ic.yr.dt[,.(count = .N),by = .(Distribution, clust.2,Year)], aes(x=Distribution, y = count))+
-  geom_bar(aes(fill = factor(clust.2)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
-  facet_wrap(~Year,ncol = 4)+
-  labs(title="Distribution by Two Clusters",x ="Distribution", y = "Cluster Count")
-
-ggplot(data = ic.yr.dt[,.(count = .N),by = .(Distribution, clust.3,Year)], aes(x=Distribution, y = count))+
-  geom_bar(aes(fill = factor(clust.3)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
-  facet_wrap(~Year,ncol = 4)+
-  labs(title="Distribution by Three Clusters",x ="Distribution", y = "Cluster Count")
-
-ggplot(data = ic.yr.dt[,.(count = .N),by = .(Distribution, clust.4,Year)], aes(x=Distribution, y = count))+
-  geom_bar(aes(fill = factor(clust.4)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
-  facet_wrap(~Year,ncol = 4)+
-  labs(title="Distribution by Four Clusters",x ="Distribution", y = "Cluster Count")
-
-ggplot(data = ic.yr.dt[,.(count = .N),by = .(Distribution, clust.5,Year)], aes(x=Distribution, y = count))+
-  geom_bar(aes(fill = factor(clust.5)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
-  facet_wrap(~Year,ncol = 4)+
-  labs(title="Distribution by Five Clusters",x ="Distribution", y = "Cluster Count")
-
-ggplot(data = ic.yr.dt[,.(count = .N),by = .(Distribution, clust.6,Year)], aes(x=Distribution, y = count))+
-  geom_bar(aes(fill = factor(clust.6)), stat="identity",position = "stack", width = 0.5,show.legend = F)+
-  facet_wrap(~Year,ncol = 4)+
-  labs(title="Distribution by Six Clusters",x ="Distribution", y = "Cluster Count")
-
-
-###Visualize
-##3 Clusters
-
-#Taxon
-for (i in 1:length(years)) {
-Taxon = fviz_cluster(list(data = ic.avg.df.2[ic.avg.df.2$Year==years[i],1:2], cluster = clust.yr.3[(yr.count[i]+1):yr.count[i+1]]), 
-             data = ic.yr.clust[ic.yr.clust$Year==years[i],], show.clust.cent = FALSE, axes = c(1,2), repel = T, geom = c("text"),
-             ellipse = T,  ellipse.type = "convex", ellipse.alpha = 0, labelsize = 7,
-             xlab = "Change in Frequency", ylab = "Change in Cover",main = "Cluster plot - Taxon")+
-  geom_point(data = ic.yr.clust[ic.yr.clust$Year==years[i],], aes(x=f.change,y=cov.change,colour = Type),size=2) +
-  guides(size = FALSE, shape=FALSE, group = FALSE)
-print(Taxon)
-  
-#Duration
-Duration = fviz_cluster(list(data = ic.avg.df.2[ic.avg.df.2$Year==years[i],1:2], cluster = clust.yr.3[(yr.count[i]+1):yr.count[i+1]]), 
-             data = ic.yr.clust[ic.yr.clust$Year==years[i],], show.clust.cent = FALSE, axes = c(1,2), repel = T, geom = c("text"),
-             ellipse = T,  ellipse.type = "convex", ellipse.alpha = 0, labelsize = 7,
-             xlab = "Change in Frequency", ylab = "Change in Cover",main = "Cluster plot - Duration")+
-  geom_point(data = ic.yr.clust[ic.yr.clust$Year==years[i],], aes(x=f.change,y=cov.change,group = Duration,colour = Duration),size=2) +
-  guides(size = FALSE, shape=FALSE, group = FALSE)
-print(Duration)
-
-#Photopath
-Photo = fviz_cluster(list(data = ic.avg.df.2[ic.avg.df.2$Year==years[i],1:2], cluster = clust.yr.3[(yr.count[i]+1):yr.count[i+1]]), 
-             data = ic.yr.clust[ic.yr.clust$Year==years[i],], show.clust.cent = FALSE, axes = c(1,2), repel = T, geom = c("text"),
-             ellipse = T,  ellipse.type = "convex", ellipse.alpha = 0, labelsize = 7,
-             xlab = "Change in Frequency", ylab = "Change in Cover",main = "Cluster plot - Photopath")+
-  geom_point(data = ic.yr.clust[ic.yr.clust$Year==years[i],], aes(x=f.change,y=cov.change, group = Photopath, colour = Photopath) ,size=2) +
-  guides(size = FALSE, shape=FALSE, group = FALSE)
-print(Photo)
-}
+#Save all the objects to load into Visualization Rmd File
+setwd("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis")
+save(list = c("clust.yr.2","clust.yr.3","clust.yr.4","clust.yr.5","clust.yr.6", "ic.yr.dt", "ic.avg.df.2",'ic.avg.df','ic.avg.clust','ic.avg.df'), file = "cluster.rda")
 
 ```
 
-#Multiple Indices Model
+
+#Models
 Create comprehensive FE models which incorporate multiple climate indices into single model.
 
-##Transect
-###Drought Model
-####Fixed Effects
+##Growing Season Model
+
+###Fixed Effects
+
+####Transect means and groups
 ```{r indices-fe}
-#IR
-ind.ir.1 = felm(ir_tran ~ nr_tran + nr_tran.lag + VOR + VOR.lag + Action +
-                          cdd + sdii + gsl + cwd + wsdi + prcpt.lag +
-                          Action:gsl + Action:sdii
-                | TransectID, data = tran.dt, exactDOF='rM')
+######Model Without Groups
 
-summary(ind.ir.1,robust = TRUE, cluster = TRUE)
+#Create master modeling list to easily control the models
 
-##Hugh run each one with obscode as a random effect
+grow.response = c('if.tran',"rel.cov.i.2","nf.tran","rel.cov.n.2")
 
-#IF
-ind.if.1 = felm(if.tran ~ nr_tran + nr_tran.lag + VOR + VOR.lag + Action +
-                          cdd + sdii + gsl + cwd + wsdi + prcpt.lag +
-                          Action:gsl + Action:sdii
-                | TransectID, data = tran.dt)
+grow.index = c('gsl',
+               'gsl + gsl.lag',
+               "gsl + rx5.w + sdii + cwd + cdd + prcpt.lag",
+               "gsl + gsl.lag + rx5.w.lag + rx5.w.lag + sdii + sdii.lag + cwd + cwd.lag + cdd + cdd.lag + prcpt.lag") #Each entry represents index terms to consider simultaneously
 
-summary(ind.if.1)
+grow.variant = c(" + ObsCode + Action",
+                 #"+ nr_tran.lag + VOR.lag + Litter.lag + Action",
+                 " + ObsCode + nr_tran.lag + VOR.lag + Litter.lag + Action"
+                 ) #Each entry represents the time varying terms to consider
+grow.interact = c(" + Action:gsl + Action:gsl.lag",
+                  " + Action:gsl + Action:sdii",
+                  " + Action:gsl + Action:sdii + Action:gsl.lag + Action:sdii.lag"
+                  )
+    
+#The fellowing creates a data frame of terms to build model from within loop
+grow.model.terms = as.data.table(expand.grid(grow.response=grow.response,grow.index=grow.index,grow.variant=grow.variant,grow.interact=grow.interact, stringsAsFactors = FALSE))
 
-#Relative Cover
-ind.irc.1 = felm(rel.cov.i.2 ~ nr_tran + nr_tran.lag + Action + 
-                          cdd + sdii + gsl + cwd + wsdi + prcpt.lag +
-                          Action:gsl + Action:sdii
-                | TransectID, data = tran.dt, exactDOF='rM')
+#Now create a loop to run a felm model for each model term combination and store the model within a list and the model summary within a list...RERUN terms above first
+growing.models = list()
+growing.m.summaries = list()
+growing.m.coeffs = list()
 
-summary(ind.irc.1,robust = TRUE, cluster = TRUE)
-
-#Dominance 
-ind.iDI.1 = felm(meanDI.i.tran.2 ~ nr_tran + nr_tran.lag  + Action + 
-                          cdd + sdii + gsl + cwd + wsdi + prcpt.lag +
-                          Action:gsl + Action:sdii
-                | TransectID, data = tran.dt)
-
-summary(ind.iDI.1)
-
-
-
-library(texreg)
-####### Using texreg for storing model output - examples ######
-# Example of texreg with two models - give it a list of models, give titles, etc. Here, for example, these models are called  
-my.table = texreg(list(ind.ir.1), 
-                    custom.model.names=c("IR Drought Mod"))
-#   
-#   screenreg(list(clust.res.PlotFEs.SiteYear.Levels,
-#                  clust.res.PlotFEs.SiteYear.Levels.groundPAR),       # object with results from clx
-#             custom.model.names=c("Base mod", "another mod"),
-#             omit.coef=c("(site_code)|(newplotid)"))  # object from estimation (unclustered) for # BIC
-#   
-#   htmlreg(list(clust.res.PlotFEs.SiteYear.Levels,
-#                clust.res.PlotFEs.SiteYear.Levels.groundPAR),       # object with results from clx
-#           custom.model.names=c("Base mod", "another mod"),
-#           omit.coef=c("(site_code)|(newplotid)"),
-#           file="~/Desktop/lauratable.html")
-
-#Plotting
-plain <- ggplot(all.results, aes(x = Model, y = Est, fill = Model))
+#Modeling loop
+for ( i in 1:length(grow.model.terms$grow.response)){
+  modelformula <- paste(noquote(grow.model.terms[i,grow.response]), "~", noquote(grow.model.terms[i,grow.index]),noquote(grow.model.terms[i,grow.variant]),
+                        noquote(grow.model.terms[i,grow.interact]), "| TransectID",sep = " ")
+  growing.models[[i]] = felm(as.formula(modelformula), data = tran.dt, exactDOF='rM')
+  growing.m.summaries[[i]] = summary(growing.models[[i]],robust = TRUE, cluster = TRUE)
+  growing.m.coeffs[[i]] = broom::tidy(growing.models[[i]], conf.int = T)
+}
 
 
+######Model WITH Groups
 
-## plain graphic with no data
-plain <- ggplot(ind.ir.1, aes(x = Model, y = Est, fill = Model)) +
-  geom_bar(stat = "identity", color= "black", position=position_dodge()) +
-  ylim(-0.5, 0.3) +
-  geom_hline(yintercept=0, linetype="dashed", color = "black", size = 1.5) +
-  geom_errorbar(aes(ymin= Est- (SE*1.96), ymax=Est + (SE*1.96)), width=.2, position=position_dodge(.9)) +  
-  theme_bw() +
-  theme(axis.text.y = element_text(size = 30, face = "bold")) + 
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-  theme(axis.text.x = element_text(size=30, face = "italic")) + 
-  labs(x = "Model", y = "Estimate for log(richness) effect size") +
-  theme(axis.title.y= element_text(size=30)) + 
-  theme(axis.title.x= element_text(size=30)) +
-  labs(title = "Log-Log Model Results") + 
-  theme(plot.title = element_text(hjust = 0.5)) + 
-  theme(plot.title = element_text(face="bold", size = 18))
-        
-plain + scale_fill_brewer(palette="Greys")
-      
-## graphic with data for job talk
-all.results$Model <- as.factor(all.results$Model)
 
-p_res <- ggplot(all.results, aes(x = Model, y = Est, fill = Model)) +
-  geom_bar(stat = "identity", color= "black", 
-                    position=position_dodge()) +
-           ylim(-0.5, 0.3) +
-             geom_hline(yintercept=0, linetype="dashed", color = "black", size = 1.5) +
-             geom_errorbar(aes(ymin= Est- (SE*1.96), ymax=Est + (SE*1.96)), width=.2,
-                         position=position_dodge(.9)) +  
-             theme_bw() +
-             theme(axis.text.y = element_text(size = 30, face = "bold")) + 
-             theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-             theme(axis.text.x = element_text(size=30, face = "italic")) + 
-             labs(x = "Model", y = "Estimate for log(richness) effect size") +
-             theme(axis.title.y= element_text(size=30)) + theme(axis.title.x= element_text(size=30)) +
-             labs(title = "Log-Log Model Results") + theme(plot.title = element_text(hjust = 0.5)) + 
-             theme(plot.title = element_text(face="bold", size = 18))
-          
-  # p_res + scale_fill_brewer(palette="Greys")
-cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+#grow.response.grp = as.character(expression(r.T.dur , f.T.dur,rel.cov.2.dur, meanDI.2.dur,
+                                    #r.T.type,f.T.type,rel.cov.2.type,meanDI.2.type,
+                                    #r.T.leg, f.T.leg,rel.cov.2.leg, meanDI.2.leg, 
+                                    ##not enough data for photo to use it 
+                                    ##r.T.photo,f.T.photo, rel.cov.2.photo, meanDI.2.photo, 
+                                    #r.T.range, f.T.range,  rel.cov.2.range, meanDI.2.range,
+                                    #r.T.dist,f.T.dist, rel.cov.2.dist, meanDI.2.dist))
 
-#model.1 <- "#D55E00"
-#p_res +  scale_colour_manual(values = model.1)
+categories.grp = c("Native.Status", "Ind.class","Indlvl")
 
-p_res + scale_fill_manual(values=cbPalette[c(7,6,1,2)]) +  theme(legend.title=element_text(size=30), legend.text=element_text(size=30))
+status = c("I", "N")
+
+resp.cnt = c("freq", "cover")
+
+grow.response.grp = as.character(expression(f.T.dur,rel.cov.2.dur, f.ind.dur, rel.cov.2.ind.dur,f.indlvl.dur, rel.cov.2.indlvl.dur,
+                                            f.T.type,rel.cov.2.type, f.ind.type, rel.cov.2.ind.type,f.indlvl.type, rel.cov.2.indlvl.type,
+                                            #Legume and Photopath aren't really interesting yet, leave out for now
+                                            #f.T.leg,rel.cov.2.leg, f.ind.leg, rel.cov.2.ind.leg,f.indlvl.leg, rel.cov.2.indlvl.leg,
+                                            #f.T.photo, rel.cov.2.photo, f.ind.photo, rel.cov.2.ind.photo,f.indlvl.photo, rel.photo.2.indlvl.photo,
+                                            f.T.range,  rel.cov.2.range, f.ind.range, rel.cov.2.ind.range,f.indlvl.range, rel.cov.2.indlvl.range,
+                                            f.T.dist, rel.cov.2.dist,f.ind.dist, rel.cov.2.ind.dist, f.indlvl.dist, rel.cov.2.indlvl.dist))
+
+groups = unique(group.names$V7)
+#Remove photo and legume for now
+groups =groups[!(groups=="Photopath" | groups=="Legume")]
+
+dt.grps = as.data.frame(data.table(invasive = rep(group.names[!(V7=="Photopath" | V7=="Legume"),V3],each =length(resp.cnt)), native = rep(group.names[!(V7=="Photopath" | V7=="Legume"),V5], each = length(resp.cnt))))
+
+grow.index.grp = grow.index  #Each entry represents index terms to consider simultaneously
+
+grow.variant.grp = grow.variant #Each entry represents the time varying terms to consider
+
+grow.interact.grp = grow.interact
+
+
+#The fellowing creates a data frame of terms to build model from within loop
+prelim.terms.grp = as.data.table(expand.grid(grow.index.grp=grow.index.grp,grow.variant.grp=grow.variant.grp,grow.interact.grp=grow.interact.grp, stringsAsFactors = FALSE))
+
+#write a loop to correctly expand matrix with groups and associated data tables
+grow.setup = as.data.table(data.frame(grow.response.grp = rep(grow.response.grp, each = length(status)), status = rep(status, times = length(grow.response.grp)), groups = rep(groups, 
+                        each = (length(groups) * length(categories.grp))), categories.grp = rep(categories.grp, each = length(status)*length(resp.cnt), times = length(groups))))
+
+grp.datatables = c()
+for (i in 1:(length(grow.setup$grow.response.grp)/length(status))) {
+  for (k in 1:length(status)){
+    grp.datatables[k + ((i-1)*length(status))] = dt.grps[i,k]  
+  }
+}
+
+grow.setup = as.data.table(data.frame(grow.setup, dt.grps = grp.datatables))
+
+
+grow.model.terms.grp = data.frame()
+zzz=data.frame()
+for (k in 1:length(grow.setup$grow.response.grp)){
+  for(r in 1:length(prelim.terms.grp$grow.index.grp)){
+    z = data.frame(expand.grid(grow.response.grp = grow.setup$grow.response.grp[k],groups = grow.setup$groups[k],dt.grps = grow.setup$dt.grps[k],
+                               status = grow.setup$status[k], categories.grp = grow.setup$categories.grp[k],
+                               grow.index.grp=prelim.terms.grp$grow.index.grp[r], grow.variant.grp=prelim.terms.grp$grow.variant.grp[r],
+                               grow.interact.grp=prelim.terms.grp$grow.interact.grp[r], stringsAsFactors = F))
+    zzz = rbind(zzz,z)
+    }
+  grow.model.terms.grp = rbind(grow.model.terms.grp,zzz)
+  zzz=data.frame()
+}
+
+grow.model.terms.grp = as.data.table(grow.model.terms.grp)
+#I need to reorder this so modeling and graphing is easier
+grow.model.terms.grp[,sorting:=paste(grow.interact.grp,grow.variant.grp,grow.index.grp)]
+setorder(grow.model.terms.grp,sorting,groups,categories.grp,grow.response.grp)
+
+#Modeling loop
+growing.m.grp = list()
+growing.grp.summaries = list()
+growing.grp.coeffs = list()
+
+for ( i in 1:length(grow.model.terms.grp$grow.response.grp)){
+  modelformula <- paste(noquote(grow.model.terms.grp[i,grow.response.grp]), "~", noquote(grow.model.terms.grp[i,grow.index.grp]),noquote(grow.model.terms.grp[i,grow.variant.grp]),
+                        noquote(grow.model.terms.grp[i,grow.interact.grp]), '+', noquote(grow.model.terms.grp[i,groups]), "| TransectID",sep = " ")
+  growing.m.grp[[i]] = felm(as.formula(modelformula), data = group.list[[as.character(grow.model.terms.grp[i,dt.grps])]] , exactDOF='rM')
+  growing.grp.summaries[[i]] = summary(growing.m.grp[[i]],robust = TRUE, cluster = TRUE)
+  growing.grp.coeffs[[i]] = broom::tidy(growing.m.grp[[i]], conf.int = T)
+}
+
+#Save
+setwd("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis")
+save(list = c('growing.models', 'growing.m.summaries', 'growing.m.coeffs','growing.m.grp','growing.grp.summaries','growing.grp.coeffs',"grow.model.terms", 'grow.model.terms.grp', 'grow.response','groups', 'grow.response.grp'), 
+     file = "model_GSL_FE_tran.rda")
 
 ```
 
-####Lagged
+####Species Level
+
+###Lagged
+
+####Transect means and groups
+```{r indices-le} 
+#The lagged models should be the same as above with the addition of a lagged response variable and the removal of the fixed effect. Use the same terms as above to streamline model design and avoid errors. 
+
+#Call the terms to confirm they are correct
+
+######Model Without Groups
+
+#Create master modeling list to easily control the models
+
+#call terms
+print(grow.response)
+print(grow.index)
+print(grow.interact)
+print(grow.variant)
+
+#Create new lagged terms
+grow.lag = paste(grow.response,".lag", sep = "")
+
+
+#The fellowing creates a data frame of terms to build model from within loop
+grow.lag.terms = as.data.table(expand.grid(grow.lag=grow.lag,grow.index=grow.index,grow.variant=grow.variant,grow.interact=grow.interact, stringsAsFactors = FALSE))
+
+#Now create a loop to run a felm model for each model term combination and store the model within a list and the model summary within a list...RERUN terms above first
+growing.lagged = list()
+growing.lagged.summaries = list()
+growing.lagged.coeffs = list()
+
+#Modeling loop
+for ( i in 1:length(grow.lag.terms$grow.lag)){
+  modelformula <- paste(noquote(grow.lag.terms[i,grow.lag]), "~", noquote(grow.lag.terms[i,grow.index]),noquote(grow.lag.terms[i,grow.variant]),
+                        noquote(grow.lag.terms[i,grow.interact]),sep = " ")
+  growing.lagged[[i]] = felm(as.formula(modelformula), data = tran.dt.lag, exactDOF='rM')
+  growing.lagged.summaries[[i]] = summary(growing.lagged[[i]], robust = TRUE, cluster = TRUE)
+  growing.lagged.coeffs[[i]] = broom::tidy(growing.lagged[[i]], conf.int = T)
+}
+
+
+######Model WITH Groups
+ 
+#call terms
+print(grow.response.grp)
+print(groups)
+print(dt.grps)
+print(grow.index.grp) 
+print(grow.variant.grp) 
+print(grow.interact.grp) 
+
+#Create new lagged terms
+grow.lag.grp = paste(grow.response.grp,".lag", sep = "")
+dt.lag.grps = paste(dt.grps,".lag", sep = "")
+
+
+#The fellowing creates a data frame of terms to build model from within loop
+prelim.terms.grp = as.data.table(expand.grid(grow.index.grp=grow.index.grp,grow.variant.grp=grow.variant.grp,grow.interact.grp=grow.interact.grp, stringsAsFactors = FALSE))
+
+#write a loop to correctly expand matrix with groups and associated data tables
+grow.lag.terms.grp=data.frame()
+zz=data.frame()
+for (i in 1:length(groups)) {
+  z = data.frame(expand.grid(grow.lag.grp = grow.lag.grp[1+((length(grow.lag.grp)/length(groups)*(i-1))):((length(grow.lag.grp)/length(groups)*(i))-1)],groups=groups[i],dt.lag.grps = dt.lag.grps[i],stringsAsFactors = F))
+  zz =rbind(zz,z) 
+}
+
+zzz=data.frame()
+for (k in 1:length(zz$groups)){
+  for(r in 1:length(prelim.terms.grp$grow.index.grp)){
+    z = data.frame(expand.grid(grow.lag.grp = zz$grow.lag.grp[k],groups = zz$groups[k],dt.lag.grps = zz$dt.lag.grps[k],
+                               grow.index.grp=prelim.terms.grp$grow.index.grp[r], grow.variant.grp=prelim.terms.grp$grow.variant.grp[r], grow.interact.grp=prelim.terms.grp$grow.interact.grp[r], stringsAsFactors = F))
+    zzz = rbind(zzz,z)
+    }
+  grow.lag.terms.grp = rbind(grow.lag.terms.grp,zzz)
+  zzz=data.frame()
+}
+
+grow.lag.terms.grp = as.data.table(grow.lag.terms.grp)
+#I need to reorder this so modeling and graphing is easier
+grow.lag.terms.grp[,sorting:=paste(grow.interact.grp,grow.variant.grp,grow.index.grp)]
+setorder(grow.lag.terms.grp,sorting,groups,grow.lag.grp)
+
+#Modeling loop
+
+growing.lagged.grp = list()
+growing.lagged.summaries.grp = list()
+growing.lagged.coeffs.grp = list()
+
+for ( i in 1:length(grow.lag.terms.grp$grow.lag.grp)){
+  modelformula <- paste(noquote(grow.lag.terms.grp[i,grow.lag.grp]), "~", noquote(grow.lag.terms.grp[i,grow.index.grp]),noquote(grow.lag.terms.grp[i,grow.variant.grp]),
+                        noquote(grow.lag.terms.grp[i,grow.interact.grp]), '+', noquote(grow.lag.terms.grp[i,groups]), "| TransectID",sep = " ")
+  growing.lagged.grp[[i]] = felm(as.formula(modelformula), data = group.list[[grow.lag.terms.grp[i,dt.lag.grps]]] , exactDOF='rM')
+  growing.lagged.summaries.grp[[i]] = summary(growing.lagged.grp[[i]],robust = TRUE, cluster = TRUE)
+  growing.lagged.coeffs.grp[[i]] = broom::tidy(growing.lagged.grp[[i]], conf.int = T)
+}
+
+setwd("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis")
+save(list = c('growing.lagged', 'growing.lagged.summaries', 'growing.lagged.coeffs','growing.lagged.grp','growing.lagged.summaries.grp','growing.lagged.coeffs.grp'),
+     file = "model_GSL_LE_tran.rda")
+
+```
+
+####Species Level
+
+
+
+##Drought Model
+
+###Fixed Effects
+
+####Transect means and groups
+```{r indices-fe}
+######Model Without Groups
+
+#Create master modeling list to easily control the models
+
+responses = c("ir_tran","if.tran","rel.cov.i.2","meanDI.i.tran.2")
+
+index.coms = c("cdd + sdii + gsl + cwd + wsdi + prcpt.lag",
+                 "cdd.lag + sdii.lag + gsl.lag + cwd.lag + wsdi.lag + prcpt.lag") #Each entry represents index terms to consider simultaneously
+
+variant.effects = c("+ nr_tran.lag + VOR.lag + Action",
+                      "+ Action") #Each entry represents the time varying terms to consider
+interactions = c(" + Action:gsl + Action:sdii",
+                   "+ Action:gsl.lag + Action:sdii.lag")
+    
+#The fellowing creates a data frame of terms to build model from within loop
+model.terms = as.data.table(expand.grid(responses=responses,index.coms=index.coms,variant.effects=variant.effects,interactions=interactions, stringsAsFactors = FALSE))
+
+#Now create a loop to run a felm model for each model term combination and store the model within a list and the model summary within a list...RERUN terms above first
+drought.models = list()
+drought.m.summaries = list()
+drought.m.coeffs = list()
+
+#Modeling loop
+for ( i in 1:length(model.terms$responses)){
+  modelformula <- paste(noquote(model.terms[i,responses]), "~", noquote(model.terms[i,index.coms]),noquote(model.terms[i,variant.effects]),
+                        noquote(model.terms[i,interactions]), "| TransectID",sep = " ")
+  drought.models[[i]] = felm(as.formula(modelformula), data = tran.dt, exactDOF='rM')
+  drought.m.summaries[[i]] = summary(drought.models[[i]])
+  drought.m.coeffs[[i]] = broom::tidy(drought.models[[i]], conf.int = T)
+}
+
+
+#Plot effects: all response variable per model type
+coeff.dt = data.frame()
+for (k in 1:(length(model.terms$responses)/length(responses))) {
+  coeff.dt = data.frame()
+    for (i in 1:length(responses)) {
+    coeff.dt = rbind(coeff.dt,drought.m.coeffs[[i+(length(responses)*(k-1))]])
+    }
+  coeff.dt$response = rep(responses,each = length(coeff.dt$term)/length(responses))
+  
+  plot = ggplot(data = coeff.dt ,aes(x=term, y=estimate, ymin=conf.low, ymax=conf.high)) +
+  geom_pointrange() +
+  coord_flip() +
+  facet_wrap(~response)+
+  labs(Title = "Effects on Invasive Species") +
+  geom_hline(yintercept = 0, col = "orange") +
+  ylim(-0.3, 0.3 ) +
+  #labs(title = "Effects on Invasive Richness") +
+  theme(axis.title.x = element_blank(),axis.title.y = element_blank())
+  print(plot)
+}
+
+
+
+
+
+######Model WITH Groups
+responses = as.character(expression(r.T.dur , f.T.dur,rel.cov.2.dur, meanDI.2.dur,
+                                    r.T.type,f.T.type,rel.cov.2.type,meanDI.2.type,
+                                    r.T.leg, f.T.leg,rel.cov.2.leg, meanDI.2.leg, 
+                                    #not enough data for photo to use it 
+                                    #r.T.photo,f.T.photo, rel.cov.2.photo, meanDI.2.photo, 
+                                    r.T.range, f.T.range,  rel.cov.2.range, meanDI.2.range,
+                                    r.T.dist,f.T.dist, rel.cov.2.dist, meanDI.2.dist))
+groups = group.names$V7
+#have to remove photo for now
+groups =groups[!groups=="Photopath"]
+
+dt.grps = group.names$V3
+#have to remove photo for now
+dt.grps = dt.grps[!dt.grps=="i.photo.dt"]
+
+index.coms = c("cdd + sdii + gsl + cwd + wsdi + prcpt.lag",
+                 "cdd.lag + sdii.lag + gsl.lag + cwd.lag + wsdi.lag + prcpt.lag") #Each entry represents index terms to consider simultaneously
+
+variant.effects = c("+ nr_tran.lag + VOR.lag + Action",
+                      "+ Action") #Each entry represents the time varying terms to consider
+interactions = c(" + Action:gsl + Action:sdii",
+                   "+ Action:gsl.lag + Action:sdii.lag")
+
+
+#The fellowing creates a data frame of terms to build model from within loop
+prelim.terms.grp = as.data.table(expand.grid(index.coms=index.coms,variant.effects=variant.effects,interactions=interactions, stringsAsFactors = FALSE))
+
+#write a loop to correctly expand matrix with groups and associated data tables
+model.terms.grp=data.frame()
+zz=data.frame()
+for (i in 1:length(groups)) {
+  z = data.frame(expand.grid(responses = responses[1+((length(responses)/length(groups)*(i-1))):((length(responses)/length(groups)*(i))-1)],groups=groups[i],dt.grps = dt.grps[i],stringsAsFactors = F))
+  zz =rbind(zz,z) 
+}
+
+zzz=data.frame()
+for (k in 1:length(zz$groups)){
+  for(r in 1:length(prelim.terms.grp$index.coms)){
+    z = data.frame(expand.grid(responses = zz$responses[k],groups = zz$groups[k],dt.grps = zz$dt.grps[k],
+                               index.coms=prelim.terms.grp$index.coms[r], variant.effects=prelim.terms.grp$variant.effects[r], interactions=prelim.terms.grp$interactions[r], stringsAsFactors = F))
+    zzz = rbind(zzz,z)
+    }
+  model.terms.grp = rbind(model.terms.grp,zzz)
+  zzz=data.frame()
+}
+
+model.terms.grp = as.data.table(model.terms.grp)
+#I need to reorder this so modeling and graphing is easier
+model.terms.grp[,sorting:=paste(interactions,variant.effects,index.coms)]
+setorder(model.terms.grp,sorting,groups,responses)
+
+#Modeling loop
+
+drought.m.grp = list()
+drought.grp.summaries = list()
+drought.grp.coeffs = list()
+
+for ( i in 1:length(model.terms.grp$responses)){
+  modelformula <- paste(noquote(model.terms.grp[i,responses]), "~", noquote(model.terms.grp[i,index.coms]),noquote(model.terms.grp[i,variant.effects]),
+                        noquote(model.terms.grp[i,interactions]), '+', noquote(model.terms.grp[i,groups]), "| TransectID",sep = " ")
+  drought.m.grp[[i]] = felm(as.formula(modelformula), data = group.list[[model.terms.grp[i,dt.grps]]] , exactDOF='rM')
+  drought.grp.summaries[[i]] = summary(drought.m.grp[[i]])
+  drought.grp.coeffs[[i]] = broom::tidy(drought.m.grp[[i]], conf.int = T)
+}
+
+
+#Plot effects: all response variable per model type
+coeff.grp.dt = data.frame()
+coef.resp = c()
+coef.grp = c()
+for (k in 1:(length(model.terms.grp$responses)/(length(responses)))) {
+  for (i in 1:length(groups)){
+    coeff.grp.dt=data.frame()
+    coef.resp = c()
+    coef.grp = c()
+    for (r in 1:(length(responses)/length(groups))){
+      coeff.grp.dt = rbind(coeff.grp.dt,
+                       drought.grp.coeffs[[ r + (length(responses)/length(groups)*(i-1)) + (length(groups)*(length(responses)/length(groups)*(k-1)))]])
+     
+       coef.resp = c(coef.resp, 
+                    rep(responses[r+(length(responses)/length(groups)*(i-1))] ,each = length(drought.grp.coeffs[[r + (length(responses)/length(groups)*(i-1)) + (length(groups)*(length(responses)/length(groups)*(k-1)))]]$term)))
+      
+       coef.grp = c(coef.grp, 
+                    rep(responses[r+(length(responses)/length(groups)*(i-1))] ,each = length(drought.grp.coeffs[[r + (length(responses)/length(groups)*(i-1)) + (length(groups)*(length(responses)/length(groups)*(k-1)))]]$term)))
+      
+       }
+      
+    coeff.grp.dt = cbind(coeff.grp.dt,coef.grp,coef.resp)
+  
+  #Now plot using this coefficient table  
+  plot = ggplot(data = coeff.grp.dt ,aes(x=term, y=estimate, ymin=conf.low, ymax=conf.high)) +
+  geom_pointrange() +
+  coord_flip() +
+  facet_wrap(~coef.resp)+
+  labs(Title = "Effects on Invasive Species") +
+  geom_hline(yintercept = 0, col = "orange") +
+  ylim(-0.3, 0.3 ) +
+  #labs(title = "Effects on Invasive Richness") +
+  theme(axis.title.x = element_blank(),axis.title.y = element_blank())
+  print(plot)
+  }
+}
+  
+```
+  
+####Species Level
+
+###Lagged effects
+
+####Transect means and groups
+
 ```{r indices-le}
 
 #IR
@@ -835,194 +1162,10 @@ summary(ind.iDI.1.lag,robust = TRUE, cluster = TRUE)
 
 ```
 
-
-###Growing Season Model
-####Fixed Effects
-```{r indices-fe}
-#IR
-ind.ir.1 = felm(ir_tran ~ nr_tran.lag + VOR.lag + Action +
-                gsl + rx5.w + sdii + cwd + cdd + prcpt.lag +
-                Action:gsl + Action:sdii + Action:cwd
-                | TransectID, data = tran.dt, exactDOF='rM')
-
-summary(ind.ir.1,robust = TRUE, cluster = TRUE)
-
-##Hugh run each one with obscode as a random effect
-
-#IF
-ind.if.1 = felm(ihs(if.tran) ~ nr_tran.lag + VOR.lag + Action +
-                gsl + rx5.w + sdii + cwd + cdd + prcpt.lag +
-                Action:gsl + Action:sdii + Action:cwd
-                | TransectID, data = tran.dt, exactDOF='rM')
-
-summary(ind.if.1)
-
-#Relative Cover
-ind.irc.1 = felm(ihs(rel.cov.i.2) ~ nr_tran.lag + VOR.lag + Action +
-                gsl + rx5.w + sdii + cwd + cdd + prcpt.lag +
-                Action:gsl + Action:sdii + Action:cwd
-                | TransectID, data = tran.dt, exactDOF='rM')
-
-summary(ind.irc.1,robust = TRUE, cluster = TRUE)
-
-#Dominance 
-ind.iDI.1 = felm(ihs(meanDI.i.tran.2) ~ nr_tran.lag + VOR.lag + Action +
-                gsl + rx5.w + sdii + cwd + cdd + prcpt.lag +
-                Action:gsl + Action:sdii + Action:cwd
-                | TransectID, data = tran.dt, exactDOF='rM')
-
-summary(ind.iDI.1)
-
-#Visualizing
-coefs_ir.1 = broom::tidy(ind.ir.1, conf.int = T)
-coefs_if.1 = broom::tidy(ind.if.1, conf.int = T)
-coefs_irc.1 = broom::tidy(ind.irc.1, conf.int = T)
-coefs_iDI.1 = broom::tidy(ind.iDI.1, conf.int = T)
-
-#IR
-ggplot(data = coefs_ir.1,aes(x=term, y=estimate, ymin=conf.low, ymax=conf.high)) +
-  geom_pointrange() +
-  coord_flip() +
-  labs(Title = "Effects on Invasive Richness") +
-  geom_hline(yintercept = 0, col = "orange") +
-  ylim(-0.3, 0.3 ) +
-  labs(
-    title = "Effects on Invasive Richness"
-    ) +
-  theme(axis.title.x = element_blank(),axis.title.y = element_blank())
-
-#IF
-ggplot(data = coefs_if.1,aes(x=term, y=estimate, ymin=conf.low, ymax=conf.high)) +
-  geom_pointrange() +
-  coord_flip() +
-  labs(Title = "Effects on Invasive Frequency") +
-  geom_hline(yintercept = 0, col = "orange") +
-  ylim(-0.1, 0.1 ) +
-  labs(
-    title = "Effects on Invasive Frequency"
-    ) +
-  theme(axis.title.x = element_blank(),axis.title.y = element_blank())
-
-#IRC
-ggplot(data = coefs_irc.1,aes(x=term, y=estimate, ymin=conf.low, ymax=conf.high)) +
-  geom_pointrange() +
-  coord_flip() +
-  labs(Title = "Effects on Invasive Relative Cover") +
-  geom_hline(yintercept = 0, col = "orange") +
-  ylim(-0.1, 0.1 ) +
-  labs(
-    title = "Effects on Invasive Relative Cover"
-    ) +
-  theme(axis.title.x = element_blank(),axis.title.y = element_blank())
-
-#IDI
-ggplot(data = coefs_iDI.1,aes(x=term, y=estimate, ymin=conf.low, ymax=conf.high)) +
-  geom_pointrange() +
-  coord_flip() +
-  labs(Title = "Effects on Invasive Dominance") +
-  geom_hline(yintercept = 0, col = "orange") +
-  ylim(-0.1, 0.1 ) +
-  labs(
-    title = "Effects on Invasive Dominance"
-    ) +
-  theme(axis.title.x = element_blank(),axis.title.y = element_blank())
-
-```
-
-####Lagged
-```{r indices-le}
-
-#IR
-ind.ir.1.lag = felm(ir_tran ~ ir_tran.lag + nr_tran.lag + VOR.lag + Action +
-                gsl + rx5.w + sdii + cwd + cdd + prcpt.lag +
-                Action:gsl + Action:sdii + Action:cwd
-                , data = tran.dt, exactDOF='rM')
-
-summary(ind.ir.1.lag,robust = TRUE, cluster = TRUE)
-
-##Hugh run each one with obscode as a random effect
-
-#IF
-ind.if.1.lag = felm(if.tran ~ if.tran.lag + nr_tran.lag + VOR.lag + Action +
-                gsl + rx5.w + sdii + cwd + cdd + prcpt.lag +
-                Action:gsl + Action:sdii + Action:cwd
-                , data = tran.dt, exactDOF='rM')
-
-summary(ind.if.1.lag,robust = TRUE, cluster = TRUE)
-
-#Relative Cover
-ind.irc.1.lag = felm(ihs(rel.cov.i.2) ~ rel.cov.i.2.lag + nr_tran.lag + VOR.lag + Action +
-                gsl + rx5.w + sdii + cwd + cdd + prcpt.lag +
-                Action:gsl + Action:sdii + Action:cwd
-                , data = tran.dt, exactDOF='rM')
-
-summary(ind.irc.1.lag,robust = TRUE, cluster = TRUE)
-
-#Dominance 
-ind.iDI.1.lag = felm(meanDI.i.tran.2 ~ meanDI.i.tran.2.lag  + nr_tran.lag + VOR.lag + Action +
-                gsl + rx5.w + sdii + cwd + cdd + prcpt.lag +
-                Action:gsl + Action:sdii + Action:cwd
-                , data = tran.dt, exactDOF='rM')
-
-summary(ind.iDI.1.lag,robust = TRUE, cluster = TRUE)
-
-#Visualizing
-coefs_ir.lag.1 = broom::tidy(ind.ir.1.lag, conf.int = T)
-coefs_if.lag.1 = broom::tidy(ind.if.1.lag, conf.int = T)
-coefs_irc.lag.1 = broom::tidy(ind.irc.1.lag, conf.int = T)
-coefs_iDI.lag.1 = broom::tidy(ind.iDI.1.lag, conf.int = T)
-
-#IR
-ggplot(data = coefs_ir.lag.1,aes(x=term, y=estimate, ymin=conf.low, ymax=conf.high)) +
-  geom_pointrange() +
-  coord_flip() +
-  labs(Title = "Effects on Invasive Richness") +
-  geom_hline(yintercept = 0, col = "orange") +
-  ylim(-0.3, 0.3 ) +
-  labs(
-    title = "Effects on Invasive Richness"
-    ) +
-  theme(axis.title.x = element_blank(),axis.title.y = element_blank())
-
-#IF
-ggplot(data = coefs_if.lag.1,aes(x=term, y=estimate, ymin=conf.low, ymax=conf.high)) +
-  geom_pointrange() +
-  coord_flip() +
-  labs(Title = "Effects on Invasive Frequency") +
-  geom_hline(yintercept = 0, col = "orange") +
-  ylim(-0.5, 0.5 ) +
-  labs(
-    title = "Effects on Invasive Frequency"
-    ) +
-  theme(axis.title.x = element_blank(),axis.title.y = element_blank())
-
-#IRC
-ggplot(data = coefs_irc.lag.1,aes(x=term, y=estimate, ymin=conf.low, ymax=conf.high)) +
-  geom_pointrange() +
-  coord_flip() +
-  labs(Title = "Effects on Invasive Relative Cover") +
-  geom_hline(yintercept = 0, col = "orange") +
-  ylim(-0.1, 0.1 ) +
-  labs(
-    title = "Effects on Invasive Relative Cover"
-    ) +
-  theme(axis.title.x = element_blank(),axis.title.y = element_blank())
-
-#IDI
-ggplot(data = coefs_iDI.lag.1,aes(x=term, y=estimate, ymin=conf.low, ymax=conf.high)) +
-  geom_pointrange() +
-  coord_flip() +
-  labs(Title = "Effects on Invasive Dominance") +
-  geom_hline(yintercept = 0, col = "orange") +
-  ylim(-0.1, 0.1 ) +
-  labs(
-    title = "Effects on Invasive Dominance"
-    ) +
-  theme(axis.title.x = element_blank(),axis.title.y = element_blank())
+####Species Level
 
 
 
-```
 
 ##Species
 ###Fixed effects
@@ -1091,7 +1234,22 @@ summary(ind.iDI.1.lag,robust = TRUE, cluster = TRUE)
 
 ```
 
-# TXx (max temperature) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## TXx (max temperature) 
 
 ##Transect
 
@@ -1912,6 +2070,118 @@ summary(tn90p.iSDI.lag.lm.1)
 
 
 # fd
+
+
+
+```{r oldmodelcode}
+
+#IR
+ind.ir.1 = felm(ir_tran ~ nr_tran.lag + VOR.lag + Action +
+                          cdd + sdii + gsl + cwd + wsdi + prcpt.lag +
+                          Action:gsl + Action:sdii
+                | TransectID, data = tran.dt, exactDOF='rM')
+
+summary(ind.ir.1,robust = TRUE, cluster = TRUE)
+
+##Hugh run each one with obscode as a random effect
+
+#IF
+ind.if.1 = felm(if.tran ~ nr_tran + nr_tran.lag + VOR + VOR.lag + Action +
+                          cdd + sdii + gsl + cwd + wsdi + prcpt.lag +
+                          Action:gsl + Action:sdii
+                | TransectID, data = tran.dt)
+
+summary(ind.if.1)
+
+#Relative Cover
+ind.irc.1 = felm(rel.cov.i.2 ~ nr_tran + nr_tran.lag + Action + 
+                          cdd + sdii + gsl + cwd + wsdi + prcpt.lag +
+                          Action:gsl + Action:sdii
+                | TransectID, data = tran.dt, exactDOF='rM')
+
+summary(ind.irc.1,robust = TRUE, cluster = TRUE)
+
+#Dominance 
+ind.iDI.1 = felm(meanDI.i.tran.2 ~ nr_tran + nr_tran.lag  + Action + 
+                          cdd + sdii + gsl + cwd + wsdi + prcpt.lag +
+                          Action:gsl + Action:sdii
+                | TransectID, data = tran.dt)
+
+summary(ind.iDI.1)
+
+
+
+library(texreg)
+####### Using texreg for storing model output - examples ######
+# Example of texreg with two models - give it a list of models, give titles, etc. Here, for example, these models are called  
+my.table = texreg(list(ind.ir.1), 
+                    custom.model.names=c("IR Drought Mod"))
+#   
+#   screenreg(list(clust.res.PlotFEs.SiteYear.Levels,
+#                  clust.res.PlotFEs.SiteYear.Levels.groundPAR),       # object with results from clx
+#             custom.model.names=c("Base mod", "another mod"),
+#             omit.coef=c("(site_code)|(newplotid)"))  # object from estimation (unclustered) for # BIC
+#   
+#   htmlreg(list(clust.res.PlotFEs.SiteYear.Levels,
+#                clust.res.PlotFEs.SiteYear.Levels.groundPAR),       # object with results from clx
+#           custom.model.names=c("Base mod", "another mod"),
+#           omit.coef=c("(site_code)|(newplotid)"),
+#           file="~/Desktop/lauratable.html")
+
+#Plotting
+plain <- ggplot(all.results, aes(x = Model, y = Est, fill = Model))
+
+
+
+## plain graphic with no data
+plain <- ggplot(ind.ir.1, aes(x = Model, y = Est, fill = Model)) +
+  geom_bar(stat = "identity", color= "black", position=position_dodge()) +
+  ylim(-0.5, 0.3) +
+  geom_hline(yintercept=0, linetype="dashed", color = "black", size = 1.5) +
+  geom_errorbar(aes(ymin= Est- (SE*1.96), ymax=Est + (SE*1.96)), width=.2, position=position_dodge(.9)) +  
+  theme_bw() +
+  theme(axis.text.y = element_text(size = 30, face = "bold")) + 
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  theme(axis.text.x = element_text(size=30, face = "italic")) + 
+  labs(x = "Model", y = "Estimate for log(richness) effect size") +
+  theme(axis.title.y= element_text(size=30)) + 
+  theme(axis.title.x= element_text(size=30)) +
+  labs(title = "Log-Log Model Results") + 
+  theme(plot.title = element_text(hjust = 0.5)) + 
+  theme(plot.title = element_text(face="bold", size = 18))
+        
+plain + scale_fill_brewer(palette="Greys")
+      
+## graphic with data for job talk
+all.results$Model <- as.factor(all.results$Model)
+
+p_res <- ggplot(all.results, aes(x = Model, y = Est, fill = Model)) +
+  geom_bar(stat = "identity", color= "black", 
+                    position=position_dodge()) +
+           ylim(-0.5, 0.3) +
+             geom_hline(yintercept=0, linetype="dashed", color = "black", size = 1.5) +
+             geom_errorbar(aes(ymin= Est- (SE*1.96), ymax=Est + (SE*1.96)), width=.2,
+                         position=position_dodge(.9)) +  
+             theme_bw() +
+             theme(axis.text.y = element_text(size = 30, face = "bold")) + 
+             theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+             theme(axis.text.x = element_text(size=30, face = "italic")) + 
+             labs(x = "Model", y = "Estimate for log(richness) effect size") +
+             theme(axis.title.y= element_text(size=30)) + theme(axis.title.x= element_text(size=30)) +
+             labs(title = "Log-Log Model Results") + theme(plot.title = element_text(hjust = 0.5)) + 
+             theme(plot.title = element_text(face="bold", size = 18))
+          
+  # p_res + scale_fill_brewer(palette="Greys")
+cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+#model.1 <- "#D55E00"
+#p_res +  scale_colour_manual(values = model.1)
+
+p_res + scale_fill_manual(values=cbPalette[c(7,6,1,2)]) +  theme(legend.title=element_text(size=30), legend.text=element_text(size=30))
+
+```
+
+
 
 ##Transect
 

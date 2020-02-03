@@ -66,6 +66,37 @@ ir_mgmt = unique(cover[Native.Status=="I" & !(cov.2.T==0),length(unique(SpeciesI
                  [!(is.na(V1)),.(MGMTUNIT_I,Year,V1)])
 setnames(ir_mgmt,"V1","ir_mgmt")
 
+
+ind_ir_tran = unique(cover[(Indicator=="I1" | Indicator=="I2") & !(cov.2.T==0), length(unique(SpeciesID)), by = .(TransectID, Year)]
+                 [!(is.na(V1)),.(TransectID,Year,V1)])
+
+setnames(ind_ir_tran,"V1","ind_ir_tran")
+  
+ind_ir_mgmt = unique(cover[(Indicator=="I1" | Indicator=="I2") & !(cov.2.T==0),length(unique(SpeciesID)), by = .(MGMTUNIT_I, Year)]
+                 [!(is.na(V1)),.(MGMTUNIT_I,Year,V1)])
+
+setnames(ind_ir_mgmt,"V1","ind_ir_mgmt")
+
+ind_i1r_tran = unique(cover[(Indicator=="I1") & !(cov.2.T==0), length(unique(SpeciesID)), by = .(TransectID, Year)]
+                 [!(is.na(V1)),.(TransectID,Year,V1)])
+
+setnames(ind_i1r_tran,"V1","ind_i1r_tran")
+  
+ind_i1r_mgmt = unique(cover[(Indicator=="I1") & !(cov.2.T==0),length(unique(SpeciesID)), by = .(MGMTUNIT_I, Year)]
+                 [!(is.na(V1)),.(MGMTUNIT_I,Year,V1)])
+
+setnames(ind_i1r_mgmt,"V1","ind_i1r_mgmt")
+
+ind_i2r_tran = unique(cover[(Indicator=="I2") & !(cov.2.T==0), length(unique(SpeciesID)), by = .(TransectID, Year)]
+                 [!(is.na(V1)),.(TransectID,Year,V1)])
+
+setnames(ind_i2r_tran,"V1","ind_i2r_tran")
+  
+ind_i2r_mgmt = unique(cover[(Indicator=="I2") & !(cov.2.T==0),length(unique(SpeciesID)), by = .(MGMTUNIT_I, Year)]
+                 [!(is.na(V1)),.(MGMTUNIT_I,Year,V1)])
+
+setnames(ind_i2r_mgmt,"V1","ind_i2r_mgmt")
+
 #ir_site = unique(cover[Native.Status=="I" & !(cov.2.T==0), ir_site:=length(unique(SpeciesID)), by = .(SITE_ID, Year)]     [!(is.na(ir_site)),.(SITE_ID,Year,ir_site)])
 #setnames(ir_site,"V1","ir_site")
 
@@ -76,6 +107,38 @@ setnames(nr_tran,"V1","nr_tran")
 nr_mgmt = unique(cover[Native.Status=="N" & !(cov.2.T==0), length(unique(SpeciesID)), by = .(MGMTUNIT_I, Year)]
                  [!(is.na(V1)),.(MGMTUNIT_I,Year,V1)])
 setnames(nr_mgmt,"V1","nr_mgmt")
+
+
+ind_nr_tran = unique(cover[(Indicator=="N1" | Indicator=="N2") & !(cov.2.T==0), length(unique(SpeciesID)), by = .(TransectID, Year)]
+                 [!(is.na(V1)),.(TransectID,Year,V1)])
+
+setnames(ind_nr_tran,"V1","ind_nr_tran")
+  
+ind_nr_mgmt = unique(cover[(Indicator=="N1" | Indicator=="N2") & !(cov.2.T==0),length(unique(SpeciesID)), by = .(MGMTUNIT_I, Year)]
+                 [!(is.na(V1)),.(MGMTUNIT_I,Year,V1)])
+
+setnames(ind_nr_mgmt,"V1","ind_nr_mgmt")
+
+ind_n1r_tran = unique(cover[(Indicator=="N1") & !(cov.2.T==0), length(unique(SpeciesID)), by = .(TransectID, Year)]
+                 [!(is.na(V1)),.(TransectID,Year,V1)])
+
+setnames(ind_n1r_tran,"V1","ind_n1r_tran")
+  
+ind_n1r_mgmt = unique(cover[(Indicator=="N1") & !(cov.2.T==0),length(unique(SpeciesID)), by = .(MGMTUNIT_I, Year)]
+                 [!(is.na(V1)),.(MGMTUNIT_I,Year,V1)])
+
+setnames(ind_n1r_mgmt,"V1","ind_n1r_mgmt")
+
+ind_n2r_tran = unique(cover[(Indicator=="N2") & !(cov.2.T==0), length(unique(SpeciesID)), by = .(TransectID, Year)]
+                 [!(is.na(V1)),.(TransectID,Year,V1)])
+
+setnames(ind_n2r_tran,"V1","ind_n2r_tran")
+  
+ind_n2r_mgmt = unique(cover[(Indicator=="N2") & !(cov.2.T==0),length(unique(SpeciesID)), by = .(MGMTUNIT_I, Year)]
+                 [!(is.na(V1)),.(MGMTUNIT_I,Year,V1)])
+
+setnames(ind_n2r_mgmt,"V1","ind_n2r_mgmt")
+
 
 #nr_site = unique(cover[Native.Status=="n" & !(cov.2.T==0), nr_site:=length(unique(SpeciesID)), by = .(SITE_ID, Year)]     [!(is.na(nr_site)),.(SITE_ID,Year,nr_site)])
 #setnames(nr_site,"V1","nr_site")
@@ -93,12 +156,25 @@ cover=unique(cover)
 
 ##Merge all richness calcs
 cover = merge(cover,sr_tran,by=c('TransectID','Year'))
-cover = merge(cover,ir_tran,by=c('TransectID','Year'))
-cover = merge(cover,nr_tran,by=c('TransectID','Year'))
+cover = merge(cover,ir_tran,by=c('TransectID','Year'),all = T)
+cover = merge(cover,ind_ir_tran,by=c('TransectID','Year') ,all = T)
+cover = merge(cover,ind_i1r_tran,by=c('TransectID','Year'),all = T)
+cover = merge(cover,ind_i2r_tran,by=c('TransectID','Year') ,all = T)
+cover = merge(cover,nr_tran,by=c('TransectID','Year') ,all = T)
+cover = merge(cover,ind_nr_tran,by=c('TransectID','Year') ,all = T)
+cover = merge(cover,ind_n1r_tran,by=c('TransectID','Year') ,all = T)
+cover = merge(cover,ind_n2r_tran,by=c('TransectID','Year') ,all = T)
 
-cover = merge(cover,sr_mgmt,by=c('MGMTUNIT_I','Year'))
-cover = merge(cover,ir_mgmt,by=c('MGMTUNIT_I','Year'))
-cover = merge(cover,nr_mgmt,by=c('MGMTUNIT_I','Year'))
+cover = merge(cover,sr_mgmt,by=c('MGMTUNIT_I','Year') ,all = T)
+cover = merge(cover,ir_mgmt,by=c('MGMTUNIT_I','Year') ,all = T)
+cover = merge(cover,ind_ir_mgmt,by=c('MGMTUNIT_I','Year') ,all = T)
+cover = merge(cover,ind_i1r_mgmt,by=c('MGMTUNIT_I','Year') ,all = T)
+cover = merge(cover,ind_i2r_mgmt,by=c('MGMTUNIT_I','Year') ,all = T)
+cover = merge(cover,nr_mgmt,by=c('MGMTUNIT_I','Year') ,all = T)
+cover = merge(cover,ind_nr_mgmt,by=c('MGMTUNIT_I','Year') ,all = T)
+cover = merge(cover,ind_n1r_mgmt,by=c('MGMTUNIT_I','Year') ,all = T)
+cover = merge(cover,ind_n2r_mgmt,by=c('MGMTUNIT_I','Year') ,all = T)
+
 
 ```
 
@@ -168,27 +244,6 @@ cover = merge(cover,change_nr_mgmt,by=c("Year","MGMTUNIT_I","nr_mgmt"),all=T)
 #cover = merge(cover,change_ur_site,by=c("Year","SITE_ID","ur_site"),all=T)
 
   
-```
-
-Demeaning and centering may be in important step. If we you a mixed effect model, this will be an automatic result of including transect ID or site as a factor
-```{r Demeaning}
-#average richness for all observations (at transect level)
-#avg_sr=unique(cover[!(Action==""),.(Year,TransectID,sr_tran)])[,avg_sr:=sum(sr_tran)/length(unique(cover[!(Action==""),.(Year,TransectID)])[,Year])]
-#avg_sr=avg_sr[,.(Year,TransectID,avg_sr)]
-#avg_nr=unique(cover[!(Action=="") & !(is.na(nr_tran)),.(Year,TransectID,nr_tran)])[,avg_nr:=sum(nr_tran)/length(unique(cover[!(Action==""),.(Year,TransectID)])[,Year])]
-#avg_nr=avg_nr[,.(Year,TransectID,avg_nr)]
-#avg_ir=unique(cover[!(Action=="") & !(is.na(ir_tran)),.(Year,TransectID,ir_tran)])[,avg_ir:=sum(ir_tran)/length(unique(cover[!(Action==""),.(Year,TransectID)])[,Year])]
-#avg_ir=avg_ir[,.(Year,TransectID,avg_ir)]
-
-#cover = merge(cover,avg_sr,by=c("Year","TransectID"),all = T)
-#cover = merge(cover,avg_nr,by=c("Year","TransectID"),all = T)
-#cover = merge(cover,avg_ir,by=c("Year","TransectID"),all = T)
-
-#average frequency of each species for all observations
-
-
-#average frequency of each species for all observations
-
 ```
 
 
@@ -267,23 +322,55 @@ setnames(indf.n.tran,"V1","indf.n.tran")
 indf.n.mgmt = cover[(Indicator=="N1" | Indicator=="N2") & Freq.T>0, mean(Freq.T, na.rm=T), by = .(MGMTUNIT_I, Year)]
 setnames(indf.n.mgmt,"V1","indf.n.mgmt")
 
+indf.n1.tran = cover[(Indicator=="N1") & Freq.T>0, mean(Freq.T, na.rm=T), by = .(TransectID, Year)]
+setnames(indf.n1.tran,"V1","indf.n1.tran")
+
+indf.n1.mgmt = cover[(Indicator=="N1") & Freq.T>0, mean(Freq.T, na.rm=T), by = .(MGMTUNIT_I, Year)]
+setnames(indf.n1.mgmt,"V1","indf.n1.mgmt")
+
+indf.n2.tran = cover[(Indicator=="N2") & Freq.T>0, mean(Freq.T, na.rm=T), by = .(TransectID, Year)]
+setnames(indf.n2.tran,"V1","indf.n2.tran")
+
+indf.n2.mgmt = cover[(Indicator=="N2") & Freq.T>0, mean(Freq.T, na.rm=T), by = .(MGMTUNIT_I, Year)]
+setnames(indf.n2.mgmt,"V1","indf.n2.mgmt")
+
 indf.i.tran = cover[(Indicator=="I1" | Indicator=="I2") & Freq.T>0, mean(Freq.T, na.rm=T), by = .(TransectID, Year)]
 setnames(indf.i.tran,"V1","indf.i.tran")
 
 indf.i.mgmt = cover[(Indicator=="I1" | Indicator=="I2") & Freq.T>0, mean(Freq.T, na.rm=T), by = .(MGMTUNIT_I, Year)]
 setnames(indf.i.mgmt,"V1","indf.i.mgmt")
 
+indf.i1.tran = cover[(Indicator=="I1") & Freq.T>0, mean(Freq.T, na.rm=T), by = .(TransectID, Year)]
+setnames(indf.i1.tran,"V1","indf.i1.tran")
+
+indf.i1.mgmt = cover[(Indicator=="I1") & Freq.T>0, mean(Freq.T, na.rm=T), by = .(MGMTUNIT_I, Year)]
+setnames(indf.i1.mgmt,"V1","indf.i1.mgmt")
+
+indf.i2.tran = cover[(Indicator=="I2") & Freq.T>0, mean(Freq.T, na.rm=T), by = .(TransectID, Year)]
+setnames(indf.i2.tran,"V1","indf.i2.tran")
+
+indf.i2.mgmt = cover[(Indicator=="I2") & Freq.T>0, mean(Freq.T, na.rm=T), by = .(MGMTUNIT_I, Year)]
+setnames(indf.i2.mgmt,"V1","indf.i2.mgmt")
+
 
 ##Merge all frequency calcs
 cover = merge(cover,if.tran,by=c('TransectID','Year'),all = T)
 cover = merge(cover,nf.tran,by=c('TransectID','Year'),all = T)
 cover = merge(cover,indf.n.tran,by=c('TransectID','Year'),all = T)
+cover = merge(cover,indf.n1.tran,by=c('TransectID','Year'),all = T)
+cover = merge(cover,indf.n2.tran,by=c('TransectID','Year'),all = T)
 cover = merge(cover,indf.i.tran,by=c('TransectID','Year'),all = T)
+cover = merge(cover,indf.i1.tran,by=c('TransectID','Year'),all = T)
+cover = merge(cover,indf.i2.tran,by=c('TransectID','Year'),all = T)
 
 cover = merge(cover,if.mgmt,by=c('MGMTUNIT_I','Year'),all = T)
 cover = merge(cover,nf.mgmt,by=c('MGMTUNIT_I','Year'))
 cover = merge(cover,indf.n.mgmt,by=c('MGMTUNIT_I','Year'),all = T)
+cover = merge(cover,indf.n1.mgmt,by=c('MGMTUNIT_I','Year'),all = T)
+cover = merge(cover,indf.n2.mgmt,by=c('MGMTUNIT_I','Year'),all = T)
 cover = merge(cover,indf.i.mgmt,by=c('MGMTUNIT_I','Year'),all = T)
+cover = merge(cover,indf.i1.mgmt,by=c('MGMTUNIT_I','Year'),all = T)
+cover = merge(cover,indf.i2.mgmt,by=c('MGMTUNIT_I','Year'),all = T)
 
 # Calc first differences in a loop (go back and turn prior code into loop formate to speed coding)
 
@@ -379,36 +466,56 @@ rel.cov.i.1.2 = cover[Native.Status=="I",sum(rel.cov.T.1.2,na.rm = T),by=.(Year,
 rel.cov.i.2 = cover[Native.Status=="I",sum(rel.cov.T.2,na.rm = T),by=.(Year,TransectID)]
 rel.cov.i.3 = cover[Native.Status=="I",sum(rel.cov.T.3,na.rm = T),by=.(Year,TransectID)]
 rel.cov.i.4 = cover[Native.Status=="I",sum(rel.cov.T.4,na.rm = T),by=.(Year,TransectID)]
+rel.cov.ind.i.2 = cover[(Indicator=="I1" | Indicator == "I2"),sum(rel.cov.T.2,na.rm = T),by=.(Year,TransectID)]
+rel.cov.ind.i1.2 = cover[Indicator=="I1",sum(rel.cov.T.2,na.rm = T),by=.(Year,TransectID)]
+rel.cov.ind.i2.2 = cover[Indicator=="I2",sum(rel.cov.T.2,na.rm = T),by=.(Year,TransectID)]
 
 setnames(rel.cov.i.1.1,"V1","rel.cov.i.1.1")
 setnames(rel.cov.i.1.2,"V1","rel.cov.i.1.2")
 setnames(rel.cov.i.2,"V1","rel.cov.i.2")
 setnames(rel.cov.i.3,"V1","rel.cov.i.3")
 setnames(rel.cov.i.4,"V1","rel.cov.i.4")
+setnames(rel.cov.ind.i.2 ,"V1","rel.cov.ind.i.2")
+setnames(rel.cov.ind.i1.2,"V1","rel.cov.ind.i1.2")
+setnames(rel.cov.ind.i2.2 ,"V1","rel.cov.ind.i2.2")
+
+
 
 rel.cov.n.1.1 = cover[Native.Status=="N",sum(rel.cov.T.1.1,na.rm = T),by=.(Year,TransectID)]
 rel.cov.n.1.2 = cover[Native.Status=="N",sum(rel.cov.T.1.2,na.rm = T),by=.(Year,TransectID)]
 rel.cov.n.2 = cover[Native.Status=="N",sum(rel.cov.T.2,na.rm = T),by=.(Year,TransectID)]
 rel.cov.n.3 = cover[Native.Status=="N",sum(rel.cov.T.3,na.rm = T),by=.(Year,TransectID)]
 rel.cov.n.4 = cover[Native.Status=="N",sum(rel.cov.T.4,na.rm = T),by=.(Year,TransectID)]
+rel.cov.ind.n.2 = cover[(Indicator=="N1" | Indicator == "N2"),sum(rel.cov.T.2,na.rm = T),by=.(Year,TransectID)]
+rel.cov.ind.n1.2 = cover[Indicator=="N1",sum(rel.cov.T.2,na.rm = T),by=.(Year,TransectID)]
+rel.cov.ind.n2.2 = cover[Indicator=="N2",sum(rel.cov.T.2,na.rm = T),by=.(Year,TransectID)]
 
 setnames(rel.cov.n.1.1,"V1","rel.cov.n.1.1")
 setnames(rel.cov.n.1.2,"V1","rel.cov.n.1.2")
 setnames(rel.cov.n.2,"V1","rel.cov.n.2")
 setnames(rel.cov.n.3,"V1","rel.cov.n.3")
 setnames(rel.cov.n.4,"V1","rel.cov.n.4")
+setnames(rel.cov.ind.n.2 ,"V1","rel.cov.ind.n.2")
+setnames(rel.cov.ind.n1.2,"V1","rel.cov.ind.n1.2")
+setnames(rel.cov.ind.n2.2 ,"V1","rel.cov.ind.n2.2")
 
 cover = merge(cover,rel.cov.i.1.1,by=c('TransectID','Year'),all = T)
 cover = merge(cover,rel.cov.i.1.2,by=c('TransectID','Year'),all = T)
 cover = merge(cover,rel.cov.i.2,by=c('TransectID','Year'),all = T)
 cover = merge(cover,rel.cov.i.3,by=c('TransectID','Year'),all = T)
 cover = merge(cover,rel.cov.i.4,by=c('TransectID','Year'),all = T)
+cover = merge(cover,rel.cov.ind.i.2,by=c('TransectID','Year'),all = T)
+cover = merge(cover,rel.cov.ind.i1.2,by=c('TransectID','Year'),all = T)
+cover = merge(cover,rel.cov.ind.i2.2,by=c('TransectID','Year'),all = T)
 
 cover = merge(cover,rel.cov.n.1.1,by=c('TransectID','Year'),all = T)
 cover = merge(cover,rel.cov.n.1.2,by=c('TransectID','Year'),all = T)
 cover = merge(cover,rel.cov.n.2,by=c('TransectID','Year'),all = T)
 cover = merge(cover,rel.cov.n.3,by=c('TransectID','Year'),all = T)
 cover = merge(cover,rel.cov.n.4,by=c('TransectID','Year'),all = T)
+cover = merge(cover,rel.cov.ind.n.2,by=c('TransectID','Year'),all = T)
+cover = merge(cover,rel.cov.ind.n1.2,by=c('TransectID','Year'),all = T)
+cover = merge(cover,rel.cov.ind.n2.2,by=c('TransectID','Year'),all = T)
 
 ```
 
@@ -443,13 +550,35 @@ for (i in 1:length(DI.list$cov)) {
 
 
 meanDI.i.tran.2 = cover[Native.Status=="I" & DI.T.2>0 ,mean(DI.T.2,na.rm=T), by = .(TransectID,Year)]
+meanDI.ind.i.tran.2 = cover[(Indicator=="I1" | Indicator == "I2") & DI.T.2>0 ,mean(DI.T.2,na.rm=T), by = .(TransectID,Year)]
+meanDI.ind.i1.tran.2 = cover[Indicator=="I1" & DI.T.2>0 ,mean(DI.T.2,na.rm=T), by = .(TransectID,Year)]
+meanDI.ind.i2.tran.2 = cover[Indicator=="I2" & DI.T.2>0 ,mean(DI.T.2,na.rm=T), by = .(TransectID,Year)]
+
 meanDI.n.tran.2 = cover[Native.Status=="N" & DI.T.2>0,mean(DI.T.2,na.rm=T), by = .(TransectID,Year)]
+meanDI.ind.n.tran.2 = cover[(Indicator=="N1" | Indicator == "N2") & DI.T.2>0, mean(DI.T.2,na.rm=T), by = .(TransectID,Year)]
+meanDI.ind.n1.tran.2 = cover[Indicator=="N1"  & DI.T.2>0,mean(DI.T.2,na.rm=T), by = .(TransectID,Year)]
+meanDI.ind.n2.tran.2 = cover[Indicator=="N2"  & DI.T.2>0,mean(DI.T.2,na.rm=T), by = .(TransectID,Year)]
+
+setnames(meanDI.n.tran.2,"V1","meanDI.n.tran.2")
+setnames(meanDI.ind.n.tran.2,"V1","meanDI.ind.n.tran.2")
+setnames(meanDI.ind.n1.tran.2,"V1","meanDI.ind.n1.tran.2")
+setnames(meanDI.ind.n2.tran.2,"V1","meanDI.ind.n2.tran.2")
 
 setnames(meanDI.i.tran.2,"V1","meanDI.i.tran.2")
-setnames(meanDI.n.tran.2,"V1","meanDI.n.tran.2")
+setnames(meanDI.ind.i.tran.2,"V1","meanDI.ind.i.tran.2")
+setnames(meanDI.ind.i1.tran.2,"V1","meanDI.ind.i1.tran.2")
+setnames(meanDI.ind.i2.tran.2,"V1","meanDI.ind.i2.tran.2")
+
 
 cover = merge(cover,meanDI.i.tran.2,by=c('TransectID','Year'),all = T)
+cover = merge(cover,meanDI.ind.i.tran.2,by=c('TransectID','Year'),all = T)
+cover = merge(cover,meanDI.ind.i1.tran.2,by=c('TransectID','Year'),all = T)
+cover = merge(cover,meanDI.ind.i2.tran.2,by=c('TransectID','Year'),all = T)
+
 cover = merge(cover,meanDI.n.tran.2,by=c('TransectID','Year'),all = T)
+cover = merge(cover,meanDI.ind.n.tran.2,by=c('TransectID','Year'),all = T)
+cover = merge(cover,meanDI.ind.n1.tran.2,by=c('TransectID','Year'),all = T)
+cover = merge(cover,meanDI.ind.n2.tran.2,by=c('TransectID','Year'),all = T)
 
 ####### Make Categorical Variables of Dominance too ########
 
@@ -476,9 +605,6 @@ cover = merge(cover,DI.init, by = c("SpeciesID",'TransectID'))
 #cover[, sr_rarespp := length(unique(Taxon[DIgroup == "Rare"])), by = .(plot, site_code, year)]
 #cover[, sr_subordspp := length(unique(Taxon[DIgroup == "Subordinate"])), by = .(plot, site_code, year)]
 
-summary(cover$sr_domspp) # max is 2 species that are dominant 
-summary(cover$sr_subordspp) 
-summary(cover$sr_rare) 
 
 # compute change in richness in each group 
 #cover[order(year), change_sr_domspp := sr_domspp -shift(sr_domspp), by =.(plot, site_code)]
@@ -516,8 +642,20 @@ cover[order(Year),sr_tran.lag:= shift(sr_tran), by =.(TransectID,SpeciesID)]
 cover[order(Year),sr_mgmt.lag:= shift(sr_mgmt), by =.(TransectID,SpeciesID)]
 cover[order(Year),nr_tran.lag:= shift(nr_tran), by =.(TransectID,SpeciesID)]
 cover[order(Year),nr_mgmt.lag:= shift(nr_mgmt), by =.(TransectID,SpeciesID)]
+cover[order(Year),ind_nr_tran.lag:= shift(ind_nr_tran), by =.(TransectID,SpeciesID)]
+cover[order(Year),ind_nr_mgmt.lag:= shift(ind_nr_mgmt), by =.(TransectID,SpeciesID)]
+cover[order(Year),ind_n1r_tran.lag:= shift(ind_n1r_tran), by =.(TransectID,SpeciesID)]
+cover[order(Year),ind_n1r_mgmt.lag:= shift(ind_n1r_mgmt), by =.(TransectID,SpeciesID)]
+cover[order(Year),ind_n2r_tran.lag:= shift(ind_n2r_tran), by =.(TransectID,SpeciesID)]
+cover[order(Year),ind_n2r_mgmt.lag:= shift(ind_n2r_mgmt), by =.(TransectID,SpeciesID)]
 cover[order(Year),ir_tran.lag:= shift(ir_tran), by =.(TransectID,SpeciesID)]
 cover[order(Year),ir_mgmt.lag:= shift(ir_mgmt), by =.(TransectID,SpeciesID)]
+cover[order(Year),ind_ir_tran.lag:= shift(ind_ir_tran), by =.(TransectID,SpeciesID)]
+cover[order(Year),ind_ir_mgmt.lag:= shift(ind_ir_mgmt), by =.(TransectID,SpeciesID)]
+cover[order(Year),ind_i1r_tran.lag:= shift(ind_i1r_tran), by =.(TransectID,SpeciesID)]
+cover[order(Year),ind_i1r_mgmt.lag:= shift(ind_i1r_mgmt), by =.(TransectID,SpeciesID)]
+cover[order(Year),ind_i2r_tran.lag:= shift(ind_i2r_tran), by =.(TransectID,SpeciesID)]
+cover[order(Year),ind_i2r_mgmt.lag:= shift(ind_i2r_mgmt), by =.(TransectID,SpeciesID)]
 
 #Frequency
 cover[order(Year),Freq.T.lag:= shift(Freq.T), by =.(TransectID,SpeciesID)]
@@ -534,8 +672,18 @@ cover[order(Year),allf.mgmt.lag:= shift(allf.mgmt), by =.(TransectID,SpeciesID)]
 
 cover[order(Year),indf.n.tran.lag:= shift(indf.n.tran), by =.(TransectID,SpeciesID)]
 cover[order(Year),indf.n.mgmt.lag:= shift(indf.n.mgmt), by =.(TransectID,SpeciesID)]
+cover[order(Year),indf.n1.tran.lag:= shift(indf.n1.tran), by =.(TransectID,SpeciesID)]
+cover[order(Year),indf.n1.mgmt.lag:= shift(indf.n1.mgmt), by =.(TransectID,SpeciesID)]
+cover[order(Year),indf.n2.tran.lag:= shift(indf.n2.tran), by =.(TransectID,SpeciesID)]
+cover[order(Year),indf.n2.mgmt.lag:= shift(indf.n2.mgmt), by =.(TransectID,SpeciesID)]
+
 cover[order(Year),indf.i.tran.lag:= shift(indf.i.tran), by =.(TransectID,SpeciesID)]
 cover[order(Year),indf.i.mgmt.lag:= shift(indf.i.mgmt), by =.(TransectID,SpeciesID)]
+cover[order(Year),indf.i1.tran.lag:= shift(indf.i1.tran), by =.(TransectID,SpeciesID)]
+cover[order(Year),indf.i1.mgmt.lag:= shift(indf.i1.mgmt), by =.(TransectID,SpeciesID)]
+cover[order(Year),indf.i2.tran.lag:= shift(indf.i2.tran), by =.(TransectID,SpeciesID)]
+cover[order(Year),indf.i2.mgmt.lag:= shift(indf.i2.mgmt), by =.(TransectID,SpeciesID)]
+
 
 #Cover
 cover[order(Year),cov.1.1.T.lag:= shift(cov.1.1.T), by =.(TransectID,SpeciesID)]
@@ -569,6 +717,13 @@ cover[order(Year),rel.cov.n.2.lag:= shift(rel.cov.n.2), by =.(TransectID,Species
 cover[order(Year),rel.cov.n.3.lag:= shift(rel.cov.n.3), by =.(TransectID,SpeciesID)]
 cover[order(Year),rel.cov.n.4.lag:= shift(rel.cov.n.4), by =.(TransectID,SpeciesID)]
 
+cover[order(Year),rel.cov.ind.i.2.lag:= shift(rel.cov.ind.i.2), by =.(TransectID,SpeciesID)]
+cover[order(Year),rel.cov.ind.i1.2.lag:= shift(rel.cov.ind.i1.2), by =.(TransectID,SpeciesID)]
+cover[order(Year),rel.cov.ind.i2.2.lag:= shift(rel.cov.ind.i2.2), by =.(TransectID,SpeciesID)]
+cover[order(Year),rel.cov.ind.n.2.lag:= shift(rel.cov.ind.n.2), by =.(TransectID,SpeciesID)]
+cover[order(Year),rel.cov.ind.n1.2.lag:= shift(rel.cov.ind.n1.2), by =.(TransectID,SpeciesID)]
+cover[order(Year),rel.cov.ind.n2.2.lag:= shift(rel.cov.ind.n2.2), by =.(TransectID,SpeciesID)]
+
 #DI
 cover[order(Year),DI.T.1.1.lag:= shift(DI.T.1.1), by =.(TransectID,SpeciesID)]
 cover[order(Year),DI.T.1.2.lag:= shift(DI.T.1.2), by =.(TransectID,SpeciesID)]
@@ -577,48 +732,210 @@ cover[order(Year),DI.T.3.lag:= shift(DI.T.3), by =.(TransectID,SpeciesID)]
 cover[order(Year),DI.T.4.lag:= shift(DI.T.4), by =.(TransectID,SpeciesID)]
 
 cover[order(Year),meanDI.i.tran.2.lag:= shift(meanDI.i.tran.2), by =.(TransectID,SpeciesID)]
+cover[order(Year),meanDI.ind.i.tran.2.lag:= shift(meanDI.ind.i.tran.2), by =.(TransectID,SpeciesID)]
+cover[order(Year),meanDI.ind.i1.tran.2.lag:= shift(meanDI.ind.i1.tran.2), by =.(TransectID,SpeciesID)]
+cover[order(Year),meanDI.ind.i2.tran.2.lag:= shift(meanDI.ind.i2.tran.2), by =.(TransectID,SpeciesID)]
 cover[order(Year),meanDI.n.tran.2.lag:= shift(meanDI.n.tran.2), by =.(TransectID,SpeciesID)]
+cover[order(Year),meanDI.ind.n.tran.2.lag:= shift(meanDI.ind.n.tran.2), by =.(TransectID,SpeciesID)]
+cover[order(Year),meanDI.ind.n1.tran.2.lag:= shift(meanDI.ind.n1.tran.2), by =.(TransectID,SpeciesID)]
+cover[order(Year),meanDI.ind.n2.tran.2.lag:= shift(meanDI.ind.n2.tran.2), by =.(TransectID,SpeciesID)]
 ```
 
 Species Group/Characteristic Calculations with lagged
 ```{r Group calcs}
 #The above dt represents mean invasive values or species specific values, so to compare effects broken out by plant groups I need to create new columns for each one: Duration, Type, Legume, Photopath, Range, Distribution.
 
+#Create individual group values for indicator classes
+
 #Duration
-cover[Freq.T>0,':='(f.T.dur = mean(Freq.T), rel.cov.2.dur = sum(rel.cov.T.2), meanDI.2.dur = mean(DI.T.2)),by = .(Year,Duration,TransectID,Native.Status)]
-cover[cov.2.T==0,r.T.dur:=length(unique(SpeciesID)),by = .(TransectID, Year, Duration, Native.Status)] ##This is causing the NA's to not match up which will be a problem down the road...need to fix
+cover[Freq.T>0,':='(f.T.dur = mean(Freq.T), rel.cov.2.dur = sum(rel.cov.T.2), meanDI.2.dur = mean(DI.T.2)),
+      by = .(Year,Duration,TransectID,Native.Status)]
 
-cover[order(Year),':='(f.T.dur.lag = shift(f.T.dur), rel.cov.2.dur.lag = shift(rel.cov.2.dur), meanDI.2.dur.lag = shift(meanDI.2.dur))
-      ,by = .(Duration,TransectID,Native.Status,SpeciesID)]
-cover[order(Year),r.T.dur.lag:=shift(r.T.dur),by = .()]
+cover[Freq.T>0,':='(f.ind.dur = mean(Freq.T), rel.cov.2.ind.dur = sum(rel.cov.T.2), meanDI.2.ind.dur = mean(DI.T.2)),
+      by = .(Year,Duration,TransectID,Ind.class)]
 
+cover[Freq.T>0,':='(f.indlvl.dur = mean(Freq.T), rel.cov.2.indlvl.dur = sum(rel.cov.T.2), meanDI.2.indlvl.dur = mean(DI.T.2)),
+      by = .(Year,Duration,TransectID,Indicator)]
 
-cover[TransectID==2 & SpeciesID==1,]
+cover = merge(cover,cover[Freq.T>0,.(r.T.dur = .N), by=.(Year,Duration,TransectID,Native.Status)], by =c('TransectID','Year','Native.Status','Duration'),all = T)
+cover[is.na(r.T.dur),r.T.dur:=0] #Because with these groups there will be years with zero species in the group, to adequate calculate lagged values we need these to be zeros, same goes for below
+
+cover = merge(cover,cover[Freq.T>0,.(r.ind.dur = .N), by=.(Year,Duration,TransectID,Ind.class)], by =c('TransectID','Year','Ind.class','Duration'),all = T)
+cover[is.na(r.ind.dur),r.ind.dur:=0] 
+
+cover = merge(cover,cover[Freq.T>0,.(r.indlvl.dur = .N), by=.(Year,Duration,TransectID,Indicator)], by =c('TransectID','Year','Indicator','Duration'),all = T)
+cover[is.na(r.indlvl.dur),r.indlvl.dur:=0] 
+
+##HUGH - The above comment leads to a potential issue. If there are two oberservation years with 0 values, is this relevant. One thought is that it is relevant, so zeros are needed, but in that case are all zeros relavant even for groups that never appear in a transect. This deals a bit with propagule pressure and establishment so is tricky. The other thought is that it is not relevant, so I can leave as NAs
+
+cover[order(Year),':='(f.T.dur.lag = shift(f.T.dur), rel.cov.2.dur.lag = shift(rel.cov.2.dur), meanDI.2.dur.lag = shift(meanDI.2.dur)),by = .(Duration,TransectID,Native.Status,SpeciesID)]
+
+cover[order(Year),':='(f.ind.dur.lag = shift(f.ind.dur), rel.cov.2.ind.dur.lag = shift(rel.cov.2.ind.dur), meanDI.2.ind.dur.lag = shift(meanDI.2.ind.dur)),by = .(Duration,TransectID,Ind.class,SpeciesID)]
+
+cover[order(Year),':='(f.indlvl.dur.lag = shift(f.indlvl.dur), rel.cov.2.indlvl.dur.lag = shift(rel.cov.2.indlvl.dur), meanDI.2.indlvl.dur.lag = shift(meanDI.2.indlvl.dur)),by = .(Duration,TransectID,Indicator,SpeciesID)]
+
+cover[order(Year),r.T.dur.lag:=shift(r.T.dur),by = .(Duration,SpeciesID,TransectID,Native.Status)]
+
+cover[order(Year),r.ind.dur.lag:=shift(r.ind.dur),by = .(Duration,SpeciesID,TransectID,Ind.class)]
+
+cover[order(Year),r.indlvl.dur.lag:=shift(r.indlvl.dur),by = .(Duration,SpeciesID,TransectID,Indicator)]
 
 #Type
 cover[Freq.T>0,':='(f.T.type = mean(Freq.T), rel.cov.2.type = sum(rel.cov.T.2), meanDI.2.type = mean(DI.T.2)),
       by = .(Year,Type,TransectID,Native.Status)]
-cover[cov.2.T==0,r.T.type:=length(unique(SpeciesID)),by = .(TransectID, Year, Type, Native.Status)]
+
+cover[Freq.T>0,':='(f.ind.type = mean(Freq.T), rel.cov.2.ind.type = sum(rel.cov.T.2), meanDI.2.ind.type = mean(DI.T.2)),
+      by = .(Year,Type,TransectID,Ind.class)]
+
+cover[Freq.T>0,':='(f.indlvl.type = mean(Freq.T), rel.cov.2.indlvl.type = sum(rel.cov.T.2), meanDI.2.indlvl.type = mean(DI.T.2)),
+      by = .(Year,Type,TransectID,Indicator)]
+
+cover = merge(cover,cover[Freq.T>0,.(r.T.type = .N), by=.(Year,Type,TransectID,Native.Status)], by =c('TransectID','Year','Native.Status','Type'),all = T)
+cover[is.na(r.T.type),r.T.type:=0] #Because with these groups there will be years with zero species in the group, to adequate calculate lagged values we need these to be zeros, same goes for below
+
+cover = merge(cover,cover[Freq.T>0,.(r.ind.type = .N), by=.(Year,Type,TransectID,Ind.class)], by =c('TransectID','Year','Ind.class','Type'),all = T)
+cover[is.na(r.ind.type),r.ind.type:=0] 
+
+cover = merge(cover,cover[Freq.T>0,.(r.indlvl.type = .N), by=.(Year,Type,TransectID,Indicator)], by =c('TransectID','Year','Indicator','Type'),all = T)
+cover[is.na(r.indlvl.type),r.indlvl.type:=0] 
+
+cover[order(Year),':='(f.T.type.lag = shift(f.T.type), rel.cov.2.type.lag = shift(rel.cov.2.type), meanDI.2.type.lag = shift(meanDI.2.type)),by = .(Type,TransectID,Native.Status,SpeciesID)]
+
+cover[order(Year),':='(f.ind.type.lag = shift(f.ind.type), rel.cov.2.ind.type.lag = shift(rel.cov.2.ind.type), meanDI.2.ind.type.lag = shift(meanDI.2.ind.type)),by = .(Type,TransectID,Ind.class,SpeciesID)]
+
+cover[order(Year),':='(f.indlvl.type.lag = shift(f.indlvl.type), rel.cov.2.indlvl.type.lag = shift(rel.cov.2.indlvl.type), meanDI.2.indlvl.type.lag = shift(meanDI.2.indlvl.type)),by = .(Type,TransectID,Indicator,SpeciesID)]
+
+cover[order(Year),r.T.type.lag:=shift(r.T.type),by = .(Type,SpeciesID,TransectID,Native.Status)]
+
+cover[order(Year),r.ind.type.lag:=shift(r.ind.type),by = .(Type,SpeciesID,TransectID,Ind.class)]
+
+cover[order(Year),r.indlvl.type.lag:=shift(r.indlvl.type),by = .(Type,SpeciesID,TransectID,Indicator)]
 
 #Legume
 cover[Freq.T>0,':='(f.T.leg = mean(Freq.T), rel.cov.2.leg = sum(rel.cov.T.2), meanDI.2.leg = mean(DI.T.2)),
       by = .(Year,Legume,TransectID,Native.Status)]
-cover[cov.2.T==0,r.T.leg:=length(unique(SpeciesID)),by = .(TransectID, Year, Legume, Native.Status)]
+
+cover[Freq.T>0,':='(f.ind.leg = mean(Freq.T), rel.cov.2.ind.leg = sum(rel.cov.T.2), meanDI.2.ind.leg = mean(DI.T.2)),
+      by = .(Year,Legume,TransectID,Ind.class)]
+
+cover[Freq.T>0,':='(f.indlvl.leg = mean(Freq.T), rel.cov.2.indlvl.leg = sum(rel.cov.T.2), meanDI.2.indlvl.leg = mean(DI.T.2)),
+      by = .(Year,Legume,TransectID,Indicator)]
+
+cover = merge(cover,cover[Freq.T>0,.(r.T.leg = .N), by=.(Year,Legume,TransectID,Native.Status)], by =c('TransectID','Year','Native.Status','Legume'),all = T)
+cover[is.na(r.T.leg),r.T.leg:=0] #Because with these groups there will be years with zero species in the group, to adequate calculate lagged values we need these to be zeros, same goes for below
+
+cover = merge(cover,cover[Freq.T>0,.(r.ind.leg = .N), by=.(Year,Legume,TransectID,Ind.class)], by =c('TransectID','Year','Ind.class','Legume'),all = T)
+cover[is.na(r.ind.leg),r.ind.leg:=0] 
+
+cover = merge(cover,cover[Freq.T>0,.(r.indlvl.leg = .N), by=.(Year,Legume,TransectID,Indicator)], by =c('TransectID','Year','Indicator','Legume'),all = T)
+cover[is.na(r.indlvl.leg),r.indlvl.leg:=0] 
+
+cover[order(Year),':='(f.T.leg.lag = shift(f.T.leg), rel.cov.2.leg.lag = shift(rel.cov.2.leg), meanDI.2.leg.lag = shift(meanDI.2.leg)),by = .(Legume,TransectID,Native.Status,SpeciesID)]
+
+cover[order(Year),':='(f.ind.leg.lag = shift(f.ind.leg), rel.cov.2.ind.leg.lag = shift(rel.cov.2.ind.leg), meanDI.2.ind.leg.lag = shift(meanDI.2.ind.leg)),by = .(Legume,TransectID,Ind.class,SpeciesID)]
+
+cover[order(Year),':='(f.indlvl.leg.lag = shift(f.indlvl.leg), rel.cov.2.indlvl.leg.lag = shift(rel.cov.2.indlvl.leg), meanDI.2.indlvl.leg.lag = shift(meanDI.2.indlvl.leg)),by = .(Legume,TransectID,Indicator,SpeciesID)]
+
+cover[order(Year),r.T.leg.lag:=shift(r.T.leg),by = .(Legume,SpeciesID,TransectID,Native.Status)]
+
+cover[order(Year),r.ind.leg.lag:=shift(r.ind.leg),by = .(Legume,SpeciesID,TransectID,Ind.class)]
+
+cover[order(Year),r.indlvl.leg.lag:=shift(r.indlvl.leg),by = .(Legume,SpeciesID,TransectID,Indicator)]
 
 #Photopath
 cover[Freq.T>0,':='(f.T.photo = mean(Freq.T), rel.cov.2.photo = sum(rel.cov.T.2), meanDI.2.photo = mean(DI.T.2)),
       by = .(Year,Photopath,TransectID,Native.Status)]
-cover[cov.2.T==0,r.T.photo:=length(unique(SpeciesID)),by = .(TransectID, Year, Photopath, Native.Status)]
+
+cover[Freq.T>0,':='(f.ind.photo = mean(Freq.T), rel.cov.2.ind.photo = sum(rel.cov.T.2), meanDI.2.ind.photo = mean(DI.T.2)),
+      by = .(Year,Photopath,TransectID,Ind.class)]
+
+cover[Freq.T>0,':='(f.indlvl.photo = mean(Freq.T), rel.cov.2.indlvl.photo = sum(rel.cov.T.2), meanDI.2.indlvl.photo = mean(DI.T.2)),
+      by = .(Year,Photopath,TransectID,Indicator)]
+
+cover = merge(cover,cover[Freq.T>0,.(r.T.photo = .N), by=.(Year,Photopath,TransectID,Native.Status)], by =c('TransectID','Year','Native.Status','Photopath'),all = T)
+cover[is.na(r.T.photo),r.T.photo:=0] #Because with these groups there will be years with zero species in the group, to adequate calculate lagged values we need these to be zeros, same goes for below
+
+cover = merge(cover,cover[Freq.T>0,.(r.ind.photo = .N), by=.(Year,Photopath,TransectID,Ind.class)], by =c('TransectID','Year','Ind.class','Photopath'),all = T)
+cover[is.na(r.ind.photo),r.ind.photo:=0] 
+
+cover = merge(cover,cover[Freq.T>0,.(r.indlvl.photo = .N), by=.(Year,Photopath,TransectID,Indicator)], by =c('TransectID','Year','Indicator','Photopath'),all = T)
+cover[is.na(r.indlvl.photo),r.indlvl.photo:=0] 
+
+cover[order(Year),':='(f.T.photo.lag = shift(f.T.photo), rel.cov.2.photo.lag = shift(rel.cov.2.photo), meanDI.2.photo.lag = shift(meanDI.2.photo)),by = .(Photopath,TransectID,Native.Status,SpeciesID)]
+
+cover[order(Year),':='(f.ind.photo.lag = shift(f.ind.photo), rel.cov.2.ind.photo.lag = shift(rel.cov.2.ind.photo), meanDI.2.ind.photo.lag = shift(meanDI.2.ind.photo)),by = .(Photopath,TransectID,Ind.class,SpeciesID)]
+
+cover[order(Year),':='(f.indlvl.photo.lag = shift(f.indlvl.photo), rel.cov.2.indlvl.photo.lag = shift(rel.cov.2.indlvl.photo), meanDI.2.indlvl.photo.lag = shift(meanDI.2.indlvl.photo)),by = .(Photopath,TransectID,Indicator,SpeciesID)]
+
+cover[order(Year),r.T.photo.lag:=shift(r.T.photo),by = .(Photopath,SpeciesID,TransectID,Native.Status)]
+
+cover[order(Year),r.ind.photo.lag:=shift(r.ind.photo),by = .(Photopath,SpeciesID,TransectID,Ind.class)]
+
+cover[order(Year),r.indlvl.photo.lag:=shift(r.indlvl.photo),by = .(Photopath,SpeciesID,TransectID,Indicator)]
 
 #Range
 cover[Freq.T>0,':='(f.T.range = mean(Freq.T), rel.cov.2.range = sum(rel.cov.T.2), meanDI.2.range = mean(DI.T.2)),
       by = .(Year,Range,TransectID,Native.Status)]
-cover[cov.2.T==0,r.T.range:=length(unique(SpeciesID)),by = .(TransectID, Year, Range, Native.Status)]
+
+cover[Freq.T>0,':='(f.ind.range = mean(Freq.T), rel.cov.2.ind.range = sum(rel.cov.T.2), meanDI.2.ind.range = mean(DI.T.2)),
+      by = .(Year,Range,TransectID,Ind.class)]
+
+cover[Freq.T>0,':='(f.indlvl.range = mean(Freq.T), rel.cov.2.indlvl.range = sum(rel.cov.T.2), meanDI.2.indlvl.range = mean(DI.T.2)),
+      by = .(Year,Range,TransectID,Indicator)]
+
+cover = merge(cover,cover[Freq.T>0,.(r.T.range = .N), by=.(Year,Range,TransectID,Native.Status)], by =c('TransectID','Year','Native.Status','Range'),all = T)
+cover[is.na(r.T.range),r.T.range:=0] #Because with these groups there will be years with zero species in the group, to adequate calculate lagged values we need these to be zeros, same goes for below
+
+cover = merge(cover,cover[Freq.T>0,.(r.ind.range = .N), by=.(Year,Range,TransectID,Ind.class)], by =c('TransectID','Year','Ind.class','Range'),all = T)
+cover[is.na(r.ind.range),r.ind.range:=0] 
+
+cover = merge(cover,cover[Freq.T>0,.(r.indlvl.range = .N), by=.(Year,Range,TransectID,Indicator)], by =c('TransectID','Year','Indicator','Range'),all = T)
+cover[is.na(r.indlvl.range),r.indlvl.range:=0] 
+
+cover[order(Year),':='(f.T.range.lag = shift(f.T.range), rel.cov.2.range.lag = shift(rel.cov.2.range), meanDI.2.range.lag = shift(meanDI.2.range)),by = .(Range,TransectID,Native.Status,SpeciesID)]
+
+cover[order(Year),':='(f.ind.range.lag = shift(f.ind.range), rel.cov.2.ind.range.lag = shift(rel.cov.2.ind.range), meanDI.2.ind.range.lag = shift(meanDI.2.ind.range)),by = .(Range,TransectID,Ind.class,SpeciesID)]
+
+cover[order(Year),':='(f.indlvl.range.lag = shift(f.indlvl.range), rel.cov.2.indlvl.range.lag = shift(rel.cov.2.indlvl.range), meanDI.2.indlvl.range.lag = shift(meanDI.2.indlvl.range)),by = .(Range,TransectID,Indicator,SpeciesID)]
+
+cover[order(Year),r.T.range.lag:=shift(r.T.range),by = .(Range,SpeciesID,TransectID,Native.Status)]
+
+cover[order(Year),r.ind.range.lag:=shift(r.ind.range),by = .(Range,SpeciesID,TransectID,Ind.class)]
+
+cover[order(Year),r.indlvl.range.lag:=shift(r.indlvl.range),by = .(Range,SpeciesID,TransectID,Indicator)]
 
 #Distribution
 cover[Freq.T>0,':='(f.T.dist = mean(Freq.T), rel.cov.2.dist = sum(rel.cov.T.2), meanDI.2.dist = mean(DI.T.2)),
       by = .(Year,Distribution,TransectID,Native.Status)]
-cover[cov.2.T==0,r.T.dist:=length(unique(SpeciesID)),by = .(TransectID, Year, Distribution, Native.Status)]
+
+cover[Freq.T>0,':='(f.ind.dist = mean(Freq.T), rel.cov.2.ind.dist = sum(rel.cov.T.2), meanDI.2.ind.dist = mean(DI.T.2)),
+      by = .(Year,Distribution,TransectID,Ind.class)]
+
+cover[Freq.T>0,':='(f.indlvl.dist = mean(Freq.T), rel.cov.2.indlvl.dist = sum(rel.cov.T.2), meanDI.2.indlvl.dist = mean(DI.T.2)),
+      by = .(Year,Distribution,TransectID,Indicator)]
+
+cover = merge(cover,cover[Freq.T>0,.(r.T.dist = .N), by=.(Year,Distribution,TransectID,Native.Status)], by =c('TransectID','Year','Native.Status','Distribution'),all = T)
+cover[is.na(r.T.dist),r.T.dist:=0] #Because with these groups there will be years with zero species in the group, to adequate calculate lagged values we need these to be zeros, same goes for below
+
+cover = merge(cover,cover[Freq.T>0,.(r.ind.dist = .N), by=.(Year,Distribution,TransectID,Ind.class)], by =c('TransectID','Year','Ind.class','Distribution'),all = T)
+cover[is.na(r.ind.dist),r.ind.dist:=0] 
+
+cover = merge(cover,cover[Freq.T>0,.(r.indlvl.dist = .N), by=.(Year,Distribution,TransectID,Indicator)], by =c('TransectID','Year','Indicator','Distribution'),all = T)
+cover[is.na(r.indlvl.dist),r.indlvl.dist:=0] 
+
+cover[order(Year),':='(f.T.dist.lag = shift(f.T.dist), rel.cov.2.dist.lag = shift(rel.cov.2.dist), meanDI.2.dist.lag = shift(meanDI.2.dist)),by = .(Distribution,TransectID,Native.Status,SpeciesID)]
+
+cover[order(Year),':='(f.ind.dist.lag = shift(f.ind.dist), rel.cov.2.ind.dist.lag = shift(rel.cov.2.ind.dist), meanDI.2.ind.dist.lag = shift(meanDI.2.ind.dist)),by = .(Distribution,TransectID,Ind.class,SpeciesID)]
+
+cover[order(Year),':='(f.indlvl.dist.lag = shift(f.indlvl.dist), rel.cov.2.indlvl.dist.lag = shift(rel.cov.2.indlvl.dist), meanDI.2.indlvl.dist.lag = shift(meanDI.2.indlvl.dist)),by = .(Distribution,TransectID,Indicator,SpeciesID)]
+
+cover[order(Year),r.T.dist.lag:=shift(r.T.dist),by = .(Distribution,SpeciesID,TransectID,Native.Status)]
+
+cover[order(Year),r.ind.dist.lag:=shift(r.ind.dist),by = .(Distribution,SpeciesID,TransectID,Ind.class)]
+
+cover[order(Year),r.indlvl.dist.lag:=shift(r.indlvl.dist),by = .(Distribution,SpeciesID,TransectID,Indicator)]
+
+
 ```
 
 
@@ -637,8 +954,8 @@ cover.map.1 = unique(cover[,.(TransectID,MGMTUNIT_I,SITE_ID,StartLat,StartLong,P
 fwrite(cover.map.1,"/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Mapping/Data/cover.map.1.txt")
 
 #Map 2 - Years & Actions......update with soils, system type
-cover.map.2 = unique(cover[,.(TransectID,MGMTUNIT_I,SITE_ID,StartLat,StartLong,Protocol,ManUnitAcres,Action,Year,ir_tran,change_ir_tran,
-                              nr_tran,change_nr_tran,indf.i.tran,indf.n.tran,if.tran,nf.tran)])
+cover.map.2 = unique(cover[,.(TransectID,MGMTUNIT_I,SITE_ID,StartLat,StartLong,Protocol,ManUnitAcres,Action,Year,ir_tran,
+                              nr_tran,indf.i.tran,indf.n.tran,if.tran,nf.tran)])
 fwrite(cover.map.2,"/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Mapping/Data/cover.map.2.txt")
 
 ```
