@@ -87,6 +87,7 @@ Year = c()
 TransectID = c()
 SpeciesID= c()
 
+#This loop aggregates all unique species IDs for each TransectID from all years. Then it creates a master vector of IDs which it then compares each observed year to in order to create a list of species missing for each year. It outputs vectors which together create a new table specifying the zero cover groups that need to be added
 for (i in cover.data.long[,unique(TransectID)]) {
   species.list=list()
   miss.sp=list()
@@ -170,6 +171,8 @@ Method 4 - Compare 2013 and 2014 (13 bins - 1-3, 4-5, 6-10, 11-20, 21-30, etc...
 #2018 - includes 1 text bin
 #table(cover.data.long[Year=="2018"&Protocol=="C",Cover])
 
+#2019 - HUGH run to see what I need to correct
+table(cover.data.long[Year=="2019"&Protocol=="C",Cover])
 
 ##Fixing these binning errors
 #2008 1-50% should be... see below for how 2008 data is handled
@@ -179,17 +182,17 @@ Method 4 - Compare 2013 and 2014 (13 bins - 1-3, 4-5, 6-10, 11-20, 21-30, etc...
 #2014 3-5% should be 4-5%
 cover.data.long[Year=="2014"&Protocol=="C"&Cover=="3-5%",Cover :="4-5%"]
 
-#2016 - 2018, remove text bins
+#2016 - 2019, remove text bins
 cover.data.long[Year=="2016"&Protocol=="C"&Cover=="hel",Cover :=""]
 cover.data.long[Year=="2017"&Protocol=="C"&Cover=="ii",Cover :=""]
 cover.data.long[Year=="2017"&Protocol=="C"&Cover=="io",Cover :=""]
 cover.data.long[Year=="2017"&Protocol=="C"&Cover=="pat",Cover :=""]
 cover.data.long[Year=="2017"&Protocol=="C"&Cover=="rr",Cover :=""]
 cover.data.long[Year=="2018"&Protocol=="C"&Cover=="q",Cover :=""]
-
+#HUGH add in cleaning for 2019
 
 ###Now creating a binning reference
-dat.year = c("2008","2009", "2010", '2011',"2012","2013","2014","2015","2016","2017","2018")
+dat.year = c("2008","2009", "2010", '2011',"2012","2013","2014","2015","2016","2017","2018",'2019')
 Prot.C = data.table()
 
 for (i in dat.year){
@@ -204,24 +207,23 @@ key.dat = as.data.table(readxl::read_xlsx("/Volumes/GoogleDrive/My Drive/Thesis/
 
 key.dat
 
-#Map methodology to years
+#Map methodology to years....HUGH double check this with 2019 data
 Start = c()
 End = c()
-for (i in 2008:2018) {
-  Start = c(Start,rep(i,times=(2019-i)))
-  End = c(End,c(i:2018))
+for (i in 2008:2019) {
+  Start = c(Start,rep(i,times=(2020-i)))
+  End = c(End,c(i:2019))
 }
 
 method.key = data.table(Start = Start, End = End, Method = 
                           ifelse((Start==2008|Start==2009|Start==2010|Start==2011|Start==2012)&(End==2008|End==2009|End==2010|End==2011|End==2012)|
                                   (Start==2013 & End==2013)|
                                   (Start==2014 & End==2014)|
-                                  (Start==2015|Start==2016|Start==2017|Start==2018)&(End==2015|End==2016|End==2017|End==2018),
+                                  (Start==2015|Start==2016|Start==2017|Start==2018|Start==2019) & (End==2015|End==2016|End==2017|End==2018|End==2019),
                                   "Method 1",
-                                 ifelse((Start==2008|Start==2009|Start==2010|Start==2011|Start==2012)&(End==2013|End==2014|End==2015|End==2016|End==2017|
-                                                                                                         End==2018),
+                                 ifelse((Start==2008|Start==2009|Start==2010|Start==2011|Start==2012) & (End==2013|End==2014|End==2015|End==2016|End==2017|End==2018|End==2019),
                                     'Method 2',
-                                    ifelse((Start==2013|Start==2014)&(End==2015|End==2016|End==2017|End==2018),
+                                    ifelse((Start==2013|Start==2014) & (End==2015|End==2016|End==2017|End==2018|End==2019),
                                            'Method 3', 'Method 4'))))
 
 Prot.C = merge(Prot.C,key.dat,by.x = "OriginalBin",by.y = "Bin")
@@ -239,8 +241,11 @@ Recreate Master Transect File in R
 ```{r Master Transect}
 setwd("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data/Original Data")
 
+#Now there are multiple datasets after the 2019 update. To the extent possible, load them in separately and then merge them into one file
+
 #First load in all necessary datasets
-management.data =data.table(readxl::read_xlsx("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data/Original Data/MGMT_Action_Site_MU_20190311.xlsx"))
+management.data.raw.1 =data.table(readxl::read_xlsx("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data/Original Data/MGMT_Action_Site_MU_20190311.xlsx"))
+management.data.raw.2 =data.table(readxl::read_xlsx("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data/Original Data/New_MGMT_Site_MU_20200203.xlsx"))
 
 GMT.transects.data=fread("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data/GMT Transects.csv")
 
@@ -251,14 +256,26 @@ obs.crosstab.data =data.table(readxl::read_xlsx("/Volumes/GoogleDrive/My Drive/T
 system.crosstab.data =data.table(readxl::read_xlsx("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data/Original Data/SysType_ProtC_transects_crosstab_byYear_20190325.xlsx"))
 
 #Prepare each file for merging. 
+
+#Transect Data
 GMT.transects.merge = GMT.transects.data[,.(Transect_I,TransectNa,SITE_ID,MGMTUNIT,MGMTUNIT_I,StartLat,StartLong)]
 
-management.data = management.data[,.(SiteID,SiteName,ManUnitID,ManUnitAcres,StartDate,EndDate,MgmYr,Action)]
+#MGMT
+management.data.1 = management.data.raw.1[,.(SiteID,SiteName,ManUnitID,StartDate,EndDate,MgmYr,Action)]
+management.data.2 = management.data.raw.2[,.(SITE_ID,SITE, tbl_Mgmtactions_transect_MGMTUNIT,StartDate,EndDate,MgmYr,action)]
+setnames(management.data.2, old = c('SITE_ID','SITE', 'tbl_Mgmtactions_transect_MGMTUNIT','action'), 
+         new = c('SiteID','SiteName','ManUnitID','Action'))
 
-                
+management.data = rbind(management.data.1, management.data.2)
+
+acres = unique(management.data.raw.1[,.(ManUnitID,ManUnitAcres)])
+
+management.data = merge(management.data, acres, by = "ManUnitID")
+
+#System Type                
 C.transects.merge = C.transects.data[,.(Transect,tblSITE_Site,ManUnit,PrimObs,SecObs,MonDate,Year,SysCode)]
 C.transects.merge[,Transect := as.numeric(Transect)]
-#This file needs to be in wide format. Originally there are duplicate rows for transect ID because of observation years
+#This file needs to be in wide format. Originally there are duplicate rows for transect ID because of observation years...HUGH add in 2019 
 C.transects.merge.1 = dcast(C.transects.merge,Transect ~ Year, drop = FALSE )
 colnames(C.transects.merge.1) = c("Transects","Obs.2008","Obs.2009","Obs.2010","Obs.2011","Obs.2012","Obs.2013","Obs.2014","Obs.2015","Obs.2016","Obs.2017","Obs.2018")
 

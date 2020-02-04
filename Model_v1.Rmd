@@ -22,6 +22,7 @@ library(rmarkdown)
 library(lme4)
 library(lmerTest)
 library(lfe)
+library(googlesheets4)
 
 #load data
 cover.climate=as.data.table(read.csv("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis/cover_climate.csv",header = T)) 
@@ -34,7 +35,19 @@ transect.master=as.data.table(read.csv("/Volumes/GoogleDrive/My Drive/Thesis/Pra
 
 options(max.print = 1000) #set print limit for expediency 
 
-#relevel so it is relative to rest as y intercept
+#Load in list of species identified to be of particular importance from google sheets
+imp.spec.url = as_sheets_id('https://docs.google.com/spreadsheets/d/1QrL-ToXXgGIo8OJa9QieW102y1oFx6ljyM7wSa98KuU/edit?usp=sharing')
+imp.i.spec.dt = as.data.table(read_sheet(imp.spec.url, sheet = "Invasives", col_names = T, na = "NA", trim_ws = T))
+imp.i.spec = imp.i.spec.dt[,.(ID,`Marissa Concern`,`Daren Concern`, `Sara Concern`, `Hugh Concern`)][!(is.na(`Marissa Concern`) & is.na(`Daren Concern`) & is.na(`Sara Concern`) & is.na(`Hugh Concern`)),ID]
+imp.n.spec.dt = as.data.table(read_sheet(imp.spec.url, sheet = "Natives ", col_names = T, na = "NA", trim_ws = T))
+imp.n.spec = imp.n.spec.dt[,.(ID,`Marissa Concern`,`Daren Concern`, `Sara Concern`, `Hugh Concern`)][!(is.na(`Marissa Concern`) & is.na(`Daren Concern`) & is.na(`Sara Concern`) & is.na(`Hugh Concern`)),ID]
+
+#Not all species of concern will have enough data. Subset this list by including species that have panel data
+imp.spec = c(imp.i.spec, imp.n.spec)
+imp.spec = cover.climate[SpeciesID %in% imp.spec,.N, by = .(SpeciesID,TransectID)][,max(N),by = .(SpeciesID)][V1>1,SpeciesID]
+
+
+#relevel cover factors so it is relative to rest as y intercept
 levels(cover.climate$Action)
 cover.climate$Action = factor(cover.climate$Action, levels = c("Rest","Burn","Graze","Combo",""))
 
@@ -234,7 +247,7 @@ group.names = as.data.table(cbind(as.character(expression(
                                 rep("Indicator", times = 18)
                     ))
 
-#Create loop to make specific group dt's.
+#Create loop to make specific group dt's....HUGH makesure to include a subset for T1 only at the indlvl 
 group.list = list()
 #name.list = list() For checking
 
@@ -265,6 +278,10 @@ for (i in 1:group.names[,length(V1)]) {
   }
 }
 
+#Subset for Indicator = I1
+  for (i in 1:(group.names[,length(V1)]/3)){
+    group.list[[(group.names[,length(V1)]*2) + (i*3)]] = group.list[[(group.names[,length(V1)]*2) + (i*3)]][Indicator=="I1",]
+  }
 
 #Invasive Lag
 for (i in 1:group.names[,length(V1)]) {
@@ -280,6 +297,11 @@ for (i in 1:group.names[,length(V1)]) {
       #name.list[[k + ((i-1)*(group.names[,length(V1)]/6)) + (group.names[,length(V1)]*2)]] = z
   }
 }
+
+#Subset for Indicator = N1
+  for (i in 1:(group.names[,length(V1)]/3)){
+    group.list[[(group.names[,length(V1)]*4) + (i*3)]] = group.list[[(group.names[,length(V1)]*4) + (i*3)]][Indicator=="N1",]
+  }
 
 #Native Lag
 for (i in 1:group.names[,length(V1)]) {
@@ -708,47 +730,50 @@ Create comprehensive FE models which incorporate multiple climate indices into s
 ###Fixed Effects
 
 ####Transect means and groups
-```{r indices-fe}
+```{r GSL-tran-fe}
 ######Model Without Groups
 
 #Create master modeling list to easily control the models
 
+#HUGH...add in Obs.Code when everything sorted out and unmask rows, masking for now to keep the size small 
 grow.response = c('if.tran',"rel.cov.i.2","nf.tran","rel.cov.n.2")
 
-grow.index = c('gsl',
-               'gsl + gsl.lag',
-               "gsl + rx5.w + sdii + cwd + cdd + prcpt.lag",
-               "gsl + gsl.lag + rx5.w.lag + rx5.w.lag + sdii + sdii.lag + cwd + cwd.lag + cdd + cdd.lag + prcpt.lag") #Each entry represents index terms to consider simultaneously
+grow.index = c(#'gsl',
+               'gsl + gsl.lag'
+               #, "gsl + rx5.w + sdii + cwd + cdd + prcpt.lag",
+               #"gsl + gsl.lag + rx5.w.lag + rx5.w.lag + sdii + sdii.lag + cwd + cwd.lag + cdd + cdd.lag + prcpt.lag"
+               ) #Each entry represents index terms to consider simultaneously
 
-grow.variant = c(" + ObsCode + Action",
+grow.variant = c(" + Action"
                  #"+ nr_tran.lag + VOR.lag + Litter.lag + Action",
-                 " + ObsCode + nr_tran.lag + VOR.lag + Litter.lag + Action"
+                 #" + ObsCode + nr_tran.lag + VOR.lag + Litter.lag + Action"
                  ) #Each entry represents the time varying terms to consider
-grow.interact = c(" + Action:gsl + Action:gsl.lag",
-                  " + Action:gsl + Action:sdii",
-                  " + Action:gsl + Action:sdii + Action:gsl.lag + Action:sdii.lag"
+grow.interact = c(" + Action:gsl + Action:gsl.lag"
+                  #" + Action:gsl + Action:sdii",
+                  #" + Action:gsl + Action:sdii + Action:gsl.lag + Action:sdii.lag"
                   )
     
 #The fellowing creates a data frame of terms to build model from within loop
 grow.model.terms = as.data.table(expand.grid(grow.response=grow.response,grow.index=grow.index,grow.variant=grow.variant,grow.interact=grow.interact, stringsAsFactors = FALSE))
 
 #Now create a loop to run a felm model for each model term combination and store the model within a list and the model summary within a list...RERUN terms above first
-growing.models = list()
-growing.m.summaries = list()
-growing.m.coeffs = list()
+grow.models = list()
+grow.m.summaries = list()
+grow.m.coeffs = list()
 
 #Modeling loop
 for ( i in 1:length(grow.model.terms$grow.response)){
   modelformula <- paste(noquote(grow.model.terms[i,grow.response]), "~", noquote(grow.model.terms[i,grow.index]),noquote(grow.model.terms[i,grow.variant]),
                         noquote(grow.model.terms[i,grow.interact]), "| TransectID",sep = " ")
-  growing.models[[i]] = felm(as.formula(modelformula), data = tran.dt, exactDOF='rM')
-  growing.m.summaries[[i]] = summary(growing.models[[i]],robust = TRUE, cluster = TRUE)
-  growing.m.coeffs[[i]] = broom::tidy(growing.models[[i]], conf.int = T)
+  grow.models[[modelformula]] = felm(as.formula(modelformula), data = tran.dt, exactDOF='rM')
+  grow.m.summaries[[modelformula]] = summary(grow.models[[i]],robust = TRUE, cluster = TRUE)
+  grow.m.coeffs[[modelformula]] = broom::tidy(grow.models[[i]], conf.int = T)
 }
 
 
-######Model WITH Groups
 
+
+######Model WITH Groups
 
 #grow.response.grp = as.character(expression(r.T.dur , f.T.dur,rel.cov.2.dur, meanDI.2.dur,
                                     #r.T.type,f.T.type,rel.cov.2.type,meanDI.2.type,
@@ -822,31 +847,76 @@ grow.model.terms.grp[,sorting:=paste(grow.interact.grp,grow.variant.grp,grow.ind
 setorder(grow.model.terms.grp,sorting,groups,categories.grp,grow.response.grp)
 
 #Modeling loop
-growing.m.grp = list()
-growing.grp.summaries = list()
-growing.grp.coeffs = list()
+grow.m.grp = list()
+grow.grp.summaries = list()
+grow.grp.coeffs = list()
 
 for ( i in 1:length(grow.model.terms.grp$grow.response.grp)){
   modelformula <- paste(noquote(grow.model.terms.grp[i,grow.response.grp]), "~", noquote(grow.model.terms.grp[i,grow.index.grp]),noquote(grow.model.terms.grp[i,grow.variant.grp]),
                         noquote(grow.model.terms.grp[i,grow.interact.grp]), '+', noquote(grow.model.terms.grp[i,groups]), "| TransectID",sep = " ")
-  growing.m.grp[[i]] = felm(as.formula(modelformula), data = group.list[[as.character(grow.model.terms.grp[i,dt.grps])]] , exactDOF='rM')
-  growing.grp.summaries[[i]] = summary(growing.m.grp[[i]],robust = TRUE, cluster = TRUE)
-  growing.grp.coeffs[[i]] = broom::tidy(growing.m.grp[[i]], conf.int = T)
+  grow.m.grp[[modelformula]] = felm(as.formula(modelformula), data = group.list[[as.character(grow.model.terms.grp[i,dt.grps])]] , exactDOF='rM')
+  grow.grp.summaries[[modelformula]] = summary(grow.m.grp[[i]],robust = TRUE, cluster = TRUE)
+  grow.grp.coeffs[[modelformula]] = broom::tidy(grow.m.grp[[i]], conf.int = T)
 }
 
 #Save
 setwd("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis")
-save(list = c('growing.models', 'growing.m.summaries', 'growing.m.coeffs','growing.m.grp','growing.grp.summaries','growing.grp.coeffs',"grow.model.terms", 'grow.model.terms.grp', 'grow.response','groups', 'grow.response.grp'), 
+save(list = c('grow.models', 'grow.m.summaries', 'grow.m.coeffs','grow.m.grp','grow.grp.summaries','grow.grp.coeffs',"grow.model.terms", 'grow.model.terms.grp', 'grow.response','groups', 'grow.response.grp'), 
      file = "model_GSL_FE_tran.rda")
 
 ```
 
 ####Species Level
+Run the same models as at the Transect means level only now subset each dataset by particular species of interest. No need for group models hurray!
+```{r GSL-spec-FE }
+
+grow.response.spec = c('Freq.T',"rel.cov.T.2","DI.T.2")
+
+grow.index.spec = c(#'gsl',
+               'gsl + gsl.lag'
+               #, "gsl + rx5.w + sdii + cwd + cdd + prcpt.lag",
+               #"gsl + gsl.lag + rx5.w.lag + rx5.w.lag + sdii + sdii.lag + cwd + cwd.lag + cdd + cdd.lag + prcpt.lag"
+               ) #Each entry represents index terms to consider simultaneously
+
+grow.variant.spec = c(" + Action"
+                 #"+ nr_tran.lag + VOR.lag + Litter.lag + Action",
+                 #" + ObsCode + nr_tran.lag + VOR.lag + Litter.lag + Action"
+                 ) #Each entry represents the time varying terms to consider
+grow.interact.spec = c(" + Action:gsl + Action:gsl.lag",
+                  " + Action:gsl + Action:sdii"
+                  #" + Action:gsl + Action:sdii + Action:gsl.lag + Action:sdii.lag"
+                  )
+
+imp.spec = imp.spec
+
+#The fellowing creates a data frame of terms to build model from within loop....HUGH confirm no need to sort
+grow.spec.terms = as.data.table(expand.grid(grow.response.spec=grow.response.spec,grow.index.spec=grow.index.spec,grow.variant.spec=grow.variant.spec,grow.interact.spec=grow.interact.spec, imp.spec = imp.spec, stringsAsFactors = FALSE))
+
+
+grow.models.spec = list()
+grow.spec.summaries = list()
+grow.spec.coeffs = list()
+
+#Modeling loop...HUGH still getting rank deficient error even though there is no Obs.Code
+for ( i in 1:length(grow.spec.terms$grow.response.spec)){
+  modelformula <- paste(noquote(grow.spec.terms[i,grow.response.spec]), "~", noquote(grow.spec.terms[i,grow.index.spec]),noquote(grow.spec.terms[i,grow.variant.spec]),
+                        noquote(grow.spec.terms[i,grow.interact.spec]), "| TransectID",sep = " ")
+  grow.models.spec[[modelformula]] = felm(as.formula(modelformula), data = cover.climate[SpeciesID==grow.spec.terms[i,imp.spec],], exactDOF='rM')
+  grow.spec.summaries[[modelformula]] = summary(grow.models.spec[[i]],robust = TRUE, cluster = TRUE)
+  grow.spec.coeffs[[modelformula]] = broom::tidy(grow.models.spec[[i]], conf.int = T)
+}
+
+#Save
+setwd("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis")
+save(list = c('grow.models.spec', 'grow.spec.summaries', 'grow.spec.coeffs', 'grow.spec.terms', 'grow.response.spec', 'imp.spec'), 
+     file = "model_GSL_FE_spec.rda")
+
+``` 
 
 ###Lagged
 
 ####Transect means and groups
-```{r indices-le} 
+```{r GSL-tran-le} 
 #The lagged models should be the same as above with the addition of a lagged response variable and the removal of the fixed effect. Use the same terms as above to streamline model design and avoid errors. 
 
 #Call the terms to confirm they are correct
@@ -869,17 +939,17 @@ grow.lag = paste(grow.response,".lag", sep = "")
 grow.lag.terms = as.data.table(expand.grid(grow.lag=grow.lag,grow.index=grow.index,grow.variant=grow.variant,grow.interact=grow.interact, stringsAsFactors = FALSE))
 
 #Now create a loop to run a felm model for each model term combination and store the model within a list and the model summary within a list...RERUN terms above first
-growing.lagged = list()
-growing.lagged.summaries = list()
-growing.lagged.coeffs = list()
+grow.lagged = list()
+grow.lagged.summaries = list()
+grow.lagged.coeffs = list()
 
 #Modeling loop
 for ( i in 1:length(grow.lag.terms$grow.lag)){
   modelformula <- paste(noquote(grow.lag.terms[i,grow.lag]), "~", noquote(grow.lag.terms[i,grow.index]),noquote(grow.lag.terms[i,grow.variant]),
                         noquote(grow.lag.terms[i,grow.interact]),sep = " ")
-  growing.lagged[[i]] = felm(as.formula(modelformula), data = tran.dt.lag, exactDOF='rM')
-  growing.lagged.summaries[[i]] = summary(growing.lagged[[i]], robust = TRUE, cluster = TRUE)
-  growing.lagged.coeffs[[i]] = broom::tidy(growing.lagged[[i]], conf.int = T)
+  grow.lagged[[modelformula]] = felm(as.formula(modelformula), data = tran.dt.lag, exactDOF='rM')
+  grow.lagged.summaries[[modelformula]] = summary(grow.lagged[[i]], robust = TRUE, cluster = TRUE)
+  grow.lagged.coeffs[[modelformula]] = broom::tidy(grow.lagged[[i]], conf.int = T)
 }
 
 
@@ -892,28 +962,42 @@ print(dt.grps)
 print(grow.index.grp) 
 print(grow.variant.grp) 
 print(grow.interact.grp) 
+print(categories.grp) 
+print(status)
+print(resp.cnt)
 
 #Create new lagged terms
 grow.lag.grp = paste(grow.response.grp,".lag", sep = "")
-dt.lag.grps = paste(dt.grps,".lag", sep = "")
+dt.lag.grps = dt.grps
+dt.lag.grps$invasive = paste(dt.grps$invasive,".lag", sep = "")
+dt.lag.grps$native = paste(dt.grps$native,".lag", sep = "")
 
 
 #The fellowing creates a data frame of terms to build model from within loop
-prelim.terms.grp = as.data.table(expand.grid(grow.index.grp=grow.index.grp,grow.variant.grp=grow.variant.grp,grow.interact.grp=grow.interact.grp, stringsAsFactors = FALSE))
+prelim.terms.grp.lag = as.data.table(expand.grid(grow.index.grp=grow.index.grp,grow.variant.grp=grow.variant.grp,grow.interact.grp=grow.interact.grp, stringsAsFactors = FALSE))
 
 #write a loop to correctly expand matrix with groups and associated data tables
-grow.lag.terms.grp=data.frame()
-zz=data.frame()
-for (i in 1:length(groups)) {
-  z = data.frame(expand.grid(grow.lag.grp = grow.lag.grp[1+((length(grow.lag.grp)/length(groups)*(i-1))):((length(grow.lag.grp)/length(groups)*(i))-1)],groups=groups[i],dt.lag.grps = dt.lag.grps[i],stringsAsFactors = F))
-  zz =rbind(zz,z) 
+grow.setup.lag = as.data.table(data.frame(grow.lag.grp = rep(grow.lag.grp, each = length(status)), status = rep(status, times = length(grow.lag.grp)), groups = rep(groups, 
+                        each = (length(groups) * length(categories.grp))), categories.grp = rep(categories.grp, each = length(status)*length(resp.cnt), times = length(groups))))
+
+grp.datatables.lag = c()
+for (i in 1:(length(grow.setup.lag$grow.lag.grp)/length(status))) {
+  for (k in 1:length(status)){
+    grp.datatables.lag[k + ((i-1)*length(status))] = dt.lag.grps[i,k]  
+  }
 }
 
+grow.setup.lag = as.data.table(data.frame(grow.setup.lag, dt.lag.grps = grp.datatables.lag))
+
+
+grow.lag.terms.grp = data.frame()
 zzz=data.frame()
-for (k in 1:length(zz$groups)){
-  for(r in 1:length(prelim.terms.grp$grow.index.grp)){
-    z = data.frame(expand.grid(grow.lag.grp = zz$grow.lag.grp[k],groups = zz$groups[k],dt.lag.grps = zz$dt.lag.grps[k],
-                               grow.index.grp=prelim.terms.grp$grow.index.grp[r], grow.variant.grp=prelim.terms.grp$grow.variant.grp[r], grow.interact.grp=prelim.terms.grp$grow.interact.grp[r], stringsAsFactors = F))
+for (k in 1:length(grow.setup.lag$grow.lag.grp)){
+  for(r in 1:length(prelim.terms.grp.lag$grow.index.grp)){
+    z = data.frame(expand.grid(grow.lag.grp = grow.setup.lag$grow.lag.grp[k],groups = grow.setup.lag$groups[k],dt.lag.grps = grow.setup.lag$dt.lag.grps[k],
+                               status = grow.setup.lag$status[k], categories.grp = grow.setup.lag$categories.grp[k],
+                               grow.index.grp=prelim.terms.grp.lag$grow.index.grp[r], grow.variant.grp=prelim.terms.grp.lag$grow.variant.grp[r],
+                               grow.interact.grp=prelim.terms.grp.lag$grow.interact.grp[r], stringsAsFactors = F))
     zzz = rbind(zzz,z)
     }
   grow.lag.terms.grp = rbind(grow.lag.terms.grp,zzz)
@@ -923,29 +1007,63 @@ for (k in 1:length(zz$groups)){
 grow.lag.terms.grp = as.data.table(grow.lag.terms.grp)
 #I need to reorder this so modeling and graphing is easier
 grow.lag.terms.grp[,sorting:=paste(grow.interact.grp,grow.variant.grp,grow.index.grp)]
-setorder(grow.lag.terms.grp,sorting,groups,grow.lag.grp)
+setorder(grow.lag.terms.grp,sorting,groups,categories.grp,grow.lag.grp)
+
 
 #Modeling loop
 
-growing.lagged.grp = list()
-growing.lagged.summaries.grp = list()
-growing.lagged.coeffs.grp = list()
+grow.lagged.grp = list()
+grow.lagged.summaries.grp = list()
+grow.lagged.coeffs.grp = list()
 
 for ( i in 1:length(grow.lag.terms.grp$grow.lag.grp)){
   modelformula <- paste(noquote(grow.lag.terms.grp[i,grow.lag.grp]), "~", noquote(grow.lag.terms.grp[i,grow.index.grp]),noquote(grow.lag.terms.grp[i,grow.variant.grp]),
-                        noquote(grow.lag.terms.grp[i,grow.interact.grp]), '+', noquote(grow.lag.terms.grp[i,groups]), "| TransectID",sep = " ")
-  growing.lagged.grp[[i]] = felm(as.formula(modelformula), data = group.list[[grow.lag.terms.grp[i,dt.lag.grps]]] , exactDOF='rM')
-  growing.lagged.summaries.grp[[i]] = summary(growing.lagged.grp[[i]],robust = TRUE, cluster = TRUE)
-  growing.lagged.coeffs.grp[[i]] = broom::tidy(growing.lagged.grp[[i]], conf.int = T)
+                        noquote(grow.lag.terms.grp[i,grow.interact.grp]), '+', noquote(grow.lag.terms.grp[i,groups]),sep = " ")
+  grow.lagged.grp[[modelformula]] = felm(as.formula(modelformula), data = group.list[[as.character(grow.lag.terms.grp[i,dt.lag.grps])]] , exactDOF='rM')
+  grow.lagged.summaries.grp[[modelformula]] = summary(grow.lagged.grp[[i]],robust = TRUE, cluster = TRUE)
+  grow.lagged.coeffs.grp[[modelformula]] = broom::tidy(grow.lagged.grp[[i]], conf.int = T)
 }
 
 setwd("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis")
-save(list = c('growing.lagged', 'growing.lagged.summaries', 'growing.lagged.coeffs','growing.lagged.grp','growing.lagged.summaries.grp','growing.lagged.coeffs.grp'),
+save(list = c('grow.lagged', 'grow.lagged.summaries', 'grow.lagged.coeffs','grow.lagged.grp','grow.lagged.summaries.grp','grow.lagged.coeffs.grp'),
      file = "model_GSL_LE_tran.rda")
 
 ```
 
 ####Species Level
+Run the same models as at the Transect means level only now subset each dataset by particular species of interest. No need for group models hurray!
+```{r GSL-spec-LE }
+
+grow.response.spec.lag = paste(grow.response.spec, ".lag", sep = "") 
+
+#grow.index.spec 
+#grow.variant.spec 
+#grow.interact.spec 
+#imp.spec = imp.spec
+
+#The fellowing creates a data frame of terms to build model from within loop....HUGH confirm no need to sort
+grow.spec.terms.lag = as.data.table(expand.grid(grow.response.spec.lag=grow.response.spec.lag,grow.index.spec=grow.index.spec,grow.variant.spec=grow.variant.spec,grow.interact.spec=grow.interact.spec, imp.spec = imp.spec, stringsAsFactors = FALSE))
+
+
+grow.models.spec.lag = list()
+grow.spec.summaries.lag = list()
+grow.spec.coeffs.lag = list()
+
+#Modeling loop...HUGH still getting rank deficient error even though there is no Obs.Code
+for ( i in 1:length(grow.spec.terms.lag$grow.response.spec.lag)){
+  modelformula <- paste(noquote(grow.spec.terms.lag[i,grow.response.spec.lag]), "~", noquote(grow.spec.terms.lag[i,grow.index.spec]),noquote(grow.spec.terms.lag[i,grow.variant.spec]),
+                        noquote(grow.spec.terms.lag[i,grow.interact.spec]),sep = " ")
+  grow.models.spec.lag[[modelformula]] = felm(as.formula(modelformula), data = cover.climate[SpeciesID==grow.spec.terms.lag[i,imp.spec],], exactDOF='rM')
+  grow.spec.summaries.lag[[modelformula]] = summary(grow.models.spec.lag[[i]],robust = TRUE, cluster = TRUE)
+  grow.spec.coeffs.lag[[modelformula]] = broom::tidy(grow.models.spec.lag[[i]], conf.int = T)
+}
+
+#Save
+setwd("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis")
+save(list = c('grow.models.spec.lag', 'grow.spec.summaries.lag', 'grow.spec.coeffs.lag', 'grow.spec.terms.lag', 'grow.response.spec.lag', 'imp.spec'), 
+     file = "model_GSL_LE_spec.rda")
+
+``` 
 
 
 
