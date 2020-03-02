@@ -1,33 +1,33 @@
 Transect_I,MGMTUNIT_I,TransectNa,StartLat,StartLong,SITE_ID,tblSITE_Site,ManUnitAcres,Obs.2008,Obs.2009,Obs.2010,Obs.2011,Obs.2012,Obs.2013,Obs.2014,Obs.2015,Obs.2016,Obs.2017,Obs.2018,Sys.2008,Sys.2009,Sys.2010,Sys.2011,Sys.2012,Sys.2013,Sys.2014,Sys.2015,Sys.2016,Sys.2017,Sys.2018,Mgmt.2008,Mgmt.2009,Mgmt.2010,Mgmt.2011,Mgmt.2012,Mgmt.2013,Mgmt.2014,Mgmt.2015,Mgmt.2016,Mgmt.2017,Mgmt.2018,NumObs,Delta
-1,1,3LE2-02,45.5308,-95.4851,1,Glacial Lakes SP,144.3,0,1,0,0,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,"",1,0
-2,1,3LE2-08,45.5267,-95.4924,1,Glacial Lakes SP,144.3,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,"",2,1
-3,1,3LE2-09,45.5283,-95.4912,1,Glacial Lakes SP,144.3,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,"",2,1
-4,1,3LE2-10,45.5284,-95.4955,1,Glacial Lakes SP,144.3,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,"",2,1
-5,1,3LE2-17,45.5327,-95.49,1,Glacial Lakes SP,144.3,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,"",2,1
-6,1,3LE2-18,45.5327,-95.4922,1,Glacial Lakes SP,144.3,0,1,0,0,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,"",1,0
-7,1,3LE2-21,45.5252,-95.4918,1,Glacial Lakes SP,144.3,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,"",2,1
-8,1,3LE2-22,45.5301,-95.4899,1,Glacial Lakes SP,144.3,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,"",2,1
-9,1,3LE2-30,45.5331,-95.4939,1,Glacial Lakes SP,144.3,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,"",2,1
-10,1,3LE2-37,45.5303,-95.4812,1,Glacial Lakes SP,144.3,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,"",2,1
-11,1,3LE2-41,45.5271,-95.4944,1,Glacial Lakes SP,144.3,0,1,0,0,0,0,0,0,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,"",0,0
-12,1,3LE2-42,45.5315,-95.4868,1,Glacial Lakes SP,144.3,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,"",2,1
-13,1,3LE2-43,45.5326,-95.4837,1,Glacial Lakes SP,144.3,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,"",2,1
-14,1,3LE2-44,45.5317,-95.4928,1,Glacial Lakes SP,144.3,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,"",2,1
-15,1,3LE2-46,45.5283,-95.4866,1,Glacial Lakes SP,144.3,0,1,0,1,0,0,0,0,0,1,0,"",LG,LG,LG,LG,LG,LG,LG,LG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,"",2,1
+1,1,3LE2-02,45.5308,-95.4851,1,Glacial Lakes SP,144.3,0,1,0,0,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,1,0
+2,1,3LE2-08,45.5267,-95.4924,1,Glacial Lakes SP,144.3,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,2,1
+3,1,3LE2-09,45.5283,-95.4912,1,Glacial Lakes SP,144.3,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,2,1
+4,1,3LE2-10,45.5284,-95.4955,1,Glacial Lakes SP,144.3,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,2,1
+5,1,3LE2-17,45.5327,-95.49,1,Glacial Lakes SP,144.3,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,2,1
+6,1,3LE2-18,45.5327,-95.4922,1,Glacial Lakes SP,144.3,0,1,0,0,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,1,0
+7,1,3LE2-21,45.5252,-95.4918,1,Glacial Lakes SP,144.3,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,2,1
+8,1,3LE2-22,45.5301,-95.4899,1,Glacial Lakes SP,144.3,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,2,1
+9,1,3LE2-30,45.5331,-95.4939,1,Glacial Lakes SP,144.3,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,2,1
+10,1,3LE2-37,45.5303,-95.4812,1,Glacial Lakes SP,144.3,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,2,1
+11,1,3LE2-41,45.5271,-95.4944,1,Glacial Lakes SP,144.3,0,1,0,0,0,0,0,0,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,0,0
+12,1,3LE2-42,45.5315,-95.4868,1,Glacial Lakes SP,144.3,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,2,1
+13,1,3LE2-43,45.5326,-95.4837,1,Glacial Lakes SP,144.3,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,2,1
+14,1,3LE2-44,45.5317,-95.4928,1,Glacial Lakes SP,144.3,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,2,1
+15,1,3LE2-46,45.5283,-95.4866,1,Glacial Lakes SP,144.3,0,1,0,1,0,0,0,0,0,1,0,"",LG,LG,LG,LG,LG,LG,LG,LG,UG,UG,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,2,1
 16,2,3LE2-40,45.5229,-95.4917,1,Glacial Lakes SP,8.5,0,1,0,1,0,0,0,0,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Burn,Rest,"","","","",1,0
-17,3,3LE2-07,45.5358,-95.5136,1,Glacial Lakes SP,20.5,0,1,0,1,0,0,0,0,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Burn,Rest,Rest,Burn,"","","","",1,0
-18,3,3LE2-23,45.5373,-95.5144,1,Glacial Lakes SP,20.5,0,1,0,1,0,0,0,0,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Burn,Rest,Rest,Burn,"","","","",1,0
-19,3,3LE2-47,45.537,-95.5174,1,Glacial Lakes SP,20.5,0,1,0,1,0,0,0,0,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Burn,Rest,Rest,Burn,"","","","",1,0
-20,4,3LE2-14,45.5377,-95.5124,1,Glacial Lakes SP,20.7,0,1,0,1,0,0,0,0,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,Burn,"","","","",1,0
-21,5,3LE2-11,45.5302,-95.5,1,Glacial Lakes SP,76.8,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",2,1
-22,5,3LE2-15,45.5338,-95.505,1,Glacial Lakes SP,76.8,0,1,0,0,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",1,0
-23,5,3LE2-24,45.5338,-95.5013,1,Glacial Lakes SP,76.8,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",2,1
-24,5,3LE2-25,45.5371,-95.5082,1,Glacial Lakes SP,76.8,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",2,1
-25,5,3LE2-28,45.538,-95.5101,1,Glacial Lakes SP,76.8,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",2,1
-26,5,3LE2-32,45.5311,-95.5015,1,Glacial Lakes SP,76.8,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",2,1
-27,5,3LE2-35,45.5324,-95.5071,1,Glacial Lakes SP,76.8,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",2,1
-28,5,3LE2-38,45.5394,-95.5083,1,Glacial Lakes SP,76.8,0,1,0,0,0,0,0,0,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",0,0
-29,5,3LE2-39,45.5354,-95.5059,1,Glacial Lakes SP,76.8,0,1,0,0,0,0,0,0,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",0,0
+17,3,3LE2-07,45.5358,-95.5136,1,Glacial Lakes SP,20.5,0,1,0,1,0,0,0,0,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Burn,Rest,Rest,Burn,Rest,Rest,Rest,Rest,1,0
+18,3,3LE2-23,45.5373,-95.5144,1,Glacial Lakes SP,20.5,0,1,0,1,0,0,0,0,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Burn,Rest,Rest,Burn,Rest,Rest,Rest,Rest,1,0
+19,3,3LE2-47,45.537,-95.5174,1,Glacial Lakes SP,20.5,0,1,0,1,0,0,0,0,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Burn,Rest,Rest,Burn,Rest,Rest,Rest,Rest,1,0
+20,4,3LE2-14,45.5377,-95.5124,1,Glacial Lakes SP,20.7,0,1,0,1,0,0,0,0,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,Rest,Rest,1,0
+21,5,3LE2-11,45.5302,-95.5,1,Glacial Lakes SP,76.8,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+22,5,3LE2-15,45.5338,-95.505,1,Glacial Lakes SP,76.8,0,1,0,0,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+23,5,3LE2-24,45.5338,-95.5013,1,Glacial Lakes SP,76.8,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+24,5,3LE2-25,45.5371,-95.5082,1,Glacial Lakes SP,76.8,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+25,5,3LE2-28,45.538,-95.5101,1,Glacial Lakes SP,76.8,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+26,5,3LE2-32,45.5311,-95.5015,1,Glacial Lakes SP,76.8,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+27,5,3LE2-35,45.5324,-95.5071,1,Glacial Lakes SP,76.8,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+28,5,3LE2-38,45.5394,-95.5083,1,Glacial Lakes SP,76.8,0,1,0,0,0,0,0,0,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+29,5,3LE2-39,45.5354,-95.5059,1,Glacial Lakes SP,76.8,0,1,0,0,0,0,0,0,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,0,0
 30,6,3LE2-12,45.5295,-95.505,1,Glacial Lakes SP,23.2,0,1,0,1,0,0,0,0,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Burn,Rest,"","","","",1,0
 31,6,3LE2-16,45.5282,-95.5058,1,Glacial Lakes SP,23.2,0,1,0,1,0,0,0,0,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Burn,Rest,"","","","",1,0
 32,6,3LE2-49,45.5267,-95.5022,1,Glacial Lakes SP,23.2,0,1,0,0,0,0,0,0,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Burn,Rest,"","","","",0,0
@@ -41,14 +41,14 @@ Transect_I,MGMTUNIT_I,TransectNa,StartLat,StartLong,SITE_ID,tblSITE_Site,ManUnit
 40,8,3LE2-45,45.5228,-95.497,1,Glacial Lakes SP,33.9,0,1,0,1,0,0,0,0,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Burn,Rest,Burn,Rest,"","","","",1,0
 41,9,3LE2-31,45.5346,-95.5168,1,Glacial Lakes SP,13.1,0,1,0,1,0,0,0,0,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Burn,Rest,Rest,Burn,"","","","",1,0
 42,10,3LE2-48,45.5328,-95.5164,1,Glacial Lakes SP,8.1,0,1,0,1,0,0,0,0,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Rest,Burn,Rest,Burn,"","","","",1,0
-43,11,3LE2-01,45.5342,-95.5149,1,Glacial Lakes SP,71,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","",Rest,"",2,1
-44,11,3LE2-03,45.5342,-95.5123,1,Glacial Lakes SP,71,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","",Rest,"",2,1
-45,11,3LE2-04,45.5326,-95.511,1,Glacial Lakes SP,71,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","",Rest,"",2,1
-46,11,3LE2-05,45.5342,-95.5097,1,Glacial Lakes SP,71,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","",Rest,"",2,1
-47,11,3LE2-06,45.5358,-95.5109,1,Glacial Lakes SP,71,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","",Rest,"",2,1
-48,11,3LE2-13,45.5326,-95.5136,1,Glacial Lakes SP,71,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","",Rest,"",2,1
-49,11,3LE2-20,45.5312,-95.5071,1,Glacial Lakes SP,71,0,1,0,0,0,0,0,0,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","",Rest,"",0,0
-50,11,3LE2-29,45.5317,-95.5089,1,Glacial Lakes SP,71,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","",Rest,"",2,1
+43,11,3LE2-01,45.5342,-95.5149,1,Glacial Lakes SP,71,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","",Rest,Rest,2,1
+44,11,3LE2-03,45.5342,-95.5123,1,Glacial Lakes SP,71,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","",Rest,Rest,2,1
+45,11,3LE2-04,45.5326,-95.511,1,Glacial Lakes SP,71,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","",Rest,Rest,2,1
+46,11,3LE2-05,45.5342,-95.5097,1,Glacial Lakes SP,71,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","",Rest,Rest,2,1
+47,11,3LE2-06,45.5358,-95.5109,1,Glacial Lakes SP,71,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","",Rest,Rest,2,1
+48,11,3LE2-13,45.5326,-95.5136,1,Glacial Lakes SP,71,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","",Rest,Rest,2,1
+49,11,3LE2-20,45.5312,-95.5071,1,Glacial Lakes SP,71,0,1,0,0,0,0,0,0,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","",Rest,Rest,0,0
+50,11,3LE2-29,45.5317,-95.5089,1,Glacial Lakes SP,71,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","",Rest,Rest,2,1
 51,12,1SI2-04,48.7195353,-96.60553989,2,Lake Bronson SP,12.5,0,1,1,0,0,0,0,0,0,0,1,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
 52,12,1SI2-05,48.72126632,-96.60489361,2,Lake Bronson SP,12.5,0,1,1,0,0,0,0,0,0,0,1,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
 53,13,1SI2-02,48.7177314,-96.61025155,2,Lake Bronson SP,8.8,0,1,1,0,0,0,0,0,0,0,1,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
@@ -62,57 +62,57 @@ Transect_I,MGMTUNIT_I,TransectNa,StartLat,StartLong,SITE_ID,tblSITE_Site,ManUnit
 61,17,5LE4-11,43.69562362,-96.18919195,3,Blue Mounds SP,42.7,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",2,1
 62,18,5LE4-12,43.69451288,-96.19426248,3,Blue Mounds SP,11.2,0,1,1,1,0,0,0,0,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","","",2,1
 63,19,5LE4-13,43.69776298,-96.20990418,3,Blue Mounds SP,13,0,1,1,1,0,0,0,0,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","","",2,1
-64,20,BM-0,43.70029,-96.195759,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-65,20,BM-02,43.702612,-96.200946,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-66,20,BM-03,43.699614,-96.191913,3,Blue Mounds SP,563.5,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",UG,UG,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",1,0
-67,20,BM-04,43.702453,-96.192771,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-68,20,BM-05,43.697987,-96.195053,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-69,20,BM-06,43.704272,-96.192434,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-70,20,BM-07,43.702645,-96.185249,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-71,20,BM-08,43.703186,-96.188119,3,Blue Mounds SP,563.5,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",UG,UG,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",1,0
-72,20,BM-09,43.706631,-96.191492,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-73,20,BM-10,43.696612,-96.198802,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-74,20,BM-11-D,43.701364,-96.18698,3,Blue Mounds SP,563.5,0,0,0,1,0,0,0,0,0,1,0,"","","",UG,UG,UG,UG,UG,UG,UG,UG,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",2,1
-75,20,BM-12,43.695791,-96.191487,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-76,20,BM-13,43.706303,-96.187093,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-77,20,BM-14,43.702265,-96.197254,3,Blue Mounds SP,563.5,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",LG,LG,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",1,0
-78,20,BM-15,43.697708,-96.20339,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-79,20,BM-16,43.706586,-96.190844,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-80,20,BM-17,43.711813,-96.191953,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-81,20,BM-18,43.71199,-96.188164,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-82,20,BM-19,43.704327,-96.186604,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-83,20,BM-1-D,43.702026,-96.191942,3,Blue Mounds SP,563.5,0,0,0,1,0,0,0,0,0,1,0,"","","",WM,WM,WM,WM,WM,WM,WM,WM,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",2,1
-84,20,BM-20-D,43.696569,-96.199706,3,Blue Mounds SP,563.5,0,0,0,1,0,0,0,0,0,1,0,"","","",UG,UG,UG,UG,UG,UG,UG,UG,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",2,1
-85,20,BM-21,43.710703,-96.183975,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-86,20,BM-22-D,43.712014,-96.189258,3,Blue Mounds SP,563.5,0,0,0,1,0,0,0,0,0,1,0,"","","",UG,UG,UG,UG,UG,UG,UG,UG,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",2,1
-87,20,BM-23-D,43.699885,-96.194794,3,Blue Mounds SP,563.5,0,0,0,1,0,0,0,0,0,1,0,"","","",UG,UG,UG,UG,UG,UG,UG,UG,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",2,1
-88,20,BM-24,43.702096,-96.191065,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-89,20,BM-25,43.700291,-96.197633,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-90,20,BM-26,43.702267,-96.194288,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-91,20,BM-27,43.710274,-96.191908,3,Blue Mounds SP,563.5,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",UG,UG,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",1,0
-92,20,BM-28,43.705844,-96.191301,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-93,20,BM-29-D,43.702287,-96.20001,3,Blue Mounds SP,563.5,0,0,0,1,0,0,0,0,0,1,0,"","","",UG,UG,UG,UG,UG,UG,UG,UG,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",2,1
-94,20,BM-30,43.704751,-96.187557,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-95,20,BM-31-D,43.706553,-96.189117,3,Blue Mounds SP,563.5,0,0,0,1,0,0,0,0,0,1,0,"","","",WM,WM,WM,WM,WM,WM,WM,WM,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",2,1
-96,20,BM-32-D,43.713781,-96.186584,3,Blue Mounds SP,563.5,0,0,0,1,0,0,0,0,0,1,0,"","","",UG,UG,UG,UG,UG,UG,UG,UG,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",2,1
-97,20,BM-33,43.702357,-96.188497,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-98,20,BM-34,43.711733,-96.190298,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-99,20,BM-35,43.701352,-96.189002,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-100,20,BM-36,43.697757,-96.197461,3,Blue Mounds SP,563.5,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",UG,UG,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",1,0
-101,20,BM-37,43.7134,-96.188611,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-102,20,BM-38-D,43.711589,-96.184804,3,Blue Mounds SP,563.5,0,0,0,1,0,0,0,0,0,1,0,"","","",WM,WM,WM,WM,WM,WM,WM,WM,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",2,1
-103,20,BM-39,43.706256,-96.192018,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-104,20,BM-40-D,43.697916,-96.194044,3,Blue Mounds SP,563.5,0,0,0,1,0,0,0,0,0,1,0,"","","",UG,UG,UG,UG,UG,UG,UG,UG,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",2,1
-105,20,BM-41,43.702291,-96.195046,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-106,20,BM-42,43.701299,-96.190575,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-107,20,BM-43,43.707411,-96.189659,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-108,20,BM-44,43.703532,-96.185097,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-109,20,BM-45,43.698064,-96.197775,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-110,20,BM-46,43.706713,-96.185328,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-111,20,BM-47,43.713771,-96.185342,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-112,20,BM-48,43.696393,-96.1941,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-113,20,BM-49,43.701021,-96.187657,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
-114,20,BM-50,43.7123,-96.1824,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,"",,1
+64,20,BM-0,43.70029,-96.195759,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+65,20,BM-02,43.702612,-96.200946,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+66,20,BM-03,43.699614,-96.191913,3,Blue Mounds SP,563.5,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",UG,UG,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,1,0
+67,20,BM-04,43.702453,-96.192771,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+68,20,BM-05,43.697987,-96.195053,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+69,20,BM-06,43.704272,-96.192434,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+70,20,BM-07,43.702645,-96.185249,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+71,20,BM-08,43.703186,-96.188119,3,Blue Mounds SP,563.5,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",UG,UG,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,1,0
+72,20,BM-09,43.706631,-96.191492,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+73,20,BM-10,43.696612,-96.198802,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+74,20,BM-11-D,43.701364,-96.18698,3,Blue Mounds SP,563.5,0,0,0,1,0,0,0,0,0,1,0,"","","",UG,UG,UG,UG,UG,UG,UG,UG,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,2,1
+75,20,BM-12,43.695791,-96.191487,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+76,20,BM-13,43.706303,-96.187093,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+77,20,BM-14,43.702265,-96.197254,3,Blue Mounds SP,563.5,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",LG,LG,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,1,0
+78,20,BM-15,43.697708,-96.20339,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+79,20,BM-16,43.706586,-96.190844,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+80,20,BM-17,43.711813,-96.191953,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+81,20,BM-18,43.71199,-96.188164,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+82,20,BM-19,43.704327,-96.186604,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+83,20,BM-1-D,43.702026,-96.191942,3,Blue Mounds SP,563.5,0,0,0,1,0,0,0,0,0,1,0,"","","",WM,WM,WM,WM,WM,WM,WM,WM,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,2,1
+84,20,BM-20-D,43.696569,-96.199706,3,Blue Mounds SP,563.5,0,0,0,1,0,0,0,0,0,1,0,"","","",UG,UG,UG,UG,UG,UG,UG,UG,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,2,1
+85,20,BM-21,43.710703,-96.183975,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+86,20,BM-22-D,43.712014,-96.189258,3,Blue Mounds SP,563.5,0,0,0,1,0,0,0,0,0,1,0,"","","",UG,UG,UG,UG,UG,UG,UG,UG,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,2,1
+87,20,BM-23-D,43.699885,-96.194794,3,Blue Mounds SP,563.5,0,0,0,1,0,0,0,0,0,1,0,"","","",UG,UG,UG,UG,UG,UG,UG,UG,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,2,1
+88,20,BM-24,43.702096,-96.191065,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+89,20,BM-25,43.700291,-96.197633,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+90,20,BM-26,43.702267,-96.194288,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+91,20,BM-27,43.710274,-96.191908,3,Blue Mounds SP,563.5,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",UG,UG,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,1,0
+92,20,BM-28,43.705844,-96.191301,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+93,20,BM-29-D,43.702287,-96.20001,3,Blue Mounds SP,563.5,0,0,0,1,0,0,0,0,0,1,0,"","","",UG,UG,UG,UG,UG,UG,UG,UG,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,2,1
+94,20,BM-30,43.704751,-96.187557,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+95,20,BM-31-D,43.706553,-96.189117,3,Blue Mounds SP,563.5,0,0,0,1,0,0,0,0,0,1,0,"","","",WM,WM,WM,WM,WM,WM,WM,WM,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,2,1
+96,20,BM-32-D,43.713781,-96.186584,3,Blue Mounds SP,563.5,0,0,0,1,0,0,0,0,0,1,0,"","","",UG,UG,UG,UG,UG,UG,UG,UG,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,2,1
+97,20,BM-33,43.702357,-96.188497,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+98,20,BM-34,43.711733,-96.190298,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+99,20,BM-35,43.701352,-96.189002,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+100,20,BM-36,43.697757,-96.197461,3,Blue Mounds SP,563.5,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",UG,UG,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,1,0
+101,20,BM-37,43.7134,-96.188611,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+102,20,BM-38-D,43.711589,-96.184804,3,Blue Mounds SP,563.5,0,0,0,1,0,0,0,0,0,1,0,"","","",WM,WM,WM,WM,WM,WM,WM,WM,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,2,1
+103,20,BM-39,43.706256,-96.192018,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+104,20,BM-40-D,43.697916,-96.194044,3,Blue Mounds SP,563.5,0,0,0,1,0,0,0,0,0,1,0,"","","",UG,UG,UG,UG,UG,UG,UG,UG,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,2,1
+105,20,BM-41,43.702291,-96.195046,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+106,20,BM-42,43.701299,-96.190575,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+107,20,BM-43,43.707411,-96.189659,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+108,20,BM-44,43.703532,-96.185097,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+109,20,BM-45,43.698064,-96.197775,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+110,20,BM-46,43.706713,-96.185328,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+111,20,BM-47,43.713771,-96.185342,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+112,20,BM-48,43.696393,-96.1941,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+113,20,BM-49,43.701021,-96.187657,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
+114,20,BM-50,43.7123,-96.1824,3,,563.5,,,,,,,,,,,,,,,,,,,,,,,Combo,Combo,Combo,Combo,Combo,Combo,Combo,Graze,Graze,Graze,Graze,,1
 115,21,5LE4-01,43.71263245,-96.18093749,3,Blue Mounds SP,63.9,0,1,1,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,Rest,"",3,1
 116,21,5LE4-02,43.71074137,-96.18077973,3,Blue Mounds SP,63.9,0,1,1,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,Rest,"",3,1
 117,21,5LE4-03,43.70893861,-96.18106026,3,Blue Mounds SP,63.9,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,Rest,"",2,1
@@ -138,21 +138,21 @@ Transect_I,MGMTUNIT_I,TransectNa,StartLat,StartLong,SITE_ID,tblSITE_Site,ManUnit
 177,31,BURG_50,46.85612,-96.46872,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",0,0
 178,31,BURG_53,46.85742,-96.4664,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",0,0
 179,31,BURG_9,46.85695,-96.47084,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",0,0
-180,32,BURG_1,46.8611,-96.48338,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",0,0
-181,32,BURG_12,46.86004,-96.47624,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",0,0
-182,32,BURG_19,46.85718,-96.47582,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",0,0
-183,32,BURG_21,46.85621,-96.48101,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",0,0
-184,32,BURG_24,46.85755,-96.47886,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",0,0
-185,32,BURG_36,46.8581619,-96.47755,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",0,0
-186,32,BURG_41,46.86014,-96.47468,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",0,0
-187,32,BURG_42,46.86091,-96.47818,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",0,0
-188,32,BURG_48,46.86236,-96.48172,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",0,0
-189,32,BURG_5,46.85629,-96.48322,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",0,0
-190,32,BURG_54,46.85918,-96.4831,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",0,0
-191,32,BURG_59,46.85568,-96.47413,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",0,0
-192,32,BURG_66,46.8612,-96.48013,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",0,0
-193,32,BURG_72,46.85744,-96.48295,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",0,0
-194,32,BURG_8,46.858581,-96.47544,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",0,0
+180,32,BURG_1,46.8611,-96.48338,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+181,32,BURG_12,46.86004,-96.47624,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+182,32,BURG_19,46.85718,-96.47582,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+183,32,BURG_21,46.85621,-96.48101,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+184,32,BURG_24,46.85755,-96.47886,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+185,32,BURG_36,46.8581619,-96.47755,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+186,32,BURG_41,46.86014,-96.47468,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+187,32,BURG_42,46.86091,-96.47818,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+188,32,BURG_48,46.86236,-96.48172,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+189,32,BURG_5,46.85629,-96.48322,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+190,32,BURG_54,46.85918,-96.4831,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+191,32,BURG_59,46.85568,-96.47413,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+192,32,BURG_66,46.8612,-96.48013,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+193,32,BURG_72,46.85744,-96.48295,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+194,32,BURG_8,46.858581,-96.47544,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,0,0
 195,33,BURG_15,46.84441,-96.4661,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Rest,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",0,0
 196,33,BURG_17,46.84199,-96.4676,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Rest,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",0,0
 197,33,BURG_22,46.84415,-96.46371,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",0,0
@@ -167,19 +167,19 @@ Transect_I,MGMTUNIT_I,TransectNa,StartLat,StartLong,SITE_ID,tblSITE_Site,ManUnit
 206,33,BURG_73,46.8406,-96.46822,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Rest,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",0,0
 207,33,BURG_80,46.84299,-96.46388,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Rest,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",0,0
 208,33,BURG_81,46.84592,-96.46368,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",0,0
-209,34,BURG_13,46.84987,-96.47736,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",Rest,0,0
-210,34,BURG_14,46.84875,-96.4792,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",Rest,0,0
-211,34,BURG_20,46.85008,-96.47541,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",Rest,0,0
-212,34,BURG_27,46.84921,-96.48291,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",Rest,0,0
-213,34,BURG_29,46.85379,-96.47555,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",Rest,0,0
-214,34,BURG_44,46.85399,-96.47787,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",Rest,0,0
-215,34,BURG_55,46.85305,-96.48153,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",Rest,0,0
-216,34,BURG_57,46.85229,-96.47974,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",Rest,0,0
-217,34,BURG_7,46.84852,-96.47478,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",Rest,0,0
-218,34,BURG_71,46.8501,-96.48037,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",Rest,0,0
-219,34,BURG_74,46.85186,-96.47636,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",Rest,0,0
-220,34,BURG_75,46.84847,-96.47649,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",Rest,0,0
-221,34,BURG_79,46.84816,-96.48153,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,"",Rest,0,0
+209,34,BURG_13,46.84987,-96.47736,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+210,34,BURG_14,46.84875,-96.4792,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+211,34,BURG_20,46.85008,-96.47541,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+212,34,BURG_27,46.84921,-96.48291,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+213,34,BURG_29,46.85379,-96.47555,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+214,34,BURG_44,46.85399,-96.47787,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+215,34,BURG_55,46.85305,-96.48153,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+216,34,BURG_57,46.85229,-96.47974,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+217,34,BURG_7,46.84852,-96.47478,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+218,34,BURG_71,46.8501,-96.48037,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+219,34,BURG_74,46.85186,-96.47636,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+220,34,BURG_75,46.84847,-96.47649,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+221,34,BURG_79,46.84816,-96.48153,5,Bluestem Prairie SNA,9999,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,0,0
 222,35,FE_1,46.78111,-96.4176,5,Bluestem Prairie SNA,108,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Graze,Graze,Graze,Graze,Burn,Graze,Graze,Graze,Graze,Graze,"",0,0
 223,35,FE_10,46.7759,-96.4197,5,Bluestem Prairie SNA,108,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Graze,Graze,Graze,Graze,Burn,Graze,Graze,Graze,Graze,Graze,"",0,0
 224,35,FE_2,46.77835,-96.4174,5,Bluestem Prairie SNA,108,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Graze,Graze,Graze,Graze,Burn,Graze,Graze,Graze,Graze,Graze,"",0,0
@@ -217,21 +217,21 @@ Transect_I,MGMTUNIT_I,TransectNa,StartLat,StartLong,SITE_ID,tblSITE_Site,ManUnit
 256,37,FSR_7,46.78574,-96.4789,5,Bluestem Prairie SNA,145,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Graze,Graze,Combo,Graze,Graze,Graze,Graze,Graze,Graze,Graze,"",0,0
 257,37,FSR_8,46.78608,-96.4741,5,Bluestem Prairie SNA,145,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Graze,Graze,Combo,Graze,Graze,Graze,Graze,Graze,Graze,Graze,"",0,0
 258,37,FSR_9,46.78867,-96.4766,5,Bluestem Prairie SNA,145,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Graze,Graze,Combo,Graze,Graze,Graze,Graze,Graze,Graze,Graze,"",0,0
-259,38,GLYN_0,46.84321,-96.4875,5,Bluestem Prairie SNA,161,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",0,0
-260,38,GLYN_1,46.8469,-96.49173,5,Bluestem Prairie SNA,161,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",0,0
-261,38,GLYN_10,46.8426,-96.485,5,Bluestem Prairie SNA,161,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",0,0
-262,38,GLYN_12,46.84494,-96.48537,5,Bluestem Prairie SNA,161,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",0,0
-263,38,GLYN_13,46.8451,-96.49137,5,Bluestem Prairie SNA,161,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",0,0
-264,38,GLYN_14,46.84121,-96.486,5,Bluestem Prairie SNA,161,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",0,0
-265,38,GLYN_15,46.84351,-96.4916,5,,161,,,,,,,,,,,,,,,,,,,,,,,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",,1
-266,38,GLYN_2,46.84606,-96.48924,5,Bluestem Prairie SNA,161,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",0,0
-267,38,GLYN_3,46.84211,-96.4888,5,,161,,,,,,,,,,,,,,,,,,,,,,,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",,1
-268,38,GLYN_4,46.84737,-96.49014,5,Bluestem Prairie SNA,161,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",0,0
-269,38,GLYN_5,46.84631,-96.48562,5,Bluestem Prairie SNA,161,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",0,0
-270,38,GLYN_6,46.8432,-96.4895,5,Bluestem Prairie SNA,161,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",0,0
-271,38,GLYN_7,46.84191,-96.4908,5,Bluestem Prairie SNA,161,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",0,0
-272,38,GLYN_8,46.84385,-96.4862,5,Bluestem Prairie SNA,161,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",0,0
-273,38,GLYN_9,46.84687,-96.48738,5,Bluestem Prairie SNA,161,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",0,0
+259,38,GLYN_0,46.84321,-96.4875,5,Bluestem Prairie SNA,161,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,0,0
+260,38,GLYN_1,46.8469,-96.49173,5,Bluestem Prairie SNA,161,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,0,0
+261,38,GLYN_10,46.8426,-96.485,5,Bluestem Prairie SNA,161,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,0,0
+262,38,GLYN_12,46.84494,-96.48537,5,Bluestem Prairie SNA,161,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,0,0
+263,38,GLYN_13,46.8451,-96.49137,5,Bluestem Prairie SNA,161,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,0,0
+264,38,GLYN_14,46.84121,-96.486,5,Bluestem Prairie SNA,161,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,0,0
+265,38,GLYN_15,46.84351,-96.4916,5,,161,,,,,,,,,,,,,,,,,,,,,,,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,,1
+266,38,GLYN_2,46.84606,-96.48924,5,Bluestem Prairie SNA,161,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,0,0
+267,38,GLYN_3,46.84211,-96.4888,5,,161,,,,,,,,,,,,,,,,,,,,,,,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,,1
+268,38,GLYN_4,46.84737,-96.49014,5,Bluestem Prairie SNA,161,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,0,0
+269,38,GLYN_5,46.84631,-96.48562,5,Bluestem Prairie SNA,161,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,0,0
+270,38,GLYN_6,46.8432,-96.4895,5,Bluestem Prairie SNA,161,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,0,0
+271,38,GLYN_7,46.84191,-96.4908,5,Bluestem Prairie SNA,161,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,0,0
+272,38,GLYN_8,46.84385,-96.4862,5,Bluestem Prairie SNA,161,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,0,0
+273,38,GLYN_9,46.84687,-96.48738,5,Bluestem Prairie SNA,161,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,0,0
 274,39,JOHN_1,46.81811,-96.4777,5,Bluestem Prairie SNA,115,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Graze,Graze,Graze,Graze,Graze,Combo,Graze,Graze,Graze,Graze,"",0,0
 275,39,JOHN_2,46.81683,-96.4783,5,Bluestem Prairie SNA,115,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Graze,Graze,Graze,Graze,Graze,Combo,Graze,Graze,Graze,Graze,"",0,0
 276,39,JOHN_3,46.81617,-96.48,5,Bluestem Prairie SNA,115,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Graze,Graze,Graze,Graze,Graze,Combo,Graze,Graze,Graze,Graze,"",0,0
@@ -417,32 +417,32 @@ Transect_I,MGMTUNIT_I,TransectNa,StartLat,StartLong,SITE_ID,tblSITE_Site,ManUnit
 456,45,4LE2-22,45.1394,-96.0009,7,Chippewa Prairie Preserve/LQP WMA,368.27,1,0,0,0,1,0,0,0,0,0,1,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
 457,45,4LE2-23,45.144,-96.005,7,Chippewa Prairie Preserve/LQP WMA,368.27,1,0,0,0,1,0,0,0,0,0,1,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
 458,45,4LE2-31,45.1435,-96.0015,7,Chippewa Prairie Preserve/LQP WMA,368.27,1,0,0,0,1,0,0,0,0,0,1,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
-459,53,5LE2-08,44.2329,-96.3037,8,Hole in the Mountain Preserve/WMA,92.6,1,0,0,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",1,0
-460,53,5LE2-09,44.2317,-96.3056,8,Hole in the Mountain Preserve/WMA,92.6,1,0,0,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",1,0
-461,53,5LE2-10,44.2305,-96.308,8,Hole in the Mountain Preserve/WMA,92.6,1,1,1,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",2,1
-462,53,5LE2-11,44.2302,-96.3108,8,Hole in the Mountain Preserve/WMA,92.6,1,1,1,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",2,1
-463,53,5LE2-14,44.23,-96.3039,8,Hole in the Mountain Preserve/WMA,92.6,1,0,0,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",1,0
-464,53,5LE2-15,44.2329,-96.3059,8,Hole in the Mountain Preserve/WMA,92.6,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",0,0
-465,53,5LE2-18,44.2321,-96.3033,8,Hole in the Mountain Preserve/WMA,92.6,1,1,1,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",1,0
-466,53,5LE2-19,44.2304,-96.3088,8,Hole in the Mountain Preserve/WMA,92.6,1,1,1,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",2,1
-467,54,5LE2-12,44.2278,-96.306,8,Hole in the Mountain Preserve/WMA,57.1,1,0,0,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",1,0
-468,54,5LE2-13,44.2283,-96.3031,8,Hole in the Mountain Preserve/WMA,57.1,1,0,0,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",1,0
-469,54,5LE2-16,44.228,-96.3052,8,Hole in the Mountain Preserve/WMA,57.1,1,1,1,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",2,1
-470,54,5LE2-17,44.229,-96.3033,8,Hole in the Mountain Preserve/WMA,57.1,1,1,1,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",1,0
-471,54,5LE2-20,44.2284,-96.3094,8,Hole in the Mountain Preserve/WMA,57.1,1,1,1,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",2,1
-472,54,5LE2-21,44.2284,-96.3077,8,Hole in the Mountain Preserve/WMA,57.1,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",0,0
-473,147,5LE2-01,44.2213,-96.3182,8,Hole in the Mountain Preserve/WMA,71.8,1,0,0,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",1,0
-474,147,5LE2-02,44.2223,-96.3148,8,Hole in the Mountain Preserve/WMA,71.8,1,1,0,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",1,0
-475,147,5LE2-03,44.2229,-96.3117,8,Hole in the Mountain Preserve/WMA,71.8,1,1,0,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",1,0
-476,147,5LE2-04,44.2205,-96.3092,8,Hole in the Mountain Preserve/WMA,71.8,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",0,0
-477,147,5LE2-05,44.2229,-96.3075,8,Hole in the Mountain Preserve/WMA,71.8,1,1,1,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",1,0
-478,147,5LE2-06,44.2245,-96.3097,8,Hole in the Mountain Preserve/WMA,71.8,1,0,0,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",1,0
-479,147,5LE2-07,44.2268,-96.3095,8,Hole in the Mountain Preserve/WMA,71.8,1,1,1,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",2,1
-480,147,5LE2-22,44.2225,-96.3109,8,Hole in the Mountain Preserve/WMA,71.8,1,1,1,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",1,0
-481,147,5LE2-23,44.2263,-96.308,8,Hole in the Mountain Preserve/WMA,71.8,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",0,0
-482,147,5LE2-24,44.2241,-96.3085,8,Hole in the Mountain Preserve/WMA,71.8,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",0,0
-483,147,5LE2-25,44.2227,-96.3162,8,Hole in the Mountain Preserve/WMA,71.8,1,1,0,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",1,0
-484,147,5LE2-26,44.225,-96.3095,8,Hole in the Mountain Preserve/WMA,71.8,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",0,0
+459,53,5LE2-08,44.2329,-96.3037,8,Hole in the Mountain Preserve/WMA,92.6,1,0,0,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+460,53,5LE2-09,44.2317,-96.3056,8,Hole in the Mountain Preserve/WMA,92.6,1,0,0,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+461,53,5LE2-10,44.2305,-96.308,8,Hole in the Mountain Preserve/WMA,92.6,1,1,1,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+462,53,5LE2-11,44.2302,-96.3108,8,Hole in the Mountain Preserve/WMA,92.6,1,1,1,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+463,53,5LE2-14,44.23,-96.3039,8,Hole in the Mountain Preserve/WMA,92.6,1,0,0,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+464,53,5LE2-15,44.2329,-96.3059,8,Hole in the Mountain Preserve/WMA,92.6,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+465,53,5LE2-18,44.2321,-96.3033,8,Hole in the Mountain Preserve/WMA,92.6,1,1,1,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+466,53,5LE2-19,44.2304,-96.3088,8,Hole in the Mountain Preserve/WMA,92.6,1,1,1,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+467,54,5LE2-12,44.2278,-96.306,8,Hole in the Mountain Preserve/WMA,57.1,1,0,0,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+468,54,5LE2-13,44.2283,-96.3031,8,Hole in the Mountain Preserve/WMA,57.1,1,0,0,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+469,54,5LE2-16,44.228,-96.3052,8,Hole in the Mountain Preserve/WMA,57.1,1,1,1,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+470,54,5LE2-17,44.229,-96.3033,8,Hole in the Mountain Preserve/WMA,57.1,1,1,1,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+471,54,5LE2-20,44.2284,-96.3094,8,Hole in the Mountain Preserve/WMA,57.1,1,1,1,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+472,54,5LE2-21,44.2284,-96.3077,8,Hole in the Mountain Preserve/WMA,57.1,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,0,0
+473,147,5LE2-01,44.2213,-96.3182,8,Hole in the Mountain Preserve/WMA,71.8,1,0,0,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,1,0
+474,147,5LE2-02,44.2223,-96.3148,8,Hole in the Mountain Preserve/WMA,71.8,1,1,0,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,1,0
+475,147,5LE2-03,44.2229,-96.3117,8,Hole in the Mountain Preserve/WMA,71.8,1,1,0,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,1,0
+476,147,5LE2-04,44.2205,-96.3092,8,Hole in the Mountain Preserve/WMA,71.8,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,0,0
+477,147,5LE2-05,44.2229,-96.3075,8,Hole in the Mountain Preserve/WMA,71.8,1,1,1,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,1,0
+478,147,5LE2-06,44.2245,-96.3097,8,Hole in the Mountain Preserve/WMA,71.8,1,0,0,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,1,0
+479,147,5LE2-07,44.2268,-96.3095,8,Hole in the Mountain Preserve/WMA,71.8,1,1,1,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,2,1
+480,147,5LE2-22,44.2225,-96.3109,8,Hole in the Mountain Preserve/WMA,71.8,1,1,1,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,1,0
+481,147,5LE2-23,44.2263,-96.308,8,Hole in the Mountain Preserve/WMA,71.8,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,0,0
+482,147,5LE2-24,44.2241,-96.3085,8,Hole in the Mountain Preserve/WMA,71.8,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,0,0
+483,147,5LE2-25,44.2227,-96.3162,8,Hole in the Mountain Preserve/WMA,71.8,1,1,0,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,1,0
+484,147,5LE2-26,44.225,-96.3095,8,Hole in the Mountain Preserve/WMA,71.8,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,0,0
 485,55,4LE1-16,45.2,-96.2525,9,Plover Prairie Preserve,37.2,1,0,1,1,1,1,1,1,0,0,0,LG,LG,LG,LG,LG,LG,UG,LG,LG,LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,Rest,6,1
 486,55,4LE1-19,45.1987,-96.2486,9,Plover Prairie Preserve,37.2,1,0,1,1,1,1,1,1,0,0,0,LG,LG,LG,LG,LG,LG,UG,LG,LG,LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,Rest,6,1
 487,55,4LE1-20,45.1974,-96.2492,9,Plover Prairie Preserve,37.2,1,0,1,1,1,1,1,1,0,0,0,LG,LG,LG,LG,LG,LG,UG,WM,WM,WM,WM,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,Rest,6,1
@@ -457,40 +457,40 @@ Transect_I,MGMTUNIT_I,TransectNa,StartLat,StartLong,SITE_ID,tblSITE_Site,ManUnit
 496,161,4LE1-17,45.2009,-96.2539,9,Plover Prairie Preserve,157.7,1,0,1,1,1,1,1,1,1,1,1,LG,LG,LG,LG,LG,LG,UG,LG,LG,LG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,9,1
 497,161,4LE1-18,45.2023,-96.2616,9,Plover Prairie Preserve,157.7,1,0,1,1,1,1,1,1,1,1,1,LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,9,1
 498,161,4LE1-22,45.2034,-96.2568,9,Plover Prairie Preserve,157.7,1,0,1,1,1,1,1,1,1,1,1,LG,LG,LG,LG,LG,LG,UG,LG,UG,LG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,9,1
-499,56,2LE5-03,47.6928,-96.4315,10,Tympanuchus WMA,156.8,1,0,1,1,1,1,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,"","","","","",4,1
-500,56,2LE5-04,47.6887,-96.4311,10,Tympanuchus WMA,156.8,1,0,1,1,1,1,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,"","","","","",4,1
-501,56,2LE5-07,47.6901126,-96.4335157,10,Tympanuchus WMA,156.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,"","","","","",1,0
-502,57,2LE5-08,47.69620608,-96.42584944,10,Tympanuchus WMA,279.8,0,0,0,0,0,1,1,1,0,0,0,"","","","","",UG,UG,LG,LG,LG,LG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,"","","",3,1
-503,57,2LE5-10,47.70067862,-96.42245792,10,Tympanuchus WMA,279.8,0,0,0,0,0,1,1,1,0,0,0,"","","","","",UG,UG,LG,LG,LG,LG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,"","","",3,1
-504,57,2LE5-11,47.69990874,-96.42504283,10,Tympanuchus WMA,279.8,0,0,0,0,0,1,1,1,0,0,0,"","","","","",UG,UG,LG,LG,LG,LG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,"","","",3,1
-505,57,2LE5-12,47.69823074,-96.42319231,10,Tympanuchus WMA,279.8,0,0,0,0,0,1,1,1,0,0,0,"","","","","",UG,LG,LG,LG,LG,LG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,"","","",3,1
-506,57,2LE5-13,47.69416632,-96.42206997,10,Tympanuchus WMA,279.8,0,0,0,0,0,1,1,1,0,0,0,"","","","","",UG,LG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,"","","",3,1
-507,57,2LE5-16,47.70076477,-96.43017988,10,Tympanuchus WMA,279.8,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",LG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,"","","",2,1
-508,57,2LE5-17,47.70049293,-96.4275204,10,Tympanuchus WMA,279.8,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",LG,LG,LG,LG,LG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,"","","",2,1
-509,57,2LE5-18,47.70159749,-96.42415222,10,Tympanuchus WMA,279.8,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",UG,LG,LG,LG,LG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,"","","",2,1
-510,57,2LE5-21,47.69686239,-96.42841556,10,Tympanuchus WMA,279.8,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,"","","",2,1
-511,57,2LE5-22,47.69588278,-96.42330695,10,Tympanuchus WMA,279.8,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",NR,BP,BP,BP,BP,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,"","","",2,1
-512,57,2LE5-23,47.69805863,-96.42016207,10,Tympanuchus WMA,279.8,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,"","","",2,1
-513,57,2LE5-27,47.69491466,-96.42928583,10,Tympanuchus WMA,279.8,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,"","","",2,1
-514,57,2LE5-31,47.69286882,-96.42761767,10,Tympanuchus WMA,279.8,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,"","","",2,1
-515,57,2LE5-32,47.69309206,-96.42297796,10,Tympanuchus WMA,279.8,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",LG,LG,LG,LG,LG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,"","","",2,1
-516,57,2LE5-33,47.69290633,-96.4202799,10,Tympanuchus WMA,279.8,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",LG,LG,LG,LG,LG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,"","","",2,1
-517,58,2LE5-01,47.7002,-96.434,10,Tympanuchus WMA,130,1,0,1,1,1,1,1,1,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","","",6,1
-518,58,2LE5-02,47.6976,-96.4349,10,Tympanuchus WMA,130,1,0,1,1,1,1,1,1,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","","",6,1
-519,58,2LE5-14,47.70128463,-96.43697243,10,Tympanuchus WMA,130,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",LG,LG,LG,LG,LG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","","",2,1
-520,58,2LE5-15,47.70084785,-96.43247722,10,Tympanuchus WMA,130,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","","",2,1
-521,58,2LE5-19,47.69815133,-96.4369706,10,Tympanuchus WMA,130,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",LG,LG,LG,LG,LG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","","",2,1
-522,58,2LE5-20,47.69757687,-96.43246661,10,Tympanuchus WMA,130,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",LG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","","",2,1
-523,58,2LE5-24,47.69668543,-96.43722443,10,Tympanuchus WMA,130,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",LG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","","",2,1
-524,58,2LE5-25,47.69564122,-96.43458703,10,Tympanuchus WMA,130,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",LG,LG,LG,LG,LG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","","",2,1
-525,58,2LE5-26,47.69522202,-96.43345027,10,Tympanuchus WMA,130,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","","",2,1
-526,58,2LE5-28,47.69478901,-96.43672019,10,Tympanuchus WMA,130,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","","",2,1
-527,58,2LE5-29,47.69438375,-96.43380382,10,Tympanuchus WMA,130,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","","",2,1
-528,58,2LE5-30,47.69421531,-96.43087387,10,Tympanuchus WMA,130,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","","",2,1
-529,58,2LE5-R29,47.69969099,-96.43645663,10,Tympanuchus WMA,130,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,"","","",2,1
-530,59,2LE5-05,47.6856,-96.4283,10,Tympanuchus WMA,236.9,1,0,1,1,1,1,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Rest,Burn,Rest,"","","","","",4,1
-531,59,2LE5-06,47.6818,-96.4293,10,Tympanuchus WMA,236.9,1,0,1,1,1,1,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Rest,Burn,Rest,"","","","","",4,1
-532,59,2LE5-09,47.679205,-96.43690281,10,Tympanuchus WMA,236.9,0,0,0,0,0,1,0,0,0,0,0,"","","","","",LG,LG,LG,LG,LG,LG,Rest,Burn,Rest,Rest,Burn,Rest,"","","","","",1,0
+499,56,2LE5-03,47.6928,-96.4315,10,Tympanuchus WMA,156.8,1,0,1,1,1,1,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Burn,Rest,Rest,4,1
+500,56,2LE5-04,47.6887,-96.4311,10,Tympanuchus WMA,156.8,1,0,1,1,1,1,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Burn,Rest,Rest,4,1
+501,56,2LE5-07,47.6901126,-96.4335157,10,Tympanuchus WMA,156.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Burn,Rest,Rest,1,0
+502,57,2LE5-08,47.69620608,-96.42584944,10,Tympanuchus WMA,279.8,0,0,0,0,0,1,1,1,0,0,0,"","","","","",UG,UG,LG,LG,LG,LG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,3,1
+503,57,2LE5-10,47.70067862,-96.42245792,10,Tympanuchus WMA,279.8,0,0,0,0,0,1,1,1,0,0,0,"","","","","",UG,UG,LG,LG,LG,LG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,3,1
+504,57,2LE5-11,47.69990874,-96.42504283,10,Tympanuchus WMA,279.8,0,0,0,0,0,1,1,1,0,0,0,"","","","","",UG,UG,LG,LG,LG,LG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,3,1
+505,57,2LE5-12,47.69823074,-96.42319231,10,Tympanuchus WMA,279.8,0,0,0,0,0,1,1,1,0,0,0,"","","","","",UG,LG,LG,LG,LG,LG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,3,1
+506,57,2LE5-13,47.69416632,-96.42206997,10,Tympanuchus WMA,279.8,0,0,0,0,0,1,1,1,0,0,0,"","","","","",UG,LG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,3,1
+507,57,2LE5-16,47.70076477,-96.43017988,10,Tympanuchus WMA,279.8,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",LG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,2,1
+508,57,2LE5-17,47.70049293,-96.4275204,10,Tympanuchus WMA,279.8,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",LG,LG,LG,LG,LG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,2,1
+509,57,2LE5-18,47.70159749,-96.42415222,10,Tympanuchus WMA,279.8,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",UG,LG,LG,LG,LG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,2,1
+510,57,2LE5-21,47.69686239,-96.42841556,10,Tympanuchus WMA,279.8,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,2,1
+511,57,2LE5-22,47.69588278,-96.42330695,10,Tympanuchus WMA,279.8,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",NR,BP,BP,BP,BP,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,2,1
+512,57,2LE5-23,47.69805863,-96.42016207,10,Tympanuchus WMA,279.8,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,2,1
+513,57,2LE5-27,47.69491466,-96.42928583,10,Tympanuchus WMA,279.8,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,2,1
+514,57,2LE5-31,47.69286882,-96.42761767,10,Tympanuchus WMA,279.8,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,2,1
+515,57,2LE5-32,47.69309206,-96.42297796,10,Tympanuchus WMA,279.8,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",LG,LG,LG,LG,LG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,2,1
+516,57,2LE5-33,47.69290633,-96.4202799,10,Tympanuchus WMA,279.8,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",LG,LG,LG,LG,LG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,2,1
+517,58,2LE5-01,47.7002,-96.434,10,Tympanuchus WMA,130,1,0,1,1,1,1,1,1,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Burn,6,1
+518,58,2LE5-02,47.6976,-96.4349,10,Tympanuchus WMA,130,1,0,1,1,1,1,1,1,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Burn,6,1
+519,58,2LE5-14,47.70128463,-96.43697243,10,Tympanuchus WMA,130,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",LG,LG,LG,LG,LG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Burn,2,1
+520,58,2LE5-15,47.70084785,-96.43247722,10,Tympanuchus WMA,130,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Burn,2,1
+521,58,2LE5-19,47.69815133,-96.4369706,10,Tympanuchus WMA,130,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",LG,LG,LG,LG,LG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Burn,2,1
+522,58,2LE5-20,47.69757687,-96.43246661,10,Tympanuchus WMA,130,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",LG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Burn,2,1
+523,58,2LE5-24,47.69668543,-96.43722443,10,Tympanuchus WMA,130,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",LG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Burn,2,1
+524,58,2LE5-25,47.69564122,-96.43458703,10,Tympanuchus WMA,130,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",LG,LG,LG,LG,LG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Burn,2,1
+525,58,2LE5-26,47.69522202,-96.43345027,10,Tympanuchus WMA,130,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Burn,2,1
+526,58,2LE5-28,47.69478901,-96.43672019,10,Tympanuchus WMA,130,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Burn,2,1
+527,58,2LE5-29,47.69438375,-96.43380382,10,Tympanuchus WMA,130,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Burn,2,1
+528,58,2LE5-30,47.69421531,-96.43087387,10,Tympanuchus WMA,130,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Burn,2,1
+529,58,2LE5-R29,47.69969099,-96.43645663,10,Tympanuchus WMA,130,0,0,0,0,0,0,1,1,0,0,0,"","","","","","",UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Burn,2,1
+530,59,2LE5-05,47.6856,-96.4283,10,Tympanuchus WMA,236.9,1,0,1,1,1,1,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Rest,Burn,Rest,Rest,"",Rest,Burn,Rest,4,1
+531,59,2LE5-06,47.6818,-96.4293,10,Tympanuchus WMA,236.9,1,0,1,1,1,1,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Rest,Burn,Rest,Rest,"",Rest,Burn,Rest,4,1
+532,59,2LE5-09,47.679205,-96.43690281,10,Tympanuchus WMA,236.9,0,0,0,0,0,1,0,0,0,0,0,"","","","","",LG,LG,LG,LG,LG,LG,Rest,Burn,Rest,Rest,Burn,Rest,Rest,"",Rest,Burn,Rest,1,0
 533,60,2SI1-01,47.440027,-96.034024,11,Bejou WMA,60.2,1,0,0,1,0,0,0,0,0,1,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",Rest,"",2,1
 534,60,2SI1-02,47.437447,-96.036296,11,Bejou WMA,60.2,0,0,0,1,0,0,0,0,0,1,0,"","","",LG,LG,LG,LG,LG,LG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",Rest,"",2,1
 535,60,2SI1-03,47.435743,-96.035665,11,Bejou WMA,60.2,0,0,0,1,0,0,0,0,0,1,0,"","","",WM,WM,WM,WM,WM,WM,WM,WM,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",Rest,"",2,1
@@ -500,14 +500,14 @@ Transect_I,MGMTUNIT_I,TransectNa,StartLat,StartLong,SITE_ID,tblSITE_Site,ManUnit
 539,60,2SI1-07,47.440433,-96.03747,11,Bejou WMA,60.2,0,0,0,1,0,0,0,0,0,1,0,"","","",WM,WM,WM,WM,WM,WM,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",Rest,"",2,1
 540,60,2SI1-08,47.441006,-96.033335,11,Bejou WMA,60.2,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",0,0
 541,60,2SI1-09,47.439067,-96.034444,11,Bejou WMA,60.2,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",0,0
-542,61,2SI2-01,47.4438,-95.9346,12,Loncrace WMA,34.2,1,1,0,0,0,0,0,1,0,0,0,LG,LG,LG,LG,LG,LG,LG,BP,BP,BP,BP,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,"","","",1,0
-543,61,2SI2-02,47.4429,-95.937,12,Loncrace WMA,34.2,1,1,0,0,0,0,0,1,0,0,0,LG,LG,LG,LG,LG,LG,LG,UG,UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,"","","",1,0
-544,61,2SI2-03,47.4444,-95.9393,12,Loncrace WMA,34.2,1,1,0,0,0,0,0,1,0,0,0,LG,LG,LG,LG,LG,LG,LG,UG,UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,"","","",1,0
-545,61,2SI2-04,47.4438,-95.9424,12,Loncrace WMA,34.2,1,1,0,0,0,0,0,1,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,"","","",1,0
-546,61,2SI2-07,47.4435,-95.9374,12,Loncrace WMA,34.2,1,1,0,0,0,0,0,1,0,0,0,WM,WM,WM,WM,WM,WM,WM,BP,BP,BP,BP,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,"","","",1,0
-547,61,2SI2-09,47.4443,-95.9362,12,Loncrace WMA,34.2,1,1,0,0,0,0,0,1,0,0,0,LG,LG,LG,LG,LG,LG,LG,WM,WM,WM,WM,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,"","","",1,0
-548,62,2SI4-01,47.8026,-96.2681,13,Lake Pleasant 22 NPB,9.9,1,1,1,0,0,0,0,0,1,0,0,LG,LG,LG,LG,LG,LG,UG,UG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,"","","",2,1
-549,64,2SI4-02,47.8004,-96.2684,13,Lake Pleasant 22 NPB,12.9,1,1,1,0,0,0,0,0,1,0,0,LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","","",2,1
+542,61,2SI2-01,47.4438,-95.9346,12,Loncrace WMA,34.2,1,1,0,0,0,0,0,1,0,0,0,LG,LG,LG,LG,LG,LG,LG,BP,BP,BP,BP,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Burn,1,0
+543,61,2SI2-02,47.4429,-95.937,12,Loncrace WMA,34.2,1,1,0,0,0,0,0,1,0,0,0,LG,LG,LG,LG,LG,LG,LG,UG,UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Burn,1,0
+544,61,2SI2-03,47.4444,-95.9393,12,Loncrace WMA,34.2,1,1,0,0,0,0,0,1,0,0,0,LG,LG,LG,LG,LG,LG,LG,UG,UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Burn,1,0
+545,61,2SI2-04,47.4438,-95.9424,12,Loncrace WMA,34.2,1,1,0,0,0,0,0,1,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Burn,1,0
+546,61,2SI2-07,47.4435,-95.9374,12,Loncrace WMA,34.2,1,1,0,0,0,0,0,1,0,0,0,WM,WM,WM,WM,WM,WM,WM,BP,BP,BP,BP,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Burn,1,0
+547,61,2SI2-09,47.4443,-95.9362,12,Loncrace WMA,34.2,1,1,0,0,0,0,0,1,0,0,0,LG,LG,LG,LG,LG,LG,LG,WM,WM,WM,WM,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Burn,1,0
+548,62,2SI4-01,47.8026,-96.2681,13,Lake Pleasant 22 NPB,9.9,1,1,1,0,0,0,0,0,1,0,0,LG,LG,LG,LG,LG,LG,UG,UG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,"",Burn,Rest,2,1
+549,64,2SI4-02,47.8004,-96.2684,13,Lake Pleasant 22 NPB,12.9,1,1,1,0,0,0,0,0,1,0,0,LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",Burn,Rest,2,1
 550,65,2SI4-03,47.802,-96.2706,13,Lake Pleasant 22 NPB,17.5,1,1,1,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","","",1,0
 551,66,2SI3-01,47.7305,-96.8214,14,Malmberg Prairie SNA,41.8,1,0,0,0,1,0,0,1,0,0,1,LG,LG,LG,LG,LG,LG,LG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Burn,3,1
 552,66,2SI3-02,47.7289,-96.82,14,Malmberg Prairie SNA,41.8,1,0,0,0,1,0,0,1,0,0,1,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Burn,3,1
@@ -519,46 +519,46 @@ Transect_I,MGMTUNIT_I,TransectNa,StartLat,StartLong,SITE_ID,tblSITE_Site,ManUnit
 558,67,2SI3-04,47.7249,-96.8216,14,Malmberg Prairie SNA,40.8,1,0,0,0,1,0,0,1,0,0,1,LG,LG,LG,LG,LG,LG,LG,UG,UG,UG,UG,Rest,Burn,Burn,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,3,1
 559,67,2SI3-05,47.7259,-96.8238,14,Malmberg Prairie SNA,40.8,1,0,0,0,1,0,0,1,0,0,1,WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,Rest,Burn,Burn,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,3,1
 560,67,2SI3-10,47.7249,-96.82,14,Malmberg Prairie SNA,40.8,1,0,0,0,1,0,0,1,0,0,1,LG,LG,LG,LG,LG,LG,LG,UG,UG,UG,UG,Rest,Burn,Burn,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,3,1
-561,68,1LI1-09,48.28632599,-96.37932898,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",2,1
-562,68,1LI1-10,48.28545254,-96.37592165,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",2,1
-563,68,1LI1-11,48.28636909,-96.37366574,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,1,0,0,"",WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",2,1
-564,68,1LI1-12,48.2872068,-96.37606635,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,WM,WM,WM,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",2,1
-565,68,1LI1-13,48.28892333,-96.37617962,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,1,0,0,"",WM,WM,WM,WM,WM,WM,WM,BP,BP,BP,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",2,1
-566,68,1LI1-14,48.28819698,-96.37376952,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,WM,WM,WM,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",2,1
-567,68,1LI1-21,48.28985726,-96.37333021,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",2,1
-568,68,1LI1-22,48.28547134,-96.37835329,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,1,0,0,"",WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",2,1
-569,68,1LI1-24,48.28837923,-96.37861271,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",2,1
-570,68,1LI1-28,48.29044196,-96.3718046,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,1,0,0,"",WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",2,1
-571,68,1LI1-33,48.28456268,-96.37656116,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,1,0,0,"",WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",2,1
-572,68,1LI1-34,48.28490705,-96.37289217,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,0,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",1,0
-573,68,1LI1-35,48.29062538,-96.37750702,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,WM,WM,WM,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",2,1
-574,68,1LI1-36,48.29020135,-96.37938028,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",2,1
-575,68,1LI1-38,48.2849586,-96.38058017,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",2,1
-576,69,1LI1-01,48.29376306,-96.38654647,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,1,0,0,"",WM,WM,WM,WM,WM,WM,WM,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,"","",2,1
-577,69,1LI1-02,48.29204337,-96.39031435,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,BP,BP,BP,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,"","",2,1
-578,69,1LI1-03,48.29025228,-96.39010878,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,"","",2,1
-579,69,1LI1-04,48.28941487,-96.38770781,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,"","",2,1
-580,69,1LI1-05,48.29113053,-96.38785037,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,BP,BP,BP,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,"","",2,1
-581,69,1LI1-06,48.29210516,-96.38559828,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,BP,BP,BP,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,"","",2,1
-582,69,1LI1-07,48.29009286,-96.3854425,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,"","",2,1
-583,69,1LI1-08,48.28912991,-96.38115006,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,"","",2,1
-584,69,1LI1-15,48.29692161,-96.38665245,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,WM,WM,WM,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,"","",2,1
-585,69,1LI1-16,48.28784895,-96.38759444,15,Marsh Grove 36 NPB,256.3,0,0,1,0,0,0,0,0,1,0,0,"","",UG,UG,UG,UG,UG,UG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,"","",2,1
-586,69,1LI1-17,48.29588347,-96.38962714,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,"","",2,1
-587,69,1LI1-18,48.28834123,-96.39028701,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,0,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,"","",1,0
-588,69,1LI1-19,48.28797314,-96.38415459,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,0,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,"","",1,0
-589,69,1LI1-20,48.29706816,-96.38973263,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,1,0,0,"",WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,"","",2,1
-590,69,1LI1-23,48.29519071,-96.38809784,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,0,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,"","",1,0
-591,69,1LI1-25,48.29218248,-96.38361048,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,0,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,"","",1,0
-592,69,1LI1-26,48.29366877,-96.39088283,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,BP,BP,BP,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,"","",2,1
-593,69,1LI1-27,48.28925353,-96.38925527,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,0,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,"","",1,0
-594,69,1LI1-29,48.29041989,-96.38299044,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,0,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,"","",1,0
-595,69,1LI1-30,48.28436067,-96.38245955,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,0,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,"","",1,0
-596,69,1LI1-31,48.29493635,-96.38421069,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,BP,BP,BP,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,"","",2,1
-597,69,1LI1-32,48.29696243,-96.38359709,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,0,0,0,"",WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,"","",1,0
-598,69,1LI1-37,48.29274202,-96.38874474,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,BP,BP,BP,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,"","",2,1
-599,69,1LI1-39,48.29399349,-96.38292117,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,0,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,"","",1,0
-600,69,1LI1-40,48.29546076,-96.38595805,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,0,0,0,"",WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,"","",1,0
+561,68,1LI1-09,48.28632599,-96.37932898,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+562,68,1LI1-10,48.28545254,-96.37592165,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+563,68,1LI1-11,48.28636909,-96.37366574,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,1,0,0,"",WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+564,68,1LI1-12,48.2872068,-96.37606635,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,WM,WM,WM,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+565,68,1LI1-13,48.28892333,-96.37617962,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,1,0,0,"",WM,WM,WM,WM,WM,WM,WM,BP,BP,BP,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+566,68,1LI1-14,48.28819698,-96.37376952,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,WM,WM,WM,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+567,68,1LI1-21,48.28985726,-96.37333021,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+568,68,1LI1-22,48.28547134,-96.37835329,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,1,0,0,"",WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+569,68,1LI1-24,48.28837923,-96.37861271,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+570,68,1LI1-28,48.29044196,-96.3718046,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,1,0,0,"",WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+571,68,1LI1-33,48.28456268,-96.37656116,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,1,0,0,"",WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+572,68,1LI1-34,48.28490705,-96.37289217,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,0,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+573,68,1LI1-35,48.29062538,-96.37750702,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,WM,WM,WM,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+574,68,1LI1-36,48.29020135,-96.37938028,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+575,68,1LI1-38,48.2849586,-96.38058017,15,Marsh Grove 36 NPB,144,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+576,69,1LI1-01,48.29376306,-96.38654647,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,1,0,0,"",WM,WM,WM,WM,WM,WM,WM,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,Rest,Burn,2,1
+577,69,1LI1-02,48.29204337,-96.39031435,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,BP,BP,BP,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,Rest,Burn,2,1
+578,69,1LI1-03,48.29025228,-96.39010878,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,Rest,Burn,2,1
+579,69,1LI1-04,48.28941487,-96.38770781,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,Rest,Burn,2,1
+580,69,1LI1-05,48.29113053,-96.38785037,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,BP,BP,BP,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,Rest,Burn,2,1
+581,69,1LI1-06,48.29210516,-96.38559828,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,BP,BP,BP,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,Rest,Burn,2,1
+582,69,1LI1-07,48.29009286,-96.3854425,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,Rest,Burn,2,1
+583,69,1LI1-08,48.28912991,-96.38115006,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,Rest,Burn,2,1
+584,69,1LI1-15,48.29692161,-96.38665245,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,WM,WM,WM,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,Rest,Burn,2,1
+585,69,1LI1-16,48.28784895,-96.38759444,15,Marsh Grove 36 NPB,256.3,0,0,1,0,0,0,0,0,1,0,0,"","",UG,UG,UG,UG,UG,UG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,Rest,Burn,2,1
+586,69,1LI1-17,48.29588347,-96.38962714,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,Rest,Burn,2,1
+587,69,1LI1-18,48.28834123,-96.39028701,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,0,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,Rest,Burn,1,0
+588,69,1LI1-19,48.28797314,-96.38415459,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,0,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,Rest,Burn,1,0
+589,69,1LI1-20,48.29706816,-96.38973263,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,1,0,0,"",WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,Rest,Burn,2,1
+590,69,1LI1-23,48.29519071,-96.38809784,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,0,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,Rest,Burn,1,0
+591,69,1LI1-25,48.29218248,-96.38361048,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,0,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,Rest,Burn,1,0
+592,69,1LI1-26,48.29366877,-96.39088283,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,BP,BP,BP,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,Rest,Burn,2,1
+593,69,1LI1-27,48.28925353,-96.38925527,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,0,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,Rest,Burn,1,0
+594,69,1LI1-29,48.29041989,-96.38299044,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,0,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,Rest,Burn,1,0
+595,69,1LI1-30,48.28436067,-96.38245955,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,0,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,Rest,Burn,1,0
+596,69,1LI1-31,48.29493635,-96.38421069,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,BP,BP,BP,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,Rest,Burn,2,1
+597,69,1LI1-32,48.29696243,-96.38359709,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,0,0,0,"",WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,Rest,Burn,1,0
+598,69,1LI1-37,48.29274202,-96.38874474,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,BP,BP,BP,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,Rest,Burn,2,1
+599,69,1LI1-39,48.29399349,-96.38292117,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,0,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,Rest,Burn,1,0
+600,69,1LI1-40,48.29546076,-96.38595805,15,Marsh Grove 36 NPB,256.3,0,1,1,0,0,0,0,0,0,0,0,"",WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",Rest,Rest,Burn,1,0
 601,70,1LI3-01,48.67366233,-96.35224023,16,Two-Rivers Aspen Prairie Parkland SNA,96.4,0,1,0,0,0,0,0,1,0,0,0,"",WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,"",Rest,Rest,Rest,Rest,Rest,Rest,Burn,"","",Burn,1,0
 602,70,1LI3-02,48.67310838,-96.34975464,16,Two-Rivers Aspen Prairie Parkland SNA,96.4,0,1,0,0,0,0,0,1,0,0,1,"",LG,LG,LG,LG,LG,LG,BP,BP,BP,LG,"",Rest,Rest,Rest,Rest,Rest,Rest,Burn,"",Rest,Burn,2,1
 603,70,1LI3-03,48.67268849,-96.34716878,16,Two-Rivers Aspen Prairie Parkland SNA,96.4,0,1,0,0,0,0,0,1,0,0,0,"",WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,"",Rest,Rest,Rest,Rest,Rest,Rest,Burn,"","",Burn,1,0
@@ -579,36 +579,36 @@ Transect_I,MGMTUNIT_I,TransectNa,StartLat,StartLong,SITE_ID,tblSITE_Site,ManUnit
 618,70,1LI3-18,48.67292135,-96.35157602,16,Two-Rivers Aspen Prairie Parkland SNA,96.4,0,1,0,0,0,0,0,0,0,0,0,"",WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,"",Rest,Rest,Rest,Rest,Rest,Rest,Burn,"","",Burn,0,0
 619,70,1LI3-19,48.66881988,-96.35584112,16,Two-Rivers Aspen Prairie Parkland SNA,96.4,0,1,0,0,0,0,0,0,0,0,0,"",WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,"",Rest,Rest,Rest,Rest,Rest,Rest,Burn,"","",Burn,0,0
 620,70,1LI3-20,48.67391417,-96.35085393,16,Two-Rivers Aspen Prairie Parkland SNA,96.4,0,1,0,0,0,0,0,0,0,0,0,"",WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,"",Rest,Rest,Rest,Rest,Rest,Rest,Burn,"","",Burn,0,0
-621,71,2LE1b-16,47.04137979,-96.42469009,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-622,71,2LE1b-17,47.04091474,-96.42117945,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",LG,LG,LG,LG,LG,LG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-623,71,2LE1b-18,47.04078716,-96.41881447,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-624,71,2LE1b-19,47.04113714,-96.41622621,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-625,71,2LE1b-20,47.03961565,-96.42714545,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-626,71,2LE1b-21,47.03930401,-96.4237517,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-627,71,2LE1b-22,47.03884228,-96.4194565,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-628,71,2LE1b-23,47.03950108,-96.41623043,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-629,71,2LE1b-24,47.03807371,-96.42334652,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",LG,LG,LG,LG,LG,LG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-630,71,2LE1b-25,47.03809162,-96.42150582,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",LG,LG,LG,LG,LG,LG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-631,71,2LE1b-26,47.03686638,-96.42508158,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-632,71,2LE1b-27,47.03708655,-96.42248088,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",LG,LG,LG,LG,LG,LG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-633,71,2LE1b-28,47.03598663,-96.42197431,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-634,71,2LE1b-29,47.0366118,-96.41863943,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-635,71,2LE1b-30,47.03652707,-96.41726507,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-636,72,2LE1b-01,47.04468352,-96.4352,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-637,72,2LE1b-02,47.04666374,-96.43529101,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-638,72,2LE1b-03,47.04842997,-96.43529719,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-639,72,2LE1b-04,47.04851993,-96.43290811,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-640,72,2LE1b-05,47.04768817,-96.42373192,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-641,72,2LE1b-06,47.04833349,-96.42092907,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-642,72,2LE1b-07,47.04737085,-96.4208989,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-643,72,2LE1b-08,47.04626415,-96.42299611,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-644,72,2LE1b-09,47.04616457,-96.421019,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-645,72,2LE1b-10,47.04660774,-96.41925422,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-646,72,2LE1b-11,47.04514066,-96.41919419,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-647,72,2LE1b-12,47.04424798,-96.42627609,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-648,72,2LE1b-13,47.04346497,-96.42474226,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-649,72,2LE1b-14,47.04325821,-96.42214843,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
-650,72,2LE1b-15,47.04316602,-96.41903677,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,"","","","",1,0
+621,71,2LE1b-16,47.04137979,-96.42469009,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+622,71,2LE1b-17,47.04091474,-96.42117945,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",LG,LG,LG,LG,LG,LG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+623,71,2LE1b-18,47.04078716,-96.41881447,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+624,71,2LE1b-19,47.04113714,-96.41622621,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+625,71,2LE1b-20,47.03961565,-96.42714545,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+626,71,2LE1b-21,47.03930401,-96.4237517,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+627,71,2LE1b-22,47.03884228,-96.4194565,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+628,71,2LE1b-23,47.03950108,-96.41623043,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+629,71,2LE1b-24,47.03807371,-96.42334652,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",LG,LG,LG,LG,LG,LG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+630,71,2LE1b-25,47.03809162,-96.42150582,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",LG,LG,LG,LG,LG,LG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+631,71,2LE1b-26,47.03686638,-96.42508158,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+632,71,2LE1b-27,47.03708655,-96.42248088,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",LG,LG,LG,LG,LG,LG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+633,71,2LE1b-28,47.03598663,-96.42197431,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+634,71,2LE1b-29,47.0366118,-96.41863943,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+635,71,2LE1b-30,47.03652707,-96.41726507,17,BbarB,200.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+636,72,2LE1b-01,47.04468352,-96.4352,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+637,72,2LE1b-02,47.04666374,-96.43529101,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+638,72,2LE1b-03,47.04842997,-96.43529719,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+639,72,2LE1b-04,47.04851993,-96.43290811,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+640,72,2LE1b-05,47.04768817,-96.42373192,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+641,72,2LE1b-06,47.04833349,-96.42092907,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+642,72,2LE1b-07,47.04737085,-96.4208989,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+643,72,2LE1b-08,47.04626415,-96.42299611,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+644,72,2LE1b-09,47.04616457,-96.421019,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+645,72,2LE1b-10,47.04660774,-96.41925422,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+646,72,2LE1b-11,47.04514066,-96.41919419,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+647,72,2LE1b-12,47.04424798,-96.42627609,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+648,72,2LE1b-13,47.04346497,-96.42474226,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+649,72,2LE1b-14,47.04325821,-96.42214843,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+650,72,2LE1b-15,47.04316602,-96.41903677,17,BbarB,189.7,0,0,0,0,0,1,0,0,0,0,0,"","","","","",UG,UG,UG,UG,UG,UG,"","","",Graze,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
 651,74,3SI2-04,45.420114,-95.582903,19,Langhei Prairie SNA,18.8,0,0,0,1,1,1,1,1,1,1,1,"","","",LG,LG,LG,LG,LG,WM,LG,UG,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,8,1
 652,74,3SI2-05,45.421299,-95.583247,19,Langhei Prairie SNA,18.8,0,0,0,1,1,1,1,1,1,1,1,"","","",LG,LG,LG,LG,LG,WM,LG,UG,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,8,1
 653,74,3SI2-06,45.422711,-95.584364,19,Langhei Prairie SNA,18.8,0,0,0,1,1,1,1,1,1,1,1,"","","",UG,UG,UG,UG,LG,UG,UG,UG,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,8,1
@@ -631,12 +631,12 @@ Transect_I,MGMTUNIT_I,TransectNa,StartLat,StartLong,SITE_ID,tblSITE_Site,ManUnit
 670,77,2LE4-12,47.3959,-95.9317,20,Santee Prairie SNA,114.6,1,0,0,0,0,0,1,0,1,1,1,LG,LG,LG,LG,LG,LG,LG,LG,LG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,4,1
 671,77,2LE4-14,47.393,-95.929,20,Santee Prairie SNA,114.6,1,0,0,0,0,0,1,0,1,1,1,LG,LG,LG,LG,LG,LG,UG,UG,BP,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,4,1
 672,77,2LE4-15,47.3945,-95.9269,20,Santee Prairie SNA,114.6,1,0,0,0,0,0,1,0,1,1,1,LG,LG,LG,LG,LG,LG,UG,UG,LG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,4,1
-673,78,3SI5-04,45.56993092,-95.58124853,21,Selix NPB,17,0,0,0,0,0,1,0,0,1,0,0,"","","","","",UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Burn,Rest,"","",2,1
-674,78,3SI5-05,45.57074539,-95.57943401,21,Selix NPB,17,0,0,0,0,0,1,0,0,1,0,0,"","","","","",UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Burn,Rest,"","",2,1
-675,78,3SI5-06,45.57075541,-95.58204687,21,Selix NPB,17,0,0,0,0,0,1,0,0,1,0,0,"","","","","",UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Burn,Rest,"","",2,1
-676,79,3SI5-01,45.5693408,-95.5785988,21,Selix NPB,13,0,0,0,0,0,1,0,0,1,0,0,"","","","","",UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"","",2,1
-677,79,3SI5-02,45.56880654,-95.58089706,21,Selix NPB,13,0,0,0,0,0,1,0,0,1,0,0,"","","","","",UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"","",2,1
-678,79,3SI5-03,45.5697182,-95.57994153,21,Selix NPB,13,0,0,0,0,0,1,0,0,1,0,0,"","","","","",UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"","",2,1
+673,78,3SI5-04,45.56993092,-95.58124853,21,Selix NPB,17,0,0,0,0,0,1,0,0,1,0,0,"","","","","",UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Burn,Rest,Rest,Rest,2,1
+674,78,3SI5-05,45.57074539,-95.57943401,21,Selix NPB,17,0,0,0,0,0,1,0,0,1,0,0,"","","","","",UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Burn,Rest,Rest,Rest,2,1
+675,78,3SI5-06,45.57075541,-95.58204687,21,Selix NPB,17,0,0,0,0,0,1,0,0,1,0,0,"","","","","",UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Burn,Rest,Burn,Rest,Rest,Rest,2,1
+676,79,3SI5-01,45.5693408,-95.5785988,21,Selix NPB,13,0,0,0,0,0,1,0,0,1,0,0,"","","","","",UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,2,1
+677,79,3SI5-02,45.56880654,-95.58089706,21,Selix NPB,13,0,0,0,0,0,1,0,0,1,0,0,"","","","","",UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,2,1
+678,79,3SI5-03,45.5697182,-95.57994153,21,Selix NPB,13,0,0,0,0,0,1,0,0,1,0,0,"","","","","",UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,2,1
 679,80,2LE6-23,47.18557834,-96.35931203,22,Twin Valley Prairie SNA,13.5,0,1,0,0,0,0,0,0,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Burn,"","","",0,0
 680,81,2LE6-03,47.19067632,-96.36259922,22,Twin Valley Prairie SNA,39.4,0,1,0,0,0,0,0,1,0,0,1,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,2,1
 681,81,2LE6-04,47.18800123,-96.36239035,22,Twin Valley Prairie SNA,39.4,0,1,0,0,0,0,0,1,0,0,1,"",LG,LG,LG,LG,LG,LG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,2,1
@@ -660,53 +660,53 @@ Transect_I,MGMTUNIT_I,TransectNa,StartLat,StartLong,SITE_ID,tblSITE_Site,ManUnit
 699,85,2LE6-16,47.1837453,-96.36331748,22,Twin Valley Prairie SNA,80.9,0,1,0,0,0,0,0,0,0,0,0,"",WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Burn,"","","",0,0
 700,85,2LE6-18,47.1813883,-96.3616346,22,Twin Valley Prairie SNA,80.9,0,1,0,0,0,0,0,0,0,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Burn,"","","",0,0
 701,85,2LE6-19,47.1805762,-96.36415722,22,Twin Valley Prairie SNA,80.9,0,1,0,0,0,0,0,0,0,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Burn,"","","",0,0
-702,86,3LE2b-01,45.52344229,-95.45885198,23,Vegoe NPB,49.4,0,1,1,0,0,0,0,0,1,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,"","",2,1
-703,86,3LE2b-03,45.52254662,-95.45691526,23,Vegoe NPB,49.4,0,1,0,0,0,0,0,0,1,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,"","",1,0
-704,86,3LE2b-04,45.5211008,-95.45634138,23,Vegoe NPB,49.4,0,1,0,0,0,0,0,0,1,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,"","",1,0
-705,86,3LE2b-05,45.52142603,-95.4544465,23,Vegoe NPB,49.4,0,1,1,0,0,0,0,0,1,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,"","",2,1
-706,86,3LE2b-06,45.52320176,-95.45489033,23,Vegoe NPB,49.4,0,1,1,0,0,0,0,0,1,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,"","",2,1
-707,86,3LE2b-07,45.52381576,-95.45688885,23,Vegoe NPB,49.4,0,1,1,0,0,0,0,0,1,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,"","",2,1
-708,87,4LE1-08,45.196,-96.2675,24,Agassiz 23 NPB,63.8,1,0,0,0,0,1,0,0,1,0,0,WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,Rest,Rest,Rest,Rest,Graze,Graze,Graze,Graze,Graze,"","",2,1
-709,87,4LE1-09,45.196,-96.2649,24,Agassiz 23 NPB,63.8,1,0,0,0,0,1,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Graze,Graze,Graze,Graze,Graze,"","",2,1
-710,87,4LE1-10,45.1959,-96.2619,24,Agassiz 23 NPB,63.8,1,0,0,0,0,1,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Rest,Graze,Graze,Graze,Graze,Graze,"","",1,0
-711,87,4LE1-11,45.19465923,-96.26097244,24,Agassiz 23 NPB,63.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",WM,WM,WM,WM,WM,WM,Rest,Rest,Rest,Rest,Graze,Graze,Graze,Graze,Graze,"","",1,0
-712,87,4LE1-12,45.1943,-96.2632,24,Agassiz 23 NPB,63.8,1,0,0,0,0,1,0,0,0,0,0,WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,Rest,Rest,Rest,Rest,Graze,Graze,Graze,Graze,Graze,"","",1,0
-713,87,4LE1-13,45.1942,-96.2663,24,Agassiz 23 NPB,63.8,1,0,0,0,0,1,0,0,1,0,0,WM,WM,WM,WM,WM,WM,WM,WM,LG,LG,LG,Rest,Rest,Rest,Rest,Graze,Graze,Graze,Graze,Graze,"","",2,1
-714,87,4LE1-14,45.1953,-96.2653,24,Agassiz 23 NPB,63.8,1,0,0,0,0,1,0,0,1,0,0,WM,WM,WM,WM,WM,WM,WM,WM,LG,LG,LG,Rest,Rest,Rest,Rest,Graze,Graze,Graze,Graze,Graze,"","",2,1
-715,87,4LE1-15,45.1942,-96.2621,24,Agassiz 23 NPB,63.8,1,0,0,0,0,0,0,0,0,0,0,WM,WM,WM,WM,WM,WM,WM,WM,"",WM,WM,Rest,Rest,Rest,Rest,Graze,Graze,Graze,Graze,Graze,"","",0,0
-716,88,4SI2-01,44.6718,-95.336,25,Boiling Springs NPB,27.1,1,1,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"","",0,0
-717,88,4SI2-02,44.6703,-95.3348,25,Boiling Springs NPB,27.1,1,1,1,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"","",1,0
-718,88,4SI2-04,44.6686,-95.3384,25,Boiling Springs NPB,27.1,1,1,1,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"","",2,1
-719,88,4SI2-05,44.6702,-95.3393,25,Boiling Springs NPB,27.1,1,1,1,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"","",2,1
-720,88,4SI2-08,44.6694,-95.3368,25,Boiling Springs NPB,27.1,1,1,1,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"","",1,0
-721,88,4SI2-09,44.6713,-95.3385,25,Boiling Springs NPB,27.1,1,1,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"","",0,0
-722,89,4LE4-01,45.32542563,-96.37080666,26,Schellberg NPB,177,0,0,1,0,0,0,0,0,1,0,0,"","",LG,LG,LG,LG,LG,LG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",2,1
-723,89,4LE4-02,45.32346642,-96.37069758,26,Schellberg NPB,177,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",WM,WM,WM,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",1,0
-724,89,4LE4-03,45.32440664,-96.37569632,26,,177,,,,,,,,,,,,,,,,,,,,,,,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",,1
-725,89,4LE4-04,45.32289388,-96.3731322,26,Schellberg NPB,177,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",1,0
-726,89,4LE4-05,45.32105941,-96.37099994,26,Schellberg NPB,177,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",1,0
-727,89,4LE4-06,45.32090239,-96.37361421,26,Schellberg NPB,177,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",WM,WM,WM,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",1,0
-732,89,4LE4-11,45.3256517,-96.37673289,26,Schellberg NPB,177,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",1,0
-733,89,4LE4-12,45.3260202,-96.37221923,26,Schellberg NPB,177,0,0,1,0,0,0,0,0,0,0,0,"","",LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",1,0
-734,89,4LE4-13,45.32419016,-96.37236677,26,Schellberg NPB,177,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",WM,WM,WM,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",1,0
-735,89,4LE4-14,45.32228511,-96.37138243,26,Schellberg NPB,177,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",1,0
-739,90,4SI3-03,44.8666,-95.6374,27,Stony Run 11 NPB,5.4,1,1,0,0,0,0,1,0,0,1,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",2,1
-740,90,4SI3-04,44.8673,-95.6388,27,Stony Run 11 NPB,5.4,1,1,0,0,0,0,1,0,0,1,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",2,1
-741,90,4SI3-05,44.8659235,-95.63712759,27,Stony Run 11 NPB,5.4,0,0,0,0,0,0,1,0,0,1,0,"","","","","","",UG,UG,UG,UG,UG,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",2,1
-742,91,4SI3-01,44.8638,-95.6381,27,Stony Run 11 NPB,4,1,1,0,0,0,0,1,0,0,1,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",2,1
-743,91,4SI3-02,44.86505265,-95.63693694,27,Stony Run 11 NPB,4,0,1,0,0,0,0,1,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",2,1
-744,92,4SI5-01,44.12640255,-94.3502275,28,Butternut Valley Prairie SNA,6.96,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,"",Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",2,1
-745,235,4SI5-02,44.12509989,-94.35047902,28,Butternut Valley Prairie SNA,5.55,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,LG,LG,"",Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",2,1
-746,92,4SI5-03,44.126131,-94.350914,28,Butternut Valley Prairie SNA,6.96,0,0,0,1,0,0,0,0,1,0,0,"","","",UG,UG,UG,UG,UG,UG,UG,UG,"",Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",2,1
-747,235,4SI5-04,44.125038,-94.349758,28,Butternut Valley Prairie SNA,5.55,0,0,0,1,0,0,0,0,0,1,0,"","","",WM,WM,WM,WM,WM,WM,WM,WM,"",Rest,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,"",2,1
-748,92,4SI5-05,44.125811,-94.350243,28,Butternut Valley Prairie SNA,6.96,0,0,0,1,0,0,0,0,0,1,0,"","","",LG,LG,LG,LG,LG,LG,UG,UG,"",Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",2,1
-749,93,5SI1-01,44.0806,-95.5722,29,Dovray 7 NPB,6,1,0,0,0,0,1,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",2,1
-750,93,5SI1-02,44.0801,-95.569,29,Dovray 7 NPB,6,1,0,0,0,0,1,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",2,1
-751,93,5SI1-03,44.0803,-95.5717,29,Dovray 7 NPB,6,1,0,0,0,0,1,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",2,1
-752,93,5SI1-04,44.08262024,-95.57208905,29,Dovray 7 NPB,6,0,0,0,0,0,1,0,0,1,0,0,"","","","","",UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",2,1
-753,93,5SI1-05,44.08285852,-95.56954861,29,Dovray 7 NPB,6,0,0,0,0,0,1,0,0,1,0,0,"","","","","",UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",2,1
-754,94,4SI4-08,44.20263598,-94.5319671,30,Joseph A. Tauer Prairie SNA,12.7,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,LG,LG,Rest,Rest,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Rest,"",2,1
-755,95,4SI4-02,44.19842062,-94.53147218,30,Joseph A. Tauer Prairie SNA,5.5,0,1,0,1,0,0,0,0,0,1,0,"",LG,LG,LG,LG,LG,LG,LG,LG,WM,WM,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,"",2,1
+702,86,3LE2b-01,45.52344229,-95.45885198,23,Vegoe NPB,49.4,0,1,1,0,0,0,0,0,1,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,2,1
+703,86,3LE2b-03,45.52254662,-95.45691526,23,Vegoe NPB,49.4,0,1,0,0,0,0,0,0,1,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,1,0
+704,86,3LE2b-04,45.5211008,-95.45634138,23,Vegoe NPB,49.4,0,1,0,0,0,0,0,0,1,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,1,0
+705,86,3LE2b-05,45.52142603,-95.4544465,23,Vegoe NPB,49.4,0,1,1,0,0,0,0,0,1,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,2,1
+706,86,3LE2b-06,45.52320176,-95.45489033,23,Vegoe NPB,49.4,0,1,1,0,0,0,0,0,1,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,2,1
+707,86,3LE2b-07,45.52381576,-95.45688885,23,Vegoe NPB,49.4,0,1,1,0,0,0,0,0,1,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,2,1
+708,87,4LE1-08,45.196,-96.2675,24,Agassiz 23 NPB,63.8,1,0,0,0,0,1,0,0,1,0,0,WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,Rest,Rest,Rest,Rest,Graze,Graze,Graze,Graze,Graze,Graze,Graze,2,1
+709,87,4LE1-09,45.196,-96.2649,24,Agassiz 23 NPB,63.8,1,0,0,0,0,1,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Graze,Graze,Graze,Graze,Graze,Graze,Graze,2,1
+710,87,4LE1-10,45.1959,-96.2619,24,Agassiz 23 NPB,63.8,1,0,0,0,0,1,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Rest,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+711,87,4LE1-11,45.19465923,-96.26097244,24,Agassiz 23 NPB,63.8,0,0,0,0,0,1,0,0,0,0,0,"","","","","",WM,WM,WM,WM,WM,WM,Rest,Rest,Rest,Rest,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+712,87,4LE1-12,45.1943,-96.2632,24,Agassiz 23 NPB,63.8,1,0,0,0,0,1,0,0,0,0,0,WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,Rest,Rest,Rest,Rest,Graze,Graze,Graze,Graze,Graze,Graze,Graze,1,0
+713,87,4LE1-13,45.1942,-96.2663,24,Agassiz 23 NPB,63.8,1,0,0,0,0,1,0,0,1,0,0,WM,WM,WM,WM,WM,WM,WM,WM,LG,LG,LG,Rest,Rest,Rest,Rest,Graze,Graze,Graze,Graze,Graze,Graze,Graze,2,1
+714,87,4LE1-14,45.1953,-96.2653,24,Agassiz 23 NPB,63.8,1,0,0,0,0,1,0,0,1,0,0,WM,WM,WM,WM,WM,WM,WM,WM,LG,LG,LG,Rest,Rest,Rest,Rest,Graze,Graze,Graze,Graze,Graze,Graze,Graze,2,1
+715,87,4LE1-15,45.1942,-96.2621,24,Agassiz 23 NPB,63.8,1,0,0,0,0,0,0,0,0,0,0,WM,WM,WM,WM,WM,WM,WM,WM,"",WM,WM,Rest,Rest,Rest,Rest,Graze,Graze,Graze,Graze,Graze,Graze,Graze,0,0
+716,88,4SI2-01,44.6718,-95.336,25,Boiling Springs NPB,27.1,1,1,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,0,0
+717,88,4SI2-02,44.6703,-95.3348,25,Boiling Springs NPB,27.1,1,1,1,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,1,0
+718,88,4SI2-04,44.6686,-95.3384,25,Boiling Springs NPB,27.1,1,1,1,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,2,1
+719,88,4SI2-05,44.6702,-95.3393,25,Boiling Springs NPB,27.1,1,1,1,0,0,0,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,2,1
+720,88,4SI2-08,44.6694,-95.3368,25,Boiling Springs NPB,27.1,1,1,1,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,1,0
+721,88,4SI2-09,44.6713,-95.3385,25,Boiling Springs NPB,27.1,1,1,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,0,0
+722,89,4LE4-01,45.32542563,-96.37080666,26,Schellberg NPB,177,0,0,1,0,0,0,0,0,1,0,0,"","",LG,LG,LG,LG,LG,LG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+723,89,4LE4-02,45.32346642,-96.37069758,26,Schellberg NPB,177,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",WM,WM,WM,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+724,89,4LE4-03,45.32440664,-96.37569632,26,,177,,,,,,,,,,,,,,,,,,,,,,,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,,1
+725,89,4LE4-04,45.32289388,-96.3731322,26,Schellberg NPB,177,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+726,89,4LE4-05,45.32105941,-96.37099994,26,Schellberg NPB,177,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+727,89,4LE4-06,45.32090239,-96.37361421,26,Schellberg NPB,177,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",WM,WM,WM,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+732,89,4LE4-11,45.3256517,-96.37673289,26,Schellberg NPB,177,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+733,89,4LE4-12,45.3260202,-96.37221923,26,Schellberg NPB,177,0,0,1,0,0,0,0,0,0,0,0,"","",LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+734,89,4LE4-13,45.32419016,-96.37236677,26,Schellberg NPB,177,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",WM,WM,WM,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+735,89,4LE4-14,45.32228511,-96.37138243,26,Schellberg NPB,177,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+739,90,4SI3-03,44.8666,-95.6374,27,Stony Run 11 NPB,5.4,1,1,0,0,0,0,1,0,0,1,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+740,90,4SI3-04,44.8673,-95.6388,27,Stony Run 11 NPB,5.4,1,1,0,0,0,0,1,0,0,1,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+741,90,4SI3-05,44.8659235,-95.63712759,27,Stony Run 11 NPB,5.4,0,0,0,0,0,0,1,0,0,1,0,"","","","","","",UG,UG,UG,UG,UG,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+742,91,4SI3-01,44.8638,-95.6381,27,Stony Run 11 NPB,4,1,1,0,0,0,0,1,0,0,1,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,2,1
+743,91,4SI3-02,44.86505265,-95.63693694,27,Stony Run 11 NPB,4,0,1,0,0,0,0,1,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,2,1
+744,92,4SI5-01,44.12640255,-94.3502275,28,Butternut Valley Prairie SNA,6.96,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,"",Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,2,1
+745,235,4SI5-02,44.12509989,-94.35047902,28,Butternut Valley Prairie SNA,5.55,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,LG,LG,"",Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+746,92,4SI5-03,44.126131,-94.350914,28,Butternut Valley Prairie SNA,6.96,0,0,0,1,0,0,0,0,1,0,0,"","","",UG,UG,UG,UG,UG,UG,UG,UG,"",Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,2,1
+747,235,4SI5-04,44.125038,-94.349758,28,Butternut Valley Prairie SNA,5.55,0,0,0,1,0,0,0,0,0,1,0,"","","",WM,WM,WM,WM,WM,WM,WM,WM,"",Rest,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,2,1
+748,92,4SI5-05,44.125811,-94.350243,28,Butternut Valley Prairie SNA,6.96,0,0,0,1,0,0,0,0,0,1,0,"","","",LG,LG,LG,LG,LG,LG,UG,UG,"",Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,2,1
+749,93,5SI1-01,44.0806,-95.5722,29,Dovray 7 NPB,6,1,0,0,0,0,1,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,Rest,2,1
+750,93,5SI1-02,44.0801,-95.569,29,Dovray 7 NPB,6,1,0,0,0,0,1,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,Rest,2,1
+751,93,5SI1-03,44.0803,-95.5717,29,Dovray 7 NPB,6,1,0,0,0,0,1,0,0,1,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,Rest,2,1
+752,93,5SI1-04,44.08262024,-95.57208905,29,Dovray 7 NPB,6,0,0,0,0,0,1,0,0,1,0,0,"","","","","",UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,Rest,2,1
+753,93,5SI1-05,44.08285852,-95.56954861,29,Dovray 7 NPB,6,0,0,0,0,0,1,0,0,1,0,0,"","","","","",UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Burn,Rest,2,1
+754,94,4SI4-08,44.20263598,-94.5319671,30,Joseph A. Tauer Prairie SNA,12.7,0,1,0,1,0,0,0,0,0,1,0,"",UG,UG,UG,UG,UG,UG,UG,UG,LG,LG,Rest,Rest,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Rest,Burn,2,1
+755,95,4SI4-02,44.19842062,-94.53147218,30,Joseph A. Tauer Prairie SNA,5.5,0,1,0,1,0,0,0,0,0,1,0,"",LG,LG,LG,LG,LG,LG,LG,LG,WM,WM,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,2,1
 756,96,5SI3-05,43.9313,-95.7198,31,Lundblad Prairie SNA,47,1,1,0,0,1,0,0,1,0,0,1,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,3,1
 757,96,5SI3-06,43.933,-95.7203,31,Lundblad Prairie SNA,47,1,1,0,0,1,0,0,1,0,0,1,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,3,1
 758,96,5SI3-07,43.9347,-95.72,31,Lundblad Prairie SNA,47,1,1,0,0,1,0,0,1,0,0,1,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,3,1
@@ -1124,10 +1124,10 @@ Transect_I,MGMTUNIT_I,TransectNa,StartLat,StartLong,SITE_ID,tblSITE_Site,ManUnit
 1170,144,VIC_B_06,45.33839,-96.34823,47,,73.1,,,,,,,,,,,,,,,,,,,,,,,Rest,Rest,Rest,Burn,"",Rest,Rest,Rest,Graze,"","",,1
 1171,144,VIC_B_07,45.33507,-96.34843,47,,73.1,,,,,,,,,,,,,,,,,,,,,,,Rest,Rest,Rest,Burn,"",Rest,Rest,Rest,Graze,"","",,1
 1172,144,VIC_B_08,45.33797,-96.3473,47,,73.1,,,,,,,,,,,,,,,,,,,,,,,Rest,Rest,Rest,Burn,"",Rest,Rest,Rest,Graze,"","",,1
-1173,145,5SI2-01,44.2683,-95.7543,48,Garvin County Park,8.6,1,1,0,0,0,0,0,1,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","","",1,0
-1174,145,5SI2-02,44.2683,-95.7516,48,Garvin County Park,8.6,1,1,0,0,0,0,0,1,0,0,0,UG,UG,UG,UG,UG,UG,UG,LG,LG,LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","","",1,0
-1175,146,5SI2-03,44.2665,-95.7518,48,Garvin County Park,13.6,1,1,0,0,0,0,0,1,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","","",1,0
-1176,146,5SI2-06,44.2675,-95.7498,48,Garvin County Park,13.6,1,1,0,0,0,0,0,1,0,0,0,UG,UG,UG,UG,UG,UG,UG,LG,LG,LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","","",1,0
+1173,145,5SI2-01,44.2683,-95.7543,48,Garvin County Park,8.6,1,1,0,0,0,0,0,1,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+1174,145,5SI2-02,44.2683,-95.7516,48,Garvin County Park,8.6,1,1,0,0,0,0,0,1,0,0,0,UG,UG,UG,UG,UG,UG,UG,LG,LG,LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+1175,146,5SI2-03,44.2665,-95.7518,48,Garvin County Park,13.6,1,1,0,0,0,0,0,1,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+1176,146,5SI2-06,44.2675,-95.7498,48,Garvin County Park,13.6,1,1,0,0,0,0,0,1,0,0,0,UG,UG,UG,UG,UG,UG,UG,LG,LG,LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
 1177,148,GLA_A_01,45.5315,-95.5409,49,,31.2,,,,,,,,,,,,,,,,,,,,,,,Graze,Rest,Rest,"",Rest,"","","","",Burn,Graze,,1
 1178,148,GLA_A_02,45.532,-95.5411,49,,31.2,,,,,,,,,,,,,,,,,,,,,,,Graze,Rest,Rest,"",Rest,"","","","",Burn,Graze,,1
 1179,148,GLA_A_03,45.5317,-95.54,49,,31.2,,,,,,,,,,,,,,,,,,,,,,,Graze,Rest,Rest,"",Rest,"","","","",Burn,Graze,,1
@@ -1144,9 +1144,9 @@ Transect_I,MGMTUNIT_I,TransectNa,StartLat,StartLong,SITE_ID,tblSITE_Site,ManUnit
 1190,149,HAM_A_05,45.3509,-95.8401,50,,66.9,,,,,,,,,,,,,,,,,,,,,,,Rest,Rest,Rest,Graze,Graze,Rest,Rest,"",Graze,Graze,Rest,,1
 1191,149,HAM_A_06,45.3507,-95.8333,50,,66.9,,,,,,,,,,,,,,,,,,,,,,,Rest,Rest,Rest,Graze,Graze,Rest,Rest,"",Graze,Graze,Rest,,1
 1192,149,HAM_A_07,45.3506,-95.8364,50,,66.9,,,,,,,,,,,,,,,,,,,,,,,Rest,Rest,Rest,Graze,Graze,Rest,Rest,"",Graze,Graze,Rest,,1
-1193,150,3SI3-04,45.6489,-95.6963,51,New Prairie WPA,15.2,0,1,1,0,0,0,0,1,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",2,1
-1194,150,3SI3-06,45.6502,-95.6915,51,New Prairie WPA,15.2,0,1,1,0,0,0,0,1,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",2,1
-1195,150,3SI3-07,45.6502,-95.6891,51,New Prairie WPA,15.2,0,1,1,0,0,0,0,1,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",2,1
+1193,150,3SI3-04,45.6489,-95.6963,51,New Prairie WPA,15.2,0,1,1,0,0,0,0,1,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+1194,150,3SI3-06,45.6502,-95.6915,51,New Prairie WPA,15.2,0,1,1,0,0,0,0,1,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+1195,150,3SI3-07,45.6502,-95.6891,51,New Prairie WPA,15.2,0,1,1,0,0,0,0,1,0,0,0,"",UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
 1196,151,3LE3-01,45.372,-95.4793,52,Svor WPA,54.9,0,1,0,0,1,0,0,0,0,0,1,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
 1197,151,3LE3-04,45.3682,-95.4769,52,Svor WPA,54.9,1,1,0,0,1,0,0,0,0,0,1,LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
 1198,151,3LE3-05,45.3698,-95.4754,52,Svor WPA,54.9,1,1,0,0,1,0,0,0,0,0,1,LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
@@ -1227,11 +1227,11 @@ Transect_I,MGMTUNIT_I,TransectNa,StartLat,StartLong,SITE_ID,tblSITE_Site,ManUnit
 1273,159,WEL_E_06,45.333,-95.4275,55,,126.1,,,,,,,,,,,,,,,,,,,,,,,Graze,Rest,Rest,Graze,Graze,Graze,Rest,Rest,Burn,Graze,Graze,,1
 1274,159,WEL_E_07,45.3355,-95.4238,55,,126.1,,,,,,,,,,,,,,,,,,,,,,,Graze,Rest,Rest,Graze,Graze,Graze,Rest,Rest,Burn,Graze,Graze,,1
 1275,159,WEL_E_08,45.3326,-95.4253,55,,126.1,,,,,,,,,,,,,,,,,,,,,,,Graze,Rest,Rest,Graze,Graze,Graze,Rest,Rest,Burn,Graze,Graze,,1
-1276,160,5SI4-01,43.51397519,-95.85410326,56,Sunrise Prairie County Park,3.7,0,0,0,0,0,0,1,0,0,0,0,"","","","","","",UG,UG,UG,UG,UG,"","","","",Burn,Rest,Rest,"","","","",1,0
-1277,160,5SI4-02,43.51348374,-95.85421557,56,Sunrise Prairie County Park,3.7,0,0,0,0,0,0,1,0,0,0,0,"","","","","","",UG,UG,UG,UG,UG,"","","","",Burn,Rest,Rest,"","","","",1,0
-1278,160,5SI4-03,43.51432711,-95.85475214,56,Sunrise Prairie County Park,3.7,0,0,0,0,0,0,1,0,0,0,0,"","","","","","",UG,UG,UG,UG,UG,"","","","",Burn,Rest,Rest,"","","","",1,0
-1279,160,5SI4-04,43.514425,-95.85416663,56,Sunrise Prairie County Park,3.7,0,0,0,0,0,0,1,0,0,0,0,"","","","","","",UG,UG,UG,UG,UG,"","","","",Burn,Rest,Rest,"","","","",1,0
-1280,160,5SI4-05,43.51428837,-95.85323284,56,Sunrise Prairie County Park,3.7,0,0,0,0,0,0,1,0,0,0,0,"","","","","","",UG,UG,UG,UG,UG,"","","","",Burn,Rest,Rest,"","","","",1,0
+1276,160,5SI4-01,43.51397519,-95.85410326,56,Sunrise Prairie County Park,3.7,0,0,0,0,0,0,1,0,0,0,0,"","","","","","",UG,UG,UG,UG,UG,"","","","",Burn,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+1277,160,5SI4-02,43.51348374,-95.85421557,56,Sunrise Prairie County Park,3.7,0,0,0,0,0,0,1,0,0,0,0,"","","","","","",UG,UG,UG,UG,UG,"","","","",Burn,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+1278,160,5SI4-03,43.51432711,-95.85475214,56,Sunrise Prairie County Park,3.7,0,0,0,0,0,0,1,0,0,0,0,"","","","","","",UG,UG,UG,UG,UG,"","","","",Burn,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+1279,160,5SI4-04,43.514425,-95.85416663,56,Sunrise Prairie County Park,3.7,0,0,0,0,0,0,1,0,0,0,0,"","","","","","",UG,UG,UG,UG,UG,"","","","",Burn,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+1280,160,5SI4-05,43.51428837,-95.85323284,56,Sunrise Prairie County Park,3.7,0,0,0,0,0,0,1,0,0,0,0,"","","","","","",UG,UG,UG,UG,UG,"","","","",Burn,Rest,Rest,Rest,Rest,Rest,Rest,1,0
 1281,162,LM1_001,45.4015111408,-95.1636324223,57,,157,,,,,,,,,,,,,,,,,,,,,,,Graze,Graze,Graze,Graze,Graze,Combo,Rest,Rest,Burn,Burn,"",,1
 1282,162,LM1_004,45.3993097022,-95.151914569,57,,157,,,,,,,,,,,,,,,,,,,,,,,Graze,Graze,Graze,Graze,Graze,Combo,Rest,Rest,Burn,Burn,"",,1
 1283,162,LM1_21,45.39977,-95.16403,57,Leif Mountain Preserve,157,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Graze,Graze,Graze,Graze,Graze,Combo,Rest,Rest,Burn,Burn,"",0,0
@@ -1536,31 +1536,31 @@ Transect_I,MGMTUNIT_I,TransectNa,StartLat,StartLong,SITE_ID,tblSITE_Site,ManUnit
 1582,196,BR9_79,46.3502,-97.3634,64,,71.1,,,,,,,,,,,,,,,,,,,,,,,Graze,Rest,Graze,Rest,Combo,Graze,Graze,Graze,Graze,Rest,"",,1
 1583,196,BR9_85,46.35214,-97.3585,64,Brown Ranch,71.1,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Graze,Rest,Graze,Rest,Combo,Graze,Graze,Graze,Graze,Rest,"",0,0
 1584,196,BR9_95,46.35155,-97.3641,64,Brown Ranch,71.1,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Graze,Rest,Graze,Rest,Combo,Graze,Graze,Graze,Graze,Rest,"",0,0
-1585,197,5LE1-01,44.1965,-96.3212,65,Altona WMA,24.8,1,1,0,0,0,0,1,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","","","",1,0
-1586,197,5LE1-03,44.1944,-96.3209,65,Altona WMA,24.8,1,1,0,0,0,0,1,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","","","",1,0
-1587,197,5LE1-04,44.1951,-96.3184,65,Altona WMA,24.8,1,1,0,0,0,0,1,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","","","",1,0
-1588,197,5LE1-05,44.1925,-96.3214,65,Altona WMA,24.8,1,1,0,0,0,0,1,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","","","",1,0
-1589,197,5LE1-06,44.1928,-96.3187,65,Altona WMA,24.8,1,1,0,0,0,0,1,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","","","",1,0
-1590,197,5LE1-08,44.19421955,-96.31946981,65,Altona WMA,24.8,0,0,0,0,0,0,1,0,0,0,0,"","","","","","",UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","","","",1,0
+1585,197,5LE1-01,44.1965,-96.3212,65,Altona WMA,24.8,1,1,0,0,0,0,1,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+1586,197,5LE1-03,44.1944,-96.3209,65,Altona WMA,24.8,1,1,0,0,0,0,1,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+1587,197,5LE1-04,44.1951,-96.3184,65,Altona WMA,24.8,1,1,0,0,0,0,1,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+1588,197,5LE1-05,44.1925,-96.3214,65,Altona WMA,24.8,1,1,0,0,0,0,1,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+1589,197,5LE1-06,44.1928,-96.3187,65,Altona WMA,24.8,1,1,0,0,0,0,1,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+1590,197,5LE1-08,44.19421955,-96.31946981,65,Altona WMA,24.8,0,0,0,0,0,0,1,0,0,0,0,"","","","","","",UG,UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
 1591,198,5LE1-02,44.19490289,-96.32316996,65,Altona WMA,,0,0,0,0,0,0,1,0,0,0,0,"","","","","","",UG,UG,UG,UG,UG,,,,,,,,,,,,1,0
 1592,198,5LE1-07,44.19122681,-96.31985385,65,Altona WMA,,0,0,0,0,0,0,1,0,0,0,0,"","","","","","",UG,UG,UG,UG,UG,,,,,,,,,,,,1,0
 1593,198,5LE1-09,44.1951326,-96.31973595,65,Altona WMA,,0,0,0,0,0,0,1,0,0,0,0,"","","","","","",UG,UG,UG,UG,UG,,,,,,,,,,,,1,0
 1594,198,5LE1-10,44.19621236,-96.31946555,65,Altona WMA,,0,0,0,0,0,0,1,0,0,0,0,"","","","","","",UG,UG,UG,UG,UG,,,,,,,,,,,,1,0
 1595,198,5LE1-11,44.1968885,-96.31894279,65,Altona WMA,,0,0,0,0,0,0,1,0,0,0,0,"","","","","","",UG,UG,UG,UG,UG,,,,,,,,,,,,1,0
 1596,198,5LE1-12,44.19132342,-96.32155583,65,Altona WMA,,0,0,0,0,0,0,1,0,0,0,0,"","","","","","",UG,UG,UG,UG,UG,,,,,,,,,,,,1,0
-1597,199,1SI1-06,48.00308822,-96.30884692,66,Higginbotham WMA,55.4,0,1,1,0,0,0,0,0,1,0,0,"",WM,WM,WM,WM,WM,WM,WM,LG,LG,LG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,"","","","",2,1
-1598,199,1SI1-07,48.00071689,-96.30860868,66,Higginbotham WMA,55.4,0,1,1,0,0,0,0,0,1,0,0,"",WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,Burn,Rest,Rest,Rest,Rest,Rest,Rest,"","","","",2,1
-1599,199,1SI1-08,48.00123193,-96.30583274,66,Higginbotham WMA,55.4,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,"","","","",2,1
-1600,199,1SI1-09,47.99936229,-96.30428714,66,Higginbotham WMA,55.4,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,"","","","",2,1
-1601,199,1SI1-13,47.99993519,-96.30635059,66,Higginbotham WMA,55.4,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,NR,NR,NR,Burn,Rest,Rest,Rest,Rest,Rest,Rest,"","","","",2,1
-1602,200,1SI1-01,48.01262078,-96.31620029,66,Higginbotham WMA,50.7,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Rest,Rest,Burn,Rest,"","","","",2,1
-1603,200,1SI1-02,48.0106006,-96.31585452,66,Higginbotham WMA,50.7,0,1,1,0,0,0,0,0,0,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Rest,Rest,Burn,Rest,"","","","",1,0
-1604,200,1SI1-03,48.0085969,-96.31594204,66,Higginbotham WMA,50.7,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Rest,Rest,Burn,Rest,"","","","",2,1
-1605,200,1SI1-04,48.00740693,-96.31396402,66,Higginbotham WMA,50.7,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Rest,Rest,Burn,Rest,"","","","",2,1
-1606,200,1SI1-05,48.00704867,-96.31130468,66,Higginbotham WMA,50.7,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,NR,NR,NR,Rest,Rest,Rest,Rest,Rest,Burn,Rest,"","","","",2,1
-1607,200,1SI1-12,48.00694007,-96.31650744,66,Higginbotham WMA,50.7,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Rest,Rest,Burn,Rest,"","","","",2,1
-1608,201,1SI1-10,47.99450874,-96.29758206,66,Higginbotham WMA,24.5,0,1,1,0,0,0,0,0,1,0,0,"",WM,WM,WM,WM,WM,WM,WM,BP,BP,BP,Burn,Rest,Rest,Rest,Rest,Rest,Rest,"","","","",2,1
-1609,201,1SI1-11,47.99297352,-96.2954966,66,Higginbotham WMA,24.5,0,1,1,0,0,0,0,0,1,0,0,"",WM,WM,WM,WM,WM,WM,WM,BP,BP,BP,Burn,Rest,Rest,Rest,Rest,Rest,Rest,"","","","",2,1
+1597,199,1SI1-06,48.00308822,-96.30884692,66,Higginbotham WMA,55.4,0,1,1,0,0,0,0,0,1,0,0,"",WM,WM,WM,WM,WM,WM,WM,LG,LG,LG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+1598,199,1SI1-07,48.00071689,-96.30860868,66,Higginbotham WMA,55.4,0,1,1,0,0,0,0,0,1,0,0,"",WM,WM,WM,WM,WM,WM,WM,WM,WM,WM,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+1599,199,1SI1-08,48.00123193,-96.30583274,66,Higginbotham WMA,55.4,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+1600,199,1SI1-09,47.99936229,-96.30428714,66,Higginbotham WMA,55.4,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+1601,199,1SI1-13,47.99993519,-96.30635059,66,Higginbotham WMA,55.4,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,NR,NR,NR,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+1602,200,1SI1-01,48.01262078,-96.31620029,66,Higginbotham WMA,50.7,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,2,1
+1603,200,1SI1-02,48.0106006,-96.31585452,66,Higginbotham WMA,50.7,0,1,1,0,0,0,0,0,0,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,1,0
+1604,200,1SI1-03,48.0085969,-96.31594204,66,Higginbotham WMA,50.7,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,2,1
+1605,200,1SI1-04,48.00740693,-96.31396402,66,Higginbotham WMA,50.7,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,2,1
+1606,200,1SI1-05,48.00704867,-96.31130468,66,Higginbotham WMA,50.7,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,NR,NR,NR,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,2,1
+1607,200,1SI1-12,48.00694007,-96.31650744,66,Higginbotham WMA,50.7,0,1,1,0,0,0,0,0,1,0,0,"",LG,LG,LG,LG,LG,LG,LG,LG,LG,LG,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Rest,2,1
+1608,201,1SI1-10,47.99450874,-96.29758206,66,Higginbotham WMA,24.5,0,1,1,0,0,0,0,0,1,0,0,"",WM,WM,WM,WM,WM,WM,WM,BP,BP,BP,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
+1609,201,1SI1-11,47.99297352,-96.2954966,66,Higginbotham WMA,24.5,0,1,1,0,0,0,0,0,1,0,0,"",WM,WM,WM,WM,WM,WM,WM,BP,BP,BP,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,2,1
 1610,202,SOB_12,46.37711,-97.3555,67,Sheyenne National Grasslands,300,1,0,0,0,0,0,0,0,0,0,0,WM,WM,WM,WM,WM,WM,WM,WM,"",WM,WM,"",Graze,Graze,Graze,Graze,Graze,Graze,"","","","",0,0
 1611,202,SOB_13,46.37707,-97.3477,67,Sheyenne National Grasslands,300,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,"",Graze,Graze,Graze,Graze,Graze,Graze,"","","","",0,0
 1612,202,SOB_16,46.37319,-97.3629,67,Sheyenne National Grasslands,300,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,"",Graze,Graze,Graze,Graze,Graze,Graze,"","","","",0,0
@@ -1625,9 +1625,9 @@ Transect_I,MGMTUNIT_I,TransectNa,StartLat,StartLong,SITE_ID,tblSITE_Site,ManUnit
 1671,204,WDB_6,46.50084,-97.2291,67,Sheyenne National Grasslands,520,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Graze,"","","","","","","","","","",0,0
 1672,204,WDB_7,46.50233,-97.2365,67,Sheyenne National Grasslands,520,1,0,0,0,0,0,0,0,0,0,0,LG,LG,LG,LG,LG,LG,LG,LG,"",LG,LG,Graze,"","","","","","","","","","",0,0
 1673,204,WDB_8,46.50509,-97.2187,67,Sheyenne National Grasslands,520,1,0,0,0,0,0,0,0,0,0,0,UG,UG,UG,UG,UG,UG,UG,UG,"",UG,UG,Graze,"","","","","","","","","","",0,0
-1674,146,5SI2-07,44.268206,-95.748416,48,Garvin County Park,13.6,0,0,0,0,0,0,0,1,0,0,0,"","","","","","","",LG,LG,LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","","",1,0
-1675,150,3SI3-05,45.649204,-95.693695,51,New Prairie WPA,15.2,0,0,0,0,0,0,0,1,0,0,0,"","","","","","","",UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",1,0
-1676,150,3SI3-R8839,45.648569,-95.695326,51,,15.2,,,,,,,,,,,,,,,,,,,,,,,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",,1
+1674,146,5SI2-07,44.268206,-95.748416,48,Garvin County Park,13.6,0,0,0,0,0,0,0,1,0,0,0,"","","","","","","",LG,LG,LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+1675,150,3SI3-05,45.649204,-95.693695,51,New Prairie WPA,15.2,0,0,0,0,0,0,0,1,0,0,0,"","","","","","","",UG,UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+1676,150,3SI3-R8839,45.648569,-95.695326,51,,15.2,,,,,,,,,,,,,,,,,,,,,,,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,,1
 1677,83,2LE6-24,47.192906,-96.363694,22,Twin Valley Prairie SNA,40.4,0,0,0,0,0,0,0,1,0,0,1,"","","","","","","",LG,LG,LG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,2,1
 1678,83,2LE6-25,47.191864,-96.363167,22,Twin Valley Prairie SNA,40.4,0,0,0,0,0,0,0,1,0,0,1,"","","","","","","",LG,LG,LG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,2,1
 1679,83,2LE6-26,47.192088,-96.362036,22,Twin Valley Prairie SNA,40.4,0,0,0,0,0,0,0,1,0,0,1,"","","","","","","",LG,LG,LG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,2,1
@@ -1909,30 +1909,30 @@ Transect_I,MGMTUNIT_I,TransectNa,StartLat,StartLong,SITE_ID,tblSITE_Site,ManUnit
 1955,245,AL_Unit4_06,44.886744,-96.531383,74,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1
 1956,245,AL_Unit4_07,44.888303,-96.53208,74,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1
 1957,245,AL_Unit4_08,44.88597,-96.531959,74,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1
-1958,201,1SI1-14,47.994399,-96.296676,66,Higginbotham WMA,24.5,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",BP,BP,BP,Burn,Rest,Rest,Rest,Rest,Rest,Rest,"","","","",1,0
-1959,201,1SI1-15,47.992715,-96.294512,66,Higginbotham WMA,24.5,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",LG,LG,LG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,"","","","",1,0
-1960,201,1SI1-16R,47.993927,-96.296568,66,Higginbotham WMA,24.5,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",WM,WM,WM,Burn,Rest,Rest,Rest,Rest,Rest,Rest,"","","","",1,0
-1961,64,2SI4-04,47.80026,-96.271314,13,Lake Pleasant 22 NPB,12.9,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",LG,LG,LG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","","",1,0
-1962,64,2SI4-05,47.800727,-96.269497,13,Lake Pleasant 22 NPB,12.9,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",LG,LG,LG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","","",1,0
-1963,64,2SI4-06,47.800122,-96.269477,13,Lake Pleasant 22 NPB,12.9,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",LG,LG,LG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","","",1,0
-1964,64,2SI4-07,47.799884,-96.268815,13,Lake Pleasant 22 NPB,12.9,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",LG,LG,LG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","","",1,0
-1965,62,2SI4-08,47.800481,-96.267514,13,Lake Pleasant 22 NPB,9.9,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,"","","",1,0
-1966,62,2SI4-09,47.80147,-96.267763,13,Lake Pleasant 22 NPB,9.9,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,"","","",1,0
-1967,62,2SI4-10,47.801973,-96.267895,13,Lake Pleasant 22 NPB,9.9,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,"","","",1,0
-1968,62,2SI4-11,47.801701,-96.268508,13,Lake Pleasant 22 NPB,9.9,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,"","","",1,0
-1969,88,4SI2-03,44.66862,-95.335991,25,Boiling Springs NPB,27.1,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",LG,LG,LG,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"","",1,0
-1970,88,4SI2-06,44.671751,-95.338574,25,Boiling Springs NPB,27.1,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"","",1,0
-1971,88,4SI2-07,44.670242,-95.337159,25,Boiling Springs NPB,27.1,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",LG,LG,LG,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"","",1,0
+1958,201,1SI1-14,47.994399,-96.296676,66,Higginbotham WMA,24.5,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",BP,BP,BP,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+1959,201,1SI1-15,47.992715,-96.294512,66,Higginbotham WMA,24.5,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",LG,LG,LG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+1960,201,1SI1-16R,47.993927,-96.296568,66,Higginbotham WMA,24.5,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",WM,WM,WM,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+1961,64,2SI4-04,47.80026,-96.271314,13,Lake Pleasant 22 NPB,12.9,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",LG,LG,LG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",Burn,Rest,1,0
+1962,64,2SI4-05,47.800727,-96.269497,13,Lake Pleasant 22 NPB,12.9,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",LG,LG,LG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",Burn,Rest,1,0
+1963,64,2SI4-06,47.800122,-96.269477,13,Lake Pleasant 22 NPB,12.9,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",LG,LG,LG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",Burn,Rest,1,0
+1964,64,2SI4-07,47.799884,-96.268815,13,Lake Pleasant 22 NPB,12.9,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",LG,LG,LG,Burn,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"",Burn,Rest,1,0
+1965,62,2SI4-08,47.800481,-96.267514,13,Lake Pleasant 22 NPB,9.9,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,"",Burn,Rest,1,0
+1966,62,2SI4-09,47.80147,-96.267763,13,Lake Pleasant 22 NPB,9.9,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,"",Burn,Rest,1,0
+1967,62,2SI4-10,47.801973,-96.267895,13,Lake Pleasant 22 NPB,9.9,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,"",Burn,Rest,1,0
+1968,62,2SI4-11,47.801701,-96.268508,13,Lake Pleasant 22 NPB,9.9,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",LG,LG,LG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,"",Burn,Rest,1,0
+1969,88,4SI2-03,44.66862,-95.335991,25,Boiling Springs NPB,27.1,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",LG,LG,LG,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,1,0
+1970,88,4SI2-06,44.671751,-95.338574,25,Boiling Springs NPB,27.1,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",UG,UG,UG,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,1,0
+1971,88,4SI2-07,44.670242,-95.337159,25,Boiling Springs NPB,27.1,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",LG,LG,LG,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,1,0
 1972,161,4LE1-24,45.198542,-96.255697,9,Plover Prairie Preserve,157.7,0,0,0,0,0,0,0,0,1,1,1,"","","","","","","","",LG,LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,3,1
 1973,161,4LE1-25,45.199096,-96.254577,9,Plover Prairie Preserve,157.7,0,0,0,0,0,0,0,0,1,1,1,"","","","","","","","",LG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,3,1
 1974,161,4LE1-26,45.199956,-96.257385,9,Plover Prairie Preserve,157.7,0,0,0,0,0,0,0,0,1,1,1,"","","","","","","","",UG,LG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,3,1
 1975,161,4LE1-27,45.203325,-96.253857,9,Plover Prairie Preserve,157.7,0,0,0,0,0,0,0,0,1,1,1,"","","","","","","","",WM,WM,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,3,1
 1976,161,4LE1-28,45.203692,-96.258524,9,Plover Prairie Preserve,157.7,0,0,0,0,0,0,0,0,1,1,1,"","","","","","","","",LG,UG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,3,1
 1977,161,4LE1-29,45.203439,-96.260058,9,Plover Prairie Preserve,157.7,0,0,0,0,0,0,0,0,1,1,1,"","","","","","","","",UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,3,1
-1978,89,4LE4-18,45.325539,-96.373358,26,,177,,,,,,,,,,,,,,,,,,,,,,,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",,1
-1979,89,4LE4-19,45.325228,-96.369975,26,Schellberg NPB,177,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",1,0
-1980,89,4LE4-20,45.324962,-96.371763,26,Schellberg NPB,177,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",LG,LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,"","",1,0
-1981,86,3LE2b-02,45.521591,-95.458498,23,Vegoe NPB,49.4,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,"","",1,0
+1978,89,4LE4-18,45.325539,-96.373358,26,,177,,,,,,,,,,,,,,,,,,,,,,,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,,1
+1979,89,4LE4-19,45.325228,-96.369975,26,Schellberg NPB,177,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",UG,UG,UG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+1980,89,4LE4-20,45.324962,-96.371763,26,Schellberg NPB,177,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",LG,LG,LG,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,Rest,1,0
+1981,86,3LE2b-02,45.521591,-95.458498,23,Vegoe NPB,49.4,0,0,0,0,0,0,0,0,1,0,0,"","","","","","","","",UG,UG,UG,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,1,0
 1982,246,MW_Unit1_01,43.553177,-96.968345,75,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1
 1983,246,MW_Unit1_02,43.551685,-96.968993,75,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1
 1984,246,MW_Unit1_03,43.553316,-96.969799,75,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1
@@ -2095,19 +2095,19 @@ Transect_I,MGMTUNIT_I,TransectNa,StartLat,StartLong,SITE_ID,tblSITE_Site,ManUnit
 2141,234,3SI4-08,45.671477,-95.506074,63,Strandness Prairie,17.2,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",UG,UG,"","","",Burn,Rest,Rest,Burn,Rest,Rest,Rest,"",1,0
 2142,189,3SI4-09,45.670338,-95.505856,63,Strandness Prairie,20.7,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",UG,UG,"","","",Burn,Rest,Rest,Rest,Rest,Burn,Rest,"",1,0
 2143,189,3SI4-10,45.669472,-95.506332,63,Strandness Prairie,20.7,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",UG,UG,"","","",Burn,Rest,Rest,Rest,Rest,Burn,Rest,"",1,0
-2144,95,4SI4-01,44.196581,-94.531492,30,Joseph A. Tauer Prairie SNA,5.5,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,"",1,0
-2145,94,4SI4-09,44.200698,-94.531752,30,Joseph A. Tauer Prairie SNA,12.7,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",UG,UG,Rest,Rest,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Rest,"",1,0
-2146,94,4SI4-10,44.200349,-94.530885,30,Joseph A. Tauer Prairie SNA,12.7,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",LG,LG,Rest,Rest,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Rest,"",1,0
-2147,94,4SI4-11,44.201545,-94.531642,30,Joseph A. Tauer Prairie SNA,12.7,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",LG,LG,Rest,Rest,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Rest,"",1,0
-2148,94,4SI4-12,44.201856,-94.532377,30,Joseph A. Tauer Prairie SNA,12.7,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",UG,UG,Rest,Rest,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Rest,"",1,0
-2149,95,4SI4-13,44.198795,-94.531946,30,Joseph A. Tauer Prairie SNA,5.5,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,"",1,0
-2150,95,4SI4-14,44.19949,-94.532444,30,Joseph A. Tauer Prairie SNA,5.5,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,"",1,0
-2151,95,4SI4-15,44.197112,-94.529938,30,Joseph A. Tauer Prairie SNA,5.5,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,"",1,0
-2152,92,4SI5-06,44.126503,-94.3496,28,Butternut Valley Prairie SNA,6.96,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",UG,UG,"",Rest,Rest,Rest,Rest,Rest,Burn,Burn,Rest,Rest,"",1,0
-2153,92,4SI5-07,44.125651,-94.350823,28,Butternut Valley Prairie SNA,6.96,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",UG,UG,"",Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Burn,"",1,0
-2154,92,4SI5-08,44.125544,-94.34929,28,Butternut Valley Prairie SNA,6.96,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",LG,LG,"",Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,"",1,0
-2155,92,4SI5-09,44.125014,-94.351087,28,Butternut Valley Prairie SNA,6.96,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",LG,LG,"",Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Burn,"",1,0
-2156,235,4SI5-10,44.124609,-94.351391,28,Butternut Valley Prairie SNA,5.55,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",LG,LG,"",Rest,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Burn,"",1,0
+2144,95,4SI4-01,44.196581,-94.531492,30,Joseph A. Tauer Prairie SNA,5.5,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,1,0
+2145,94,4SI4-09,44.200698,-94.531752,30,Joseph A. Tauer Prairie SNA,12.7,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",UG,UG,Rest,Rest,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Rest,Burn,1,0
+2146,94,4SI4-10,44.200349,-94.530885,30,Joseph A. Tauer Prairie SNA,12.7,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",LG,LG,Rest,Rest,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Rest,Burn,1,0
+2147,94,4SI4-11,44.201545,-94.531642,30,Joseph A. Tauer Prairie SNA,12.7,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",LG,LG,Rest,Rest,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Rest,Burn,1,0
+2148,94,4SI4-12,44.201856,-94.532377,30,Joseph A. Tauer Prairie SNA,12.7,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",UG,UG,Rest,Rest,Rest,Rest,Burn,Burn,Rest,Rest,Rest,Rest,Burn,1,0
+2149,95,4SI4-13,44.198795,-94.531946,30,Joseph A. Tauer Prairie SNA,5.5,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,1,0
+2150,95,4SI4-14,44.19949,-94.532444,30,Joseph A. Tauer Prairie SNA,5.5,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,1,0
+2151,95,4SI4-15,44.197112,-94.529938,30,Joseph A. Tauer Prairie SNA,5.5,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",UG,UG,Rest,Rest,Burn,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,1,0
+2152,92,4SI5-06,44.126503,-94.3496,28,Butternut Valley Prairie SNA,6.96,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",UG,UG,"",Rest,Rest,Rest,Rest,Rest,Burn,Burn,Rest,Rest,Rest,1,0
+2153,92,4SI5-07,44.125651,-94.350823,28,Butternut Valley Prairie SNA,6.96,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",UG,UG,"",Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Burn,Rest,1,0
+2154,92,4SI5-08,44.125544,-94.34929,28,Butternut Valley Prairie SNA,6.96,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",LG,LG,"",Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Rest,Rest,1,0
+2155,92,4SI5-09,44.125014,-94.351087,28,Butternut Valley Prairie SNA,6.96,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",LG,LG,"",Rest,Rest,Rest,Rest,Rest,Burn,Rest,Rest,Burn,Rest,1,0
+2156,235,4SI5-10,44.124609,-94.351391,28,Butternut Valley Prairie SNA,5.55,0,0,0,0,0,0,0,0,0,1,0,"","","","","","","","","",LG,LG,"",Rest,Rest,Rest,Rest,Rest,Rest,Burn,Rest,Burn,Rest,1,0
 2214,173,RM_2_12,45.38372506,-94.83908659,59,,126,,,,,,,,,,,,,,,,,,,,,,,"","","","","","",Rest,Rest,Rest,Burn,"",,1
 2215,173,RM_2_11,45.37806004,-94.84355429,59,,126,,,,,,,,,,,,,,,,,,,,,,,"","","","","","",Rest,Rest,Rest,Burn,"",,1
 2216,173,RM_2_08,45.3783057,-94.84463261,59,,126,,,,,,,,,,,,,,,,,,,,,,,"","","","","","",Rest,Rest,Rest,Burn,"",,1

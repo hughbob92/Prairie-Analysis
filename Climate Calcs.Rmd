@@ -1,0 +1,534 @@
+---
+title: "Climate Variable Calcs"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# install daymetr package
+# https://cran.r-project.org/web/packages/daymetr/vignettes/daymetr-vignette.html
+# install.packages("daymetr")
+library(daymetr)
+library(data.table)
+library(stringr)
+library(ClimInd)
+library(climdex.pcic)
+library(beepr)
+
+#365, 399, 400, 425, 426, 427
+#Look at US phenology network for extenced spring
+
+#Load in csv of transect locations
+tran.loc = as.data.table(read.csv("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Transect_weather_v2.csv"))
+
+# code is ....partially run
+#download_daymet_batch(file_location = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Transect_weather_v3.csv", start = 1980, end = 2018, internal = FALSE, path = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Daymet_2/")
+
+
+
+#modify each transect file into one climdex formatted data file per transect
+
+#run climdex input.raw
+
+#check extended spring indices
+
+#use Climind for a hanful of indices...makes sure gsl
+
+#Create list of weather data files by transect
+daymet.raw = list.files("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Daymet_2",full.names = T) 
+daymet.raw = daymet.raw[!daymet.raw %in% "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Daymet_2/Icon\r"]
+
+```
+
+#Run all annual indices based on typical year definition. Create a loop to load and modify transect weather data csv then calculate each index and output files into correct bin
+
+Annual indices to run:
+WSDI
+CDD
+CWD
+SDII
+GSL
+
+Monthly indices to run:
+Txx
+TX90P
+Rx5day
+Rx1day
+
+
+#Climdex indices to run:
+
+First run everything with a normal time step
+```{r Normal-climdex}
+
+#Loop CLimdex index calc
+#I'm also curious to scrape elevation data for these transects, go ahead and create a data table within this loop
+
+gsl = c()
+cdd = c()
+wsdi = c()
+cwd = c()
+sdii = c()
+
+tx90p = c()
+rx5day = c()
+rx1day = c()
+txx = c()
+
+id = c()
+
+elevation.dat = matrix(data = NA, ncol = 2)
+
+for (i  in 1:length(daymet.raw)) {
+  tran.weather.dt = as.data.table(read.csv(daymet.raw[[i]],header = T, skip = 7))
+  #Properly convert date for climdex input
+  tmax.dates = as.PCICt(do.call(paste,tran.weather.dt[,.(year,yday)]),format = "%Y %j", cal = "gregorian")
+  tmin.dates = tmax.dates
+  prec.dates = tmax.dates
+  
+  #Create climdexInput object
+  ci = climdexInput.raw(tmax = tran.weather.dt$tmax..deg.c.,tmin = tran.weather.dt$tmin..deg.c.,prec = tran.weather.dt$prcp..mm.day., 
+                        tmax.dates = tmax.dates, tmin.dates = tmin.dates, prec.dates = prec.dates, 
+                        base.range = c(tran.weather.dt[,min(year)],tran.weather.dt[,max(year)]),n = 5, northern.hemisphere = T, 
+                        temp.qtiles =  c(0.1, 0.9), prec.qtiles = c(0.95, 0.99), max.missing.days = c(annual = 5, monthly = 3),
+                        min.base.data.fraction.present = 0.1)
+  
+  TransectID = as.numeric(str_sub(basename(daymet.raw[[i]]),end = -15))
+  
+  #Grab elevation data
+  elevation = as.numeric(str_sub(str_sub(as.character(read.csv(daymet.raw[[i]],header = T, skip = 2,nrows = 1)[1,1]),start = 12),end = -8))
+  
+  elevation.dat = rbind(elevation.dat, c(TransectID, elevation))
+  
+  #Yearly Climdex Indices
+  gsl.dat = climdex.gsl(ci)
+  gsl.dat = c(TransectID,gsl.dat)
+  gsl = c(gsl, gsl.dat)
+  
+  cdd.dat = climdex.cdd(ci)
+  cdd.dat = c(TransectID,cdd.dat)
+  cdd = c(cdd, cdd.dat)
+  
+  wsdi.dat = climdex.wsdi(ci)
+  wsdi.dat = c(TransectID,wsdi.dat)
+  wsdi = c(wsdi, wsdi.dat)
+  
+  cwd.dat = climdex.cwd(ci)
+  cwd.dat = c(TransectID,cwd.dat)
+  cwd = c(cwd, cwd.dat)
+  
+  sdii.dat = climdex.sdii(ci)
+  sdii.dat = c(TransectID,sdii.dat)
+  sdii = c(sdii, sdii.dat)
+
+  id = c(id, TransectID)
+  
+  #Monthly Climdex Indices
+  txx.dat = climdex.txx(ci, freq = "monthly")
+  txx = c(txx, txx.dat)
+  
+  rx1day.dat = climdex.rx1day(ci, freq = "monthly")
+  rx1day = c(rx1day, rx1day.dat)
+  
+  rx5day.dat = climdex.rx5day(ci, freq = "monthly")
+  rx5day = c(rx5day, rx5day.dat)
+  
+  tx90p.dat = climdex.tx90p(ci, freq = "monthly")
+  tx90p = c(tx90p, tx90p.dat)
+
+}
+
+beep(sound = 2)
+  
+
+gsl = matrix(gsl, ncol = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]) + 1, byrow = T)
+cdd = matrix(cdd, ncol = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]) + 1, byrow = T)
+cwd = matrix(cwd, ncol = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]) + 1, byrow = T)
+sdii = matrix(sdii, ncol = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]) + 1, byrow = T)
+wsdi = matrix(wsdi, ncol = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]) + 1, byrow = T)
+
+colnames(gsl) = c("TransectID",tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)])
+colnames(wsdi) = c("TransectID",tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)])
+colnames(cdd) = c("TransectID",tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)])
+colnames(cwd) = c("TransectID",tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)])
+colnames(sdii) = c("TransectID",tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)])
+
+#Save output csv
+write.csv(x = gsl, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Yearly/gsl.csv")
+write.csv(x = cdd, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Yearly/cdd.csv")
+write.csv(x = cwd, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Yearly/cwd.csv")
+write.csv(x = sdii, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Yearly/sdii.csv")
+write.csv(x = wsdi, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Yearly/wsdi.csv")
+
+#Now organize the monthly indices
+txx.1 = as.data.table(matrix(txx, ncol = 12, byrow = F))
+txx.1[,Year:= rep(c(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]),times = length(id))]
+txx.1[,TransectID:= rep(id,each = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]))]
+colnames(txx.1) = c('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Year','TransectID')
+
+tx90p.1 = as.data.table(matrix(tx90p, ncol = 12, byrow = F))
+tx90p.1[,Year:= rep(c(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]),times = length(id))]
+tx90p.1[,TransectID:= rep(id,each = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]))]
+colnames(tx90p.1) = c('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Year','TransectID')
+
+rx1day.1 = as.data.table(matrix(rx1day, ncol = 12, byrow = F))
+rx1day.1[,Year:= rep(c(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]),times = length(id))]
+rx1day.1[,TransectID:= rep(id,each = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]))]
+colnames(rx1day.1) = c('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Year','TransectID')
+
+rx5day.1 = as.data.table(matrix(rx5day, ncol = 12, byrow = F))
+rx5day.1[,Year:= rep(c(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]),times = length(id))]
+rx5day.1[,TransectID:= rep(id,each = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]))]
+colnames(rx5day.1) = c('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Year','TransectID')
+
+#Save output csv
+write.csv(x = txx.1, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Monthly/txx.csv")
+write.csv(x = tx90p.1, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Monthly/tx90p.csv")
+write.csv(x = rx5day.1, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Monthly/rx5day.csv")
+write.csv(x = rx1day.1, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Monthly/rx1day.csv")
+
+```
+
+Now run annual indices with modified dates. There are no monitoring actions before July 1, lets use this as the cut-off day. Year day = 182
+
+```{r modified-climdex}
+
+#Loop CLimdex index calc
+#I'm also curious to scrape elevation data for these transects, go ahead and create a data table within this loop
+
+gsl.mod = c()
+cdd.mod = c()
+wsdi.mod = c()
+cwd.mod = c()
+sdii.mod = c()
+
+id = c()
+
+
+for (i in 1:length(daymet.raw)) {
+  tran.weather.dt = as.data.table(read.csv(daymet.raw[[i]],header = T, skip = 7))
+  
+  #Modify the data such they year effectively ends after June
+  tran.weather.dt[yday>181,year:= year-1]
+  
+  #Properly convert date for climdex input
+  tmax.dates = as.PCICt(do.call(paste,tran.weather.dt[,.(year,yday)]),format = "%Y %j", cal = "gregorian")
+  tmin.dates = tmax.dates
+  prec.dates = tmax.dates
+  
+  #Create climdexInput object
+  ci = climdexInput.raw(tmax = tran.weather.dt$tmax..deg.c.,tmin = tran.weather.dt$tmin..deg.c.,prec = tran.weather.dt$prcp..mm.day., 
+                        tmax.dates = tmax.dates, tmin.dates = tmin.dates, prec.dates = prec.dates, 
+                        base.range = c(tran.weather.dt[,min(year)],tran.weather.dt[,max(year)]),n = 5, northern.hemisphere = T, 
+                        temp.qtiles =  c(0.1, 0.9), prec.qtiles = c(0.95, 0.99), max.missing.days = c(annual = 200, monthly = 3),
+                        min.base.data.fraction.present = 0.1)
+  
+  TransectID = as.numeric(str_sub(basename(daymet.raw[[i]]),end = -15))
+  
+  #Yearly Climdex Indices
+  gsl.dat = climdex.gsl(ci)
+  gsl.dat = c(TransectID,gsl.dat)
+  gsl.mod = c(gsl.mod, gsl.dat)
+  
+  cdd.dat = climdex.cdd(ci)
+  cdd.dat = c(TransectID,cdd.dat)
+  cdd.mod = c(cdd.mod, cdd.dat)
+  
+  wsdi.dat = climdex.wsdi(ci)
+  wsdi.dat = c(TransectID,wsdi.dat)
+  wsdi.mod = c(wsdi.mod, wsdi.dat)
+  
+  cwd.dat = climdex.cwd(ci)
+  cwd.dat = c(TransectID,cwd.dat)
+  cwd.mod = c(cwd.mod, cwd.dat)
+  
+  sdii.dat = climdex.sdii(ci)
+  sdii.dat = c(TransectID,sdii.dat)
+  sdii.mod = c(sdii.mod, sdii.dat)
+
+  id = c(id, TransectID)
+
+}
+
+beep(sound=2)
+
+gsl.mod.1 = matrix(gsl.mod, ncol = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]) + 1, byrow = T)
+cdd.mod.1 = matrix(cdd.mod, ncol = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]) + 1, byrow = T)
+cwd.mod.1 = matrix(cwd.mod, ncol = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]) + 1, byrow = T)
+sdii.mod.1 = matrix(sdii.mod, ncol = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]) + 1, byrow = T)
+wsdi.mod.1 = matrix(wsdi.mod, ncol = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]) + 1, byrow = T)
+
+colnames(gsl.mod.1) = c("TransectID",tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)])
+colnames(wsdi.mod.1) = c("TransectID",tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)])
+colnames(cdd.mod.1) = c("TransectID",tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)])
+colnames(cwd.mod.1) = c("TransectID",tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)])
+colnames(sdii.mod.1) = c("TransectID",tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)])
+
+#Save output csv
+write.csv(x = gsl.mod.1, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Yearly/gsl.mod.csv")
+write.csv(x = cdd.mod.1, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Yearly/cdd.mod.csv")
+write.csv(x = cwd.mod.1, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Yearly/cwd.mod.csv")
+write.csv(x = sdii.mod.1, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Yearly/sdii.mod.csv")
+write.csv(x = wsdi.mod.1, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Yearly/wsdi.mod.csv")
+
+
+
+```
+
+#Now run the extra indices from ClimInd
+Adding a few new indices to consider:
+
+pci - Index to evaluate precipitation heterogeneity at a monthly scale. Values <10 (uniform monthly rainfall distribution); values 11-15 (moderate concentration of precipitation); values 16-20 (irregular distribution); and >20 ((high precipitation concentration)
+
+spei - 1, 3, 12 month
+
+spi - 1, 3, 12
+
+
+
+```{r Normal-climInd_SPEI}
+
+#ClimInd uses slightly different inputs
+#Evaluate structure of example data set 
+#summary(data(data("data_all"))) #All of the data vectors use the dates as the name
+
+
+d95p = data.frame(Jan = 1,Feb = 1,Mar =1, Apr=1,May=1,Jun=1,Jul=1,Aug=1,Sep=1,Oct=1,Nov=1,Dec=1,Year = 1,TransectID=NA) #make this monthly, Days with precipitation > 95p
+ldp = data.frame(Jan = 1,Feb = 1,Mar =1, Apr=1,May=1,Jun=1,Jul=1,Aug=1,Sep=1,Oct=1,Nov=1,Dec=1,Year = 1,TransectID=NA) #Longest dry period, could make this monthly but would be missing dry period which span different months
+lwp = data.frame(Jan = 1,Feb = 1,Mar =1, Apr=1,May=1,Jun=1,Jul=1,Aug=1,Sep=1,Oct=1,Nov=1,Dec=1,Year = 1,TransectID=NA) #longest wet period
+ogs6 = c() #onset of growing season 6 days, matches the other gsl index
+pci = c()
+
+spi1 =  data.frame(Jan = 1,Feb = 1,Mar =1, Apr=1,May=1,Jun=1,Jul=1,Aug=1,Sep=1,Oct=1,Nov=1,Dec=1,Year = 1,TransectID=NA)
+spi3 = data.frame(Jan = 1,Feb = 1,Mar =1, Apr=1,May=1,Jun=1,Jul=1,Aug=1,Sep=1,Oct=1,Nov=1,Dec=1,Year = 1,TransectID=NA)
+spi6 = data.frame(Jan = 1,Feb = 1,Mar =1, Apr=1,May=1,Jun=1,Jul=1,Aug=1,Sep=1,Oct=1,Nov=1,Dec=1,Year = 1,TransectID=NA)
+spi12 = data.frame(Jan = 1,Feb = 1,Mar =1, Apr=1,May=1,Jun=1,Jul=1,Aug=1,Sep=1,Oct=1,Nov=1,Dec=1,Year = 1,TransectID=NA)
+
+id = c()
+
+for (i in 1:length(daymet.raw)) {
+
+
+tran.weather.dt = as.data.table(read.csv(daymet.raw[[i]],header = T, skip = 7))
+
+rr = tran.weather.dt$prcp..mm.day.
+tg = apply(tran.weather.dt[,.(tmax..deg.c.,tmin..deg.c.)],MARGIN = 1, FUN = mean ) #Daily mean
+tn = tran.weather.dt$tmin..deg.c.
+tx = tran.weather.dt$tmin..deg.c.
+radiaton_w = tran.weather.dt$srad..W.m.2. #shortwave radiation
+vapour = tran.weather.dt$vp..Pa. #Water vapor pressure in pascals. Daily average partial pressure of water vapor.
+
+#Convert dates and format for ClimInd
+tmax.dates = as.PCICt(do.call(paste,tran.weather.dt[,.(year,yday)]),format = "%Y %j", cal = "gregorian")
+dates  =  noquote(format(tmax.dates,"%m/%d/%y"))
+
+names(rr) = dates
+names(tg) = dates
+names(tn) = dates
+names(tx) = dates
+names(radiaton_w) = dates
+names(vapour) = dates
+
+TransectID = as.numeric(str_sub(basename(daymet.raw[[i]]),end = -15))
+
+id = c(id, TransectID)
+
+#Now loop through indices
+d95p.dat = d95p(rr, time.scale = 'month')
+d95p.dat = cbind(d95p.dat,Year=as.numeric(row.names(d95p.dat)))
+d95p.dat = cbind(d95p.dat, TransectID = rep(TransectID, times = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)])))
+d95p = rbind(d95p, d95p.dat)
+
+ldp.dat = ldp(rr, time.scale = 'month')
+ldp.dat = cbind(ldp.dat,Year=as.numeric(row.names(ldp.dat)))
+ldp.dat = cbind(ldp.dat, TransectID = rep(TransectID, times = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)])))
+ldp = rbind(ldp, ldp.dat)
+
+lwp.dat = lwp(rr, time.scale = 'month')
+lwp.dat = cbind(lwp.dat,Year=as.numeric(row.names(lwp.dat)))
+lwp.dat = cbind(lwp.dat, TransectID = rep(TransectID, times = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)])))
+lwp = rbind(lwp, lwp.dat)
+
+spi1.dat = spi1(rr)
+spi1.dat = cbind(spi1.dat,Year=as.numeric(row.names(spi1.dat)))
+spi1.dat = cbind(spi1.dat, TransectID = rep(TransectID, times = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)])))
+spi1 = rbind(spi1, spi1.dat)
+
+spi3.dat = spi3(rr)
+spi3.dat = cbind(spi3.dat,Year=as.numeric(row.names(spi3.dat)))
+spi3.dat = cbind(spi3.dat, TransectID = rep(TransectID, times = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)])))
+spi3 = rbind(spi3, spi3.dat)
+
+spi6.dat = spi6(rr)
+spi6.dat = cbind(spi6.dat,Year=as.numeric(row.names(spi6.dat)))
+spi6.dat = cbind(spi6.dat, TransectID = rep(TransectID, times = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)])))
+spi6 = rbind(spi6, spi6.dat)
+
+spi12.dat = spi12(rr)
+spi12.dat = cbind(spi12.dat,Year=as.numeric(row.names(spi12.dat)))
+spi12.dat = cbind(spi12.dat, TransectID = rep(TransectID, times = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)])))
+spi12 = rbind(spi12, spi12.dat)
+
+ogs6.dat = ogs6(tg)
+ogs6.dat = c(TransectID,ogs6.dat)
+ogs6 = c(ogs6, ogs6.dat)
+
+pci.dat = pci(rr)
+pci.dat = c(TransectID,pci.dat)
+pci = c(pci, pci.dat)
+
+}
+beep(sound=2)
+
+#Modify yearly index outputs and save as csv
+ogs6.1 = matrix(ogs6, ncol = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]) + 1, byrow = T)
+pci.1 = matrix(pci, ncol = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]) + 1, byrow = T)
+
+colnames(ogs6.1) = c("TransectID",tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)])
+colnames(pci.1) = c("TransectID",tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)])
+
+#Save output csv
+write.csv(x = ogs6.1, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Yearly/ogs6.csv")
+write.csv(x = pci.1, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Yearly/pci.csv")
+
+#Remove top filler row from montly data
+d95p = d95p[-1,]
+ldp = ldp[-1,]
+lwp = lwp[-1,]
+spi1 = spi1[-1,]
+spi3 = spi3[-1,]
+spi6 = spi6[-1,]
+spi12 = spi12[-1,]
+
+#Save monthly outputs
+write.csv(x = d95p, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Monthly/d95p.csv")
+write.csv(x = ldp, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Monthly/ldp.csv")
+write.csv(x = lwp, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Monthly/lwp.csv")
+write.csv(x = spi1, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Monthly/spi1.csv")
+write.csv(x = spi3, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Monthly/spi3.csv")
+write.csv(x = spi6, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Monthly/spi6.csv")
+write.csv(x = spi12, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Monthly/spi12.csv")
+
+```
+
+#SPEI
+This will take some additional work since I don't have ETO precalculated, use the SPEI package
+
+To calculate Potential Evapotranspiration I will use the Hargreaves method, which allows me to incorporare radiation in without needing wind speed like in the penman method. 
+
+```{r SPEI}
+#First calculate PET
+#This uses Tmin, Tmax, radiation, latitude, and precip...will need to convert radiation values (monthly mean daily)
+
+spei.1.1 = c()
+spei.1.2 = c()
+
+spei.3.1 = c()
+spei.3.2 = c()
+
+spei.6.1 = c()
+spei.6.2 = c()
+
+spei.12.1 = c()
+spei.12.2 = c()
+
+id = c()
+
+
+for (i in 1:length(daymet.raw)) {
+
+  tran.weather.dt = as.data.table(read.csv(daymet.raw[[i]],header = T, skip = 7))
+
+  #Downscale daily data into monthly averages, requires adding month value to data
+
+tran.weather.dt[,month:= month(as.PCICt(do.call(paste,tran.weather.dt[,.(year,yday)]),format = "%Y %j", cal = "gregorian",label = FALSE))]
+
+  Tmin = ts(tran.weather.dt[,mean(tmin..deg.c.), by = .(month,year)][,V1],start = 1980, frequency = 12)
+  Tmax = ts(tran.weather.dt[,mean(tmax..deg.c.), by = .(month,year)][,V1],start = 1980, frequency = 12)
+  Ra = ts(tran.weather.dt[,mean((srad..W.m.2.*dayl..s.)/1000000), by = .(month,year)][,V1],start = 1980, frequency = 12) #also converts to daily radiation (MJ/m2/day)
+  Pre = ts(tran.weather.dt[,sum(prcp..mm.day.), by = .(month,year)][,V1],start = 1980, frequency = 12)
+  PRCP = ts(tran.weather.dt[,mean(prcp..mm.day.), by = .(month,year)][,V1],start = 1980, frequency = 12)
+  TransectID = as.numeric(str_sub(basename(daymet.raw[[i]]),end = -15))
+
+  lat = tran.loc[Site == TransectID,Latitude]
+
+  #PET.1 = hargreaves(Tmin, Tmax, Ra, lat, Pre)
+  PET.2 = hargreaves(Tmin, Tmax, lat = lat)
+
+  #I don't know which method is better...run them all for now
+  #bal.1 = Pre - PET.1
+  bal.2 = Pre - PET.2
+
+
+  #spei.1.1 = c(spei.1.1,c(spei(bal.1, 1)$fitted)) #calculate 1 month spei
+  spei.1.2 = c(spei.1.2,c(spei(bal.2, 1)$fitted)) 
+
+  #spei.3.1 = c(spei.3.1,c(spei(bal.1, 3)$fitted)) 
+  #spei.3.2 = c(spei.3.2,c(spei(bal.2, 3)$fitted)) 
+
+  #spei.6.1 = c(spei.6.1,c(spei(bal.1, 6)$fitted)) 
+  #spei.6.2 = c(spei.6.2,c(spei(bal.2, 6)$fitted)) 
+
+  #spei.12.1 = c(spei.12.1,c(spei(bal.1, 12)$fitted)) 
+  #spei.12.2 = c(spei.12.2,c(spei(bal.2, 12)$fitted)) 
+
+  id = c(id, TransectID)
+
+}
+
+beep(sound = 2)
+
+#coerce spei vectors in matrices and add identifying columns
+spei.1.1.m  = as.data.table(matrix(spei.1.1, ncol = 12, byrow = T))
+spei.1.1.m[,Year:= rep(c(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]),times = length(id))]
+spei.1.1.m[,TransectID:= rep(id,each = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]))]
+colnames(spei.1.1.m) = c('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Year','TransectID')
+
+spei.1.2.m  = as.data.table(matrix(spei.1.2, ncol = 12, byrow = T))
+spei.1.2.m[,Year:= rep(c(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]),times = length(id))]
+spei.1.2.m[,TransectID:= rep(id,each = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]))]
+colnames(spei.1.2.m) = c('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Year','TransectID')
+
+spei.3.1.m  = as.data.table(matrix(spei.3.1, ncol = 12, byrow = T))
+spei.3.1.m[,Year:= rep(c(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]),times = length(id))]
+spei.3.1.m[,TransectID:= rep(id,each = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]))]
+colnames(spei.3.1.m) = c('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Year','TransectID')
+
+spei.3.2.m  = as.data.table(matrix(spei.3.2, ncol = 12, byrow = T))
+spei.3.2.m[,Year:= rep(c(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]),times = length(id))]
+spei.3.2.m[,TransectID:= rep(id,each = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]))]
+colnames(spei.3.2.m) = c('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Year','TransectID')
+
+spei.6.1.m  = as.data.table(matrix(spei.6.1, ncol = 12, byrow = T))
+spei.6.1.m[,Year:= rep(c(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]),times = length(id))]
+spei.6.1.m[,TransectID:= rep(id,each = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]))]
+colnames(spei.6.1.m) = c('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Year','TransectID')
+
+spei.6.2.m  = as.data.table(matrix(spei.6.2, ncol = 12, byrow = T))
+spei.6.2.m[,Year:= rep(c(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]),times = length(id))]
+spei.6.2.m[,TransectID:= rep(id,each = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]))]
+colnames(spei.6.2.m) = c('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Year','TransectID')
+
+spei.12.1.m  = as.data.table(matrix(spei.12.1, ncol = 12, byrow = T))
+spei.12.1.m[,Year:= rep(c(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]),times = length(id))]
+spei.12.1.m[,TransectID:= rep(id,each = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]))]
+colnames(spei.12.1.m) = c('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Year','TransectID')
+
+spei.12.2.m  = as.data.table(matrix(spei.12.2, ncol = 12, byrow = T))
+spei.12.2.m[,Year:= rep(c(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]),times = length(id))]
+spei.12.2.m[,TransectID:= rep(id,each = length(tran.weather.dt[,min(year)]:tran.weather.dt[,max(year)]))]
+colnames(spei.12.2.m) = c('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Year','TransectID')
+
+#save csv output
+write.csv(x = spei.1.1.m, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Monthly/spei_1_1.csv")
+write.csv(x = spei.1.2.m, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Monthly/spei_1_2.csv")
+write.csv(x = spei.3.1.m, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Monthly/spei_3_1.csv")
+write.csv(x = spei.3.2.m, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Monthly/spei_3_2.csv")
+write.csv(x = spei.6.1.m, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Monthly/spei_6_1.csv")
+write.csv(x = spei.6.2.m, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Monthly/spei_6_2.csv")
+write.csv(x = spei.12.1.m, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Monthly/spei_12_1.csv")
+write.csv(x = spei.12.2.m, file = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Monthly/spei_12_2.csv")
+
+
+```

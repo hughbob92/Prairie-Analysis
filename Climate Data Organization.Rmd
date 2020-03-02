@@ -6,44 +6,52 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 rm(list=ls())
+library(data.table)
 ```
 
 ## Compile data into single data frame
 
-```{r data compilation}
-setwd("~/Documents/Grad School/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Monthly")
+```{r data-compilation}
+setwd("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Monthly")
 
-month_files <- list.files("~/Documents/Grad School/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Monthly",full.names = T) 
+month_files <- list.files("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Monthly",full.names = T) 
 
-month_files_name <- list.files("~/Documents/Grad School/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Monthly",full.names = F)
+month_files_name <- list.files("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Monthly",full.names = F)
 
-indices.monthly = data.frame()
+indices.monthly = data.frame(Year = 1, Jan = 1,Feb = 1,Mar =1, Apr=1,May=1,Jun=1,Jul=1,Aug=1,Sep=1,Oct=1,Nov=1,Dec=1,Year = 1,TransectID=NA, Index = NA)
 
 ######Read each monthly csv and bind all into one data frame with necessary labels
 for(i in 1:length(month_files)){
   data.ind <- read.csv(month_files[i],header = F,skip = 1)
-  Month <- rep(substr(month_files_name[i],1,3),times=length(data.ind[,1]))
-  index <- rep(substr(month_files_name[i],5,nchar(month_files_name[i])-4),times=length(data.ind[,1]))
-  binding = cbind(data.ind,Month,index)
+  index <- rep(substr(month_files_name[i],1,nchar(month_files_name[i])-4),times=length(data.ind[,1]))
+  binding = cbind(data.ind,index)
+  names(binding) = names(indices.monthly)
   indices.monthly = rbind(indices.monthly,binding)
     }
 
-Years = 1980:(1980+ncol(indices.monthly)-6)
-colnames(indices.monthly) = c("Transect","Lat",'Lon',Years,"Month","Index")  
+indices.monthly = as.data.table(indices.monthly)
+
+#remove placeholder row and duplicate year column
+indices.monthly = indices.monthly[!1,]
+indices.monthly[,Year.1:=NULL]
 
 ```
 
 Now let's put this in long form to make analysis easier
-```{r monthly long form}
-library(data.table)
+```{r monthly-long-form}
 head(indices.monthly)
-indices.monthly.long = data.table(melt(indices.monthly,id=c("Transect","Month","Index"),measure=4:(ncol(indices.monthly)-2)))
+indices.monthly.long = melt(indices.monthly,id=c("TransectID","Year","Index"),measure=2:(ncol(indices.monthly)-2))
 head(indices.monthly.long)
-class(indices.monthly.long)
+setnames(indices.monthly.long, "variable", 'Month')
+
 index.names = as.character(indices.monthly.long[,unique(Index)])
+
+
+
 ```
 
 #Visualize the monthly indices 
+Moved to other Rmd file for figure construction
 
 ##Index Key:
 FD -Annual count of days when TN (daily minimum temperature) < 0°C  
