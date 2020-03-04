@@ -811,36 +811,13 @@ cover[order(Year),r.ind.type.lag:=shift(r.ind.type),by = .(Type,SpeciesID,Transe
 
 cover[order(Year),r.indlvl.type.lag:=shift(r.indlvl.type),by = .(Type,SpeciesID,TransectID,Indicator)]
 
-#Legume
-cover[Freq.T>0,':='(f.T.leg = mean(Freq.T), rel.cov.2.leg = sum(rel.cov.T.2), meanDI.2.leg = mean(DI.T.2)),
-      by = .(Year,Legume,TransectID,Native.Status)]
+#Legume...Honesly I dont think I will use Legume, instead I want to create a new per transect and per year category of Legume Frequency
+cover[Legume==1, ':='(leg.f.tran = mean(Freq.T)), by = .(TransectID, Year)]
+cover[is.na(Legume), ':='(leg.f.tran = 0)]
+cover[,':='(leg.f.tran = max(leg.f.tran)), by = .(TransectID, Year)]
 
-cover[Freq.T>0,':='(f.ind.leg = mean(Freq.T), rel.cov.2.ind.leg = sum(rel.cov.T.2), meanDI.2.ind.leg = mean(DI.T.2)),
-      by = .(Year,Legume,TransectID,Ind.class)]
+cover[order(Year), ':='(leg.f.tran.lag = shift(leg.f.tran)), by = .(TransectID, Year)]
 
-cover[Freq.T>0,':='(f.indlvl.leg = mean(Freq.T), rel.cov.2.indlvl.leg = sum(rel.cov.T.2), meanDI.2.indlvl.leg = mean(DI.T.2)),
-      by = .(Year,Legume,TransectID,Indicator)]
-
-cover = merge(cover,cover[Freq.T>0,.(r.T.leg = .N), by=.(Year,Legume,TransectID,Native.Status)], by =c('TransectID','Year','Native.Status','Legume'),all = T)
-cover[is.na(r.T.leg),r.T.leg:=0] #Because with these groups there will be years with zero species in the group, to adequate calculate lagged values we need these to be zeros, same goes for below
-
-cover = merge(cover,cover[Freq.T>0,.(r.ind.leg = .N), by=.(Year,Legume,TransectID,Ind.class)], by =c('TransectID','Year','Ind.class','Legume'),all = T)
-cover[is.na(r.ind.leg),r.ind.leg:=0] 
-
-cover = merge(cover,cover[Freq.T>0,.(r.indlvl.leg = .N), by=.(Year,Legume,TransectID,Indicator)], by =c('TransectID','Year','Indicator','Legume'),all = T)
-cover[is.na(r.indlvl.leg),r.indlvl.leg:=0] 
-
-cover[order(Year),':='(f.T.leg.lag = shift(f.T.leg), rel.cov.2.leg.lag = shift(rel.cov.2.leg), meanDI.2.leg.lag = shift(meanDI.2.leg)),by = .(Legume,TransectID,Native.Status,SpeciesID)]
-
-cover[order(Year),':='(f.ind.leg.lag = shift(f.ind.leg), rel.cov.2.ind.leg.lag = shift(rel.cov.2.ind.leg), meanDI.2.ind.leg.lag = shift(meanDI.2.ind.leg)),by = .(Legume,TransectID,Ind.class,SpeciesID)]
-
-cover[order(Year),':='(f.indlvl.leg.lag = shift(f.indlvl.leg), rel.cov.2.indlvl.leg.lag = shift(rel.cov.2.indlvl.leg), meanDI.2.indlvl.leg.lag = shift(meanDI.2.indlvl.leg)),by = .(Legume,TransectID,Indicator,SpeciesID)]
-
-cover[order(Year),r.T.leg.lag:=shift(r.T.leg),by = .(Legume,SpeciesID,TransectID,Native.Status)]
-
-cover[order(Year),r.ind.leg.lag:=shift(r.ind.leg),by = .(Legume,SpeciesID,TransectID,Ind.class)]
-
-cover[order(Year),r.indlvl.leg.lag:=shift(r.indlvl.leg),by = .(Legume,SpeciesID,TransectID,Indicator)]
 
 #Photopath
 cover[Freq.T>0,':='(f.T.photo = mean(Freq.T), rel.cov.2.photo = sum(rel.cov.T.2), meanDI.2.photo = mean(DI.T.2)),
@@ -935,6 +912,37 @@ cover[order(Year),r.ind.dist.lag:=shift(r.ind.dist),by = .(Distribution,SpeciesI
 
 cover[order(Year),r.indlvl.dist.lag:=shift(r.indlvl.dist),by = .(Distribution,SpeciesID,TransectID,Indicator)]
 
+
+#Season
+cover[Freq.T>0,':='(f.T.season = mean(Freq.T), rel.cov.2.season = sum(rel.cov.T.2), meanDI.2.season = mean(DI.T.2)),
+      by = .(Year,Season,TransectID,Native.Status)]
+
+cover[Freq.T>0,':='(f.ind.season = mean(Freq.T), rel.cov.2.ind.season = sum(rel.cov.T.2), meanDI.2.ind.season = mean(DI.T.2)),
+      by = .(Year,Season,TransectID,Ind.class)]
+
+cover[Freq.T>0,':='(f.indlvl.season = mean(Freq.T), rel.cov.2.indlvl.season = sum(rel.cov.T.2), meanDI.2.indlvl.season = mean(DI.T.2)),
+      by = .(Year,Season,TransectID,Indicator)]
+
+cover = merge(cover,cover[Freq.T>0,.(r.T.season = .N), by=.(Year,Season,TransectID,Native.Status)], by =c('TransectID','Year','Native.Status','Season'),all = T)
+cover[is.na(r.T.season),r.T.season:=0] #Because with these groups there will be years with zero species in the group, to adequate calculate lagged values we need these to be zeros, same goes for below
+
+cover = merge(cover,cover[Freq.T>0,.(r.ind.season = .N), by=.(Year,Season,TransectID,Ind.class)], by =c('TransectID','Year','Ind.class','Season'),all = T)
+cover[is.na(r.ind.season),r.ind.season:=0] 
+
+cover = merge(cover,cover[Freq.T>0,.(r.indlvl.season = .N), by=.(Year,Season,TransectID,Indicator)], by =c('TransectID','Year','Indicator','Season'),all = T)
+cover[is.na(r.indlvl.season),r.indlvl.season:=0] 
+
+cover[order(Year),':='(f.T.season.lag = shift(f.T.season), rel.cov.2.season.lag = shift(rel.cov.2.season), meanDI.2.season.lag = shift(meanDI.2.season)),by = .(Season,TransectID,Native.Status,SpeciesID)]
+
+cover[order(Year),':='(f.ind.season.lag = shift(f.ind.season), rel.cov.2.ind.season.lag = shift(rel.cov.2.ind.season), meanDI.2.ind.season.lag = shift(meanDI.2.ind.season)),by = .(Season,TransectID,Ind.class,SpeciesID)]
+
+cover[order(Year),':='(f.indlvl.season.lag = shift(f.indlvl.season), rel.cov.2.indlvl.season.lag = shift(rel.cov.2.indlvl.season), meanDI.2.indlvl.season.lag = shift(meanDI.2.indlvl.season)),by = .(Season,TransectID,Indicator,SpeciesID)]
+
+cover[order(Year),r.T.season.lag:=shift(r.T.season),by = .(Season,SpeciesID,TransectID,Native.Status)]
+
+cover[order(Year),r.ind.season.lag:=shift(r.ind.season),by = .(Season,SpeciesID,TransectID,Ind.class)]
+
+cover[order(Year),r.indlvl.season.lag:=shift(r.indlvl.season),by = .(Season,SpeciesID,TransectID,Indicator)]
 
 ```
 

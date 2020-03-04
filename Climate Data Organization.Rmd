@@ -33,14 +33,16 @@ indices.monthly = as.data.table(indices.monthly)
 
 #remove placeholder row and duplicate year column
 indices.monthly = indices.monthly[!1,]
-indices.monthly[,Year.1:=NULL]
+indices.monthly[,Year:=NULL]
+setnames(indices.monthly,"Year.1","Year")
+
 
 ```
 
 Now let's put this in long form to make analysis easier
 ```{r monthly-long-form}
 head(indices.monthly)
-indices.monthly.long = melt(indices.monthly,id=c("TransectID","Year","Index"),measure=2:(ncol(indices.monthly)-2))
+indices.monthly.long = melt(indices.monthly,id=c("TransectID","Year","Index"),measure=1:(ncol(indices.monthly)-3))
 head(indices.monthly.long)
 setnames(indices.monthly.long, "variable", 'Month')
 
@@ -85,35 +87,40 @@ PRCPTOT - Annual total precipitation on wet days
 
 ##Compilation for yearly indices
 
-```{r data compilation 2}
-setwd("~/Documents/Grad School/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Yearly")
+```{r data-compilation-2}
+setwd("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Yearly")
 
-year_files <- list.files("~/Documents/Grad School/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Yearly",full.names = T) 
+year_files <- list.files("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Yearly",full.names = T) 
 
-year_files_name <- list.files("~/Documents/Grad School/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Yearly",full.names = F)
+year_files_name <- list.files("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Climate/GMT/Indices-Yearly",full.names = F)
 
-indices.yearly = data.frame()
+indices.yearly = data.table(Row = NA, TransectID = NA, 
+                            "1980" = 1, "1981" = 1, "1982" = 1, "1983" = 1, "1984" = 1, "1985" = 1, "1986" = 1, "1987" = 1, "1988" = 1, "1989" = 1,
+                            "1990" = 1, "1991" = 1, "1992" = 1, "1993" = 1, "1994" = 1, "1995" = 1, "1996" = 1, "1997" = 1, "1998" = 1, "1999" = 1,
+                            "2000" = 1, "2001" = 1, "2002" = 1, "2003" = 1, "2004" = 1, "2005" = 1, "2006" = 1, "2007" = 1, "2008" = 1, "2009" = 1,
+                            "2010" = 1, "2011" = 1, "2012" = 1, "2013" = 1, "2014" = 1, "2015" = 1, "2016" = 1, "2017" = 1, "2018" = 1,  Index = NA)
 
 ######Read each monthly csv and bind all into one data frame with necessary labels
 for(i in 1:length(year_files)){
-  data.ind <- read.csv(year_files[i],header = F,skip = 1)
+  data.ind <- data.table(read.csv(year_files[i],header = T,skip = 0))
+  data.ind[,X2019:=NULL]
   index <- rep(substr(year_files_name[i],1,nchar(year_files_name[i])-4),times=length(data.ind[,1]))
   binding = cbind(data.ind,index)
+  names(binding) = names(indices.yearly)
   indices.yearly = rbind(indices.yearly,binding)
     }
 
-Years = 1980:(1980+ncol(indices.yearly)-5)
-colnames(indices.yearly) = c("Transect","Lat",'Lon',Years,"Index")  
+indices.yearly = indices.yearly[!1,] #remove starter row
+indices.yearly[,Row:=NULL]
 
 ```
 
 Now let's put this in long form to make analysis easier
 ```{r yearly long form}
-library(data.table)
 head(indices.yearly)
-indices.yearly.long = data.table(melt(indices.yearly,id=c("Transect","Index"),measure=4:(ncol(indices.yearly)-2)))
+indices.yearly.long = melt(indices.yearly,id=c("TransectID","Index"),measure=2:(ncol(indices.yearly)-1))
 head(indices.yearly.long)
-class(indices.yearly.long)
+setnames(indices.yearly.long, "variable", 'Year')
 index.names = as.character(indices.yearly.long[,unique(Index)])
 ```
 
@@ -121,11 +128,11 @@ index.names = as.character(indices.yearly.long[,unique(Index)])
 
 See model indices selection logic for which ones we are using and why. Several of these need to be adjusted, averages, etc. and then all need to be appropriately merged to the cover file.
 
+Seasonal definitions: HUGH - modify this based on Daren and co responses
+
+Note: monthly calcs do not inherently solve the issue monitoring timing vs weather. I will need to either lag all or just some of the months. Using July 1 as the cutoff
+
 ```{r indices prep}
-indices.yearly=as.data.table(indices.yearly.long)
-indices.monthly=as.data.table(indices.monthly.long)
-setnames(indices.monthly,c("variable", "value","Index"),c("Year","val.mth","Index.m"),skip_absent=TRUE)
-setnames(indices.yearly,c("variable", "value","Index"),c("Year","val.yr","Index.y"),skip_absent=TRUE)
 
 #load in cover
 #load data
@@ -136,20 +143,21 @@ cover.climate = cover
 
 transect.master=as.data.table(read.csv("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis/Transect_master_V2.csv",header = T)) #use V2 after data issue
 
-z = transect.master[,.(Transect_I,TransectNa)]
-setnames(z,c("Transect_I","TransectNa"),c("TransectID","Transect"))
-indices.monthly = merge(indices.monthly,z, by = "Transect", all = T)
-indices.monthly[,Transect:=NULL]
-indices.yearly = merge(indices.yearly,z, by = "Transect", all = T)
-indices.yearly[,Transect:=NULL]
+
+indices.yearly=as.data.table(indices.yearly.long)
+indices.monthly=as.data.table(indices.monthly.long)
+setnames(indices.monthly,c("value","Index"),c("val.mth","Index.m"),skip_absent=TRUE)
+setnames(indices.yearly,c("value","Index"),c("val.yr","Index.y"),skip_absent=TRUE)
 
 indices.monthly$Year = as.integer(as.character(indices.monthly$Year))
 indices.yearly$Year = as.integer(as.character(indices.yearly$Year))
 
-###txx
-txx = indices.monthly[Index.m=="txx" & Year>2008,.SD[which.max(val.mth)],by=.(Year,TransectID)]
+#Create a new monthly table which changes the year value based on month
+indices.monthly.mod = indices.monthly
+indices.monthly.mod[Month=="Jul" | Month=="Aug" | Month=="Sep" | Month=="Oct" | Month=="Nov" | Month=="Dec",Year:=Year-1]
 
-#table(txx$Year,txx$Month) #See how max temperatures are divided between months each year. There is a case here for just taking txx for July...but August also has an impact.
+###txx
+txx = indices.monthly.mod[Index.m=="txx" & Year>2008,.SD[which.max(val.mth)],by=.(Year,TransectID)]
 
 #Merge txx with cover
 txx[,Month:=NULL]
@@ -158,20 +166,30 @@ txx[order(Year),txx.lag:= shift(val.mth), by =.(TransectID)]
 cover.climate = merge(cover.climate,txx, by=c("Year","TransectID"),all.x = T)
 setnames(cover.climate,"val.mth",'txx')
 
+###txxx.win
+txx.win = indices.monthly.mod[Index.m=="txx" & Year>2008 & (Month=="Dec" | Month=="Jan" | Month=="Feb"),.SD[which.max(val.mth)],by=.(Year,TransectID)]
+
+#Merge txx.win with cover
+txx.win[,Month:=NULL]
+txx.win[,Index.m:=NULL]
+txx.win[order(Year),txx.win.lag:= shift(val.mth), by =.(TransectID)]
+cover.climate = merge(cover.climate,txx.win, by=c("Year","TransectID"),all.x = T)
+setnames(cover.climate,"val.mth",'txx.win')
+
 ###tn90p
 #First sum tn90p values for winter "dormant" months, let's say Decemeber - March
-tn90p = indices.monthly[Index.m=="tn90p" & Year>2008 & (Month =="Dec" | Month == "Jan" | Month == "Feb" | Month=="Mar"),sum(val.mth)/4,by=.(Year,TransectID)]
-setnames(tn90p,"V1","tn90p")
-tn90p[order(Year),tn90p.lag:= shift(tn90p), by =.(TransectID)]
+#tn90p = indices.monthly.mod[Index.m=="tn90p" & Year>2008 & (Month =="Dec" | Month == "Jan" | Month == "Feb" | Month=="Mar"),sum(val.mth)/4,by=.(Year,TransectID)]
+#setnames(tn90p,"V1","tn90p")
+#tn90p[order(Year),tn90p.lag:= shift(tn90p), by =.(TransectID)]
 
 #Merge tn90p with cover
-cover.climate = merge(cover.climate,tn90p, by=c("Year","TransectID"),all.x = T)
+#cover.climate = merge(cover.climate,tn90p, by=c("Year","TransectID"),all.x = T)
 
-###tx90p
+###tx90p.win
 #First sum tn90p values for winter "dormant" months, let's say Decemeber - March
-tx90p = indices.monthly[Index.m=="tx90p" & Year>2008 & (Month =="Dec" | Month == "Jan" | Month == "Feb" | Month=="Mar"),sum(val.mth)/4,by=.(Year,TransectID)]
-setnames(tx90p,"V1","tx90p")
-tx90p[order(Year),tx90p.lag:= shift(tx90p), by =.(TransectID)]
+tx90p = indices.monthly.mod[Index.m=="tx90p" & Year>2008 & (Month =="Dec" | Month == "Jan" | Month == "Feb" | Month=="Mar"),sum(val.mth)/4,by=.(Year,TransectID)]
+setnames(tx90p,"V1","tx90p.win")
+tx90p[order(Year),tx90p.win.lag:= shift(tx90p.win), by =.(TransectID)]
 
 #Merge tx90p with cover
 cover.climate = merge(cover.climate,tx90p, by=c("Year","TransectID"),all.x = T)
@@ -182,28 +200,26 @@ cover.climate = merge(cover.climate,tx90p, by=c("Year","TransectID"),all.x = T)
 ###rx5
 #This is a monthly index, break out by seasons (Winter/Dormant,Spring, Summer/Fall) and also calculate yearly
 
-#rx5.winter
-rx5.w = indices.monthly[Index.m=="rx5day" & Year>2008 & (Month =="Dec" | Month == "Jan" | Month == "Feb" | Month=="Mar"),
-                             .SD[which.max(val.mth)],by=.(Year,TransectID)]
-rx5.w[,Month:=NULL]
-rx5.w[,Index.m:=NULL]
-rx5.w[order(Year),rx5.w.lag:= shift(val.mth), by =.(TransectID)]
+#rx5.win
+#rx5.win = indices.monthly.mod[Index.m=="rx5day" & Year>2008 & (Month =="Dec" | Month == "Jan" | Month == "Feb" | Month=="Mar"),.SD[which.max(val.mth)],by=.(Year,TransectID)]
+#rx5.win[,Month:=NULL]
+#rx5.win[,Index.m:=NULL]
+#rx5.win[order(Year),rx5.win.lag:= shift(val.mth), by =.(TransectID)]
 
-cover.climate = merge(cover.climate,rx5.w, by=c("Year","TransectID"),all.x = T)
-setnames(cover.climate,"val.mth",'rx5.w')
+#cover.climate = merge(cover.climate,rx5.win, by=c("Year","TransectID"),all.x = T)
+#setnames(cover.climate,"val.mth",'rx5.win')
 
-#rx5.spring
-rx5.sp = indices.monthly[Index.m=="rx5day" & Year>2008 & (Month =="Apr" | Month == "May"),
-                             .SD[which.max(val.mth)],by=.(Year,TransectID)]
-rx5.sp[,Month:=NULL]
-rx5.sp[,Index.m:=NULL]
-rx5.sp[order(Year),rx5.sp.lag:= shift(val.mth), by =.(TransectID)]
+#rx5.spr
+rx5.spr = indices.monthly.mod[Index.m=="rx5day" & Year>2008 & (Month =="Apr" | Month == "May" | Month =="Jun"),.SD[which.max(val.mth)],by=.(Year,TransectID)]
+rx5.spr[,Month:=NULL]
+rx5.spr[,Index.m:=NULL]
+rx5.spr[order(Year),rx5.spr.lag:= shift(val.mth), by =.(TransectID)]
 
-cover.climate = merge(cover.climate,rx5.sp, by=c("Year","TransectID"),all.x = T)
-setnames(cover.climate,"val.mth",'rx5.sp')
+cover.climate = merge(cover.climate,rx5.spr, by=c("Year","TransectID"),all.x = T)
+setnames(cover.climate,"val.mth",'rx5.spr')
 
 #rx5.summer
-rx5.sum = indices.monthly[Index.m=="rx5day" & Year>2009 & (Month =="Jun" | Month == "Jul"| Month == "Aug"| Month == "Sep"),
+rx5.sum = indices.monthly.mod[Index.m=="rx5day" & Year>2009 & ( Month == "Jul"| Month == "Aug"),
                              .SD[which.max(val.mth)],by=.(Year,TransectID)]
 
 rx5.sum[,Month:=NULL]
@@ -214,71 +230,253 @@ cover.climate = merge(cover.climate,rx5.sum, by=c("Year","TransectID"),all.x = T
 setnames(cover.climate,"val.mth",'rx5.sum')
 
 #rx5.year
-rx5.y = indices.monthly[Index.m=="rx5day" & Year>2008,
-                             .SD[which.max(val.mth)],by=.(Year,TransectID)]
+#rx5.y = indices.monthly.mod[Index.m=="rx5day" & Year>2008,.SD[which.max(val.mth)],by=.(Year,TransectID)]
 
-rx5.y[,Month:=NULL]
-rx5.y[,Index.m:=NULL]
-rx5.y[order(Year),rx5.y.lag:= shift(val.mth), by =.(TransectID)]
+#rx5.y[,Month:=NULL]
+#rx5.y[,Index.m:=NULL]
+#rx5.y[order(Year),rx5.y.lag:= shift(val.mth), by =.(TransectID)]
 
-cover.climate = merge(cover.climate,rx5.y, by=c("Year","TransectID"),all.x = T)
-setnames(cover.climate,"val.mth",'rx5.y')
+#cover.climate = merge(cover.climate,rx5.y, by=c("Year","TransectID"),all.x = T)
+#setnames(cover.climate,"val.mth",'rx5.y')
 
-#Hugh, work on average T when I get the data, also SPEI
+###d95p
 
-####The rest of the indices are yearly
+#d95p annual
+d95p = indices.monthly.mod[Index.m=="d95p" & Year>2008,sum(val.mth),by=.(Year,TransectID)]
+
+d95p[order(Year),d95p.lag:= shift(V1), by =.(TransectID)]
+cover.climate = merge(cover.climate,d95p, by=c("Year","TransectID"),all.x = T)
+setnames(cover.climate,"V1",'d95p')
+
+#d95p.spr
+d95p.spr = indices.monthly.mod[Index.m=="d95p" & Year>2008 & (Month =="Apr" | Month == "May" | Month =="Jun"), sum(val.mth),by=.(Year,TransectID)]
+
+d95p.spr[order(Year),d95p.spr.lag:= shift(V1), by =.(TransectID)]
+cover.climate = merge(cover.climate,d95p.spr, by=c("Year","TransectID"),all.x = T)
+setnames(cover.climate,"V1",'d95p.spr')
+
+#d95p.win
+d95p.win = indices.monthly.mod[Index.m=="d95p" & Year>2008 & (Month =="Dec" | Month == "Jan" | Month == "Feb" | Month=="Mar"), sum(val.mth),by=.(Year,TransectID)]
+
+d95p.win[order(Year),d95p.win.lag:= shift(V1), by =.(TransectID)]
+cover.climate = merge(cover.climate,d95p.win, by=c("Year","TransectID"),all.x = T)
+setnames(cover.climate,"V1",'d95p.win')
+
+###ldp
+
+#ldp annual
+ldp = indices.monthly.mod[Index.m=="ldp" & Year>2008,.SD[which.max(val.mth)],by=.(Year,TransectID)]
+
+ldp[order(Year),ldp.lag:= shift(val.mth), by =.(TransectID)]
+ldp[,Index.m:=NULL]
+ldp[,Month:=NULL]
+cover.climate = merge(cover.climate,ldp, by=c("Year","TransectID"),all.x = T)
+setnames(cover.climate,"val.mth",'ldp')
+
+#ldp.spr
+ldp.spr = indices.monthly.mod[Index.m=="ldp" & Year>2008 & (Month =="Apr" | Month == "May" | Month =="Jun"), .SD[which.max(val.mth)],by=.(Year,TransectID)]
+
+ldp.spr[order(Year),ldp.spr.lag:= shift(val.mth), by =.(TransectID)]
+ldp.spr[,Index.m:=NULL]
+ldp.spr[,Month:=NULL]
+cover.climate = merge(cover.climate,ldp.spr, by=c("Year","TransectID"),all.x = T)
+setnames(cover.climate,"val.mth",'ldp.spr')
+
+#ldp.sum
+ldp.sum = indices.monthly.mod[Index.m=="ldp" & Year>2008 & (Month =="Jul" | Month == "Aug"), .SD[which.max(val.mth)],by=.(Year,TransectID)]
+
+ldp.sum[order(Year),ldp.sum.lag:= shift(val.mth), by =.(TransectID)]
+ldp.sum[,Index.m:=NULL]
+ldp.sum[,Month:=NULL]
+cover.climate = merge(cover.climate,ldp.sum, by=c("Year","TransectID"),all.x = T)
+setnames(cover.climate,"val.mth",'ldp.sum')
+
+
+###lwp
+
+#lwp annual
+lwp = indices.monthly.mod[Index.m=="lwp" & Year>2008,.SD[which.max(val.mth)],by=.(Year,TransectID)]
+
+lwp[order(Year),lwp.lag:= shift(val.mth), by =.(TransectID)]
+lwp[,Index.m:=NULL]
+lwp[,Month:=NULL]
+cover.climate = merge(cover.climate,lwp, by=c("Year","TransectID"),all.x = T)
+setnames(cover.climate,"val.mth",'lwp')
+
+#lwp.spr
+lwp.spr = indices.monthly.mod[Index.m=="lwp" & Year>2008 & (Month =="Apr" | Month == "May" | Month =="Jun"), .SD[which.max(val.mth)],by=.(Year,TransectID)]
+
+lwp.spr[order(Year),lwp.spr.lag:= shift(val.mth), by =.(TransectID)]
+lwp.spr[,Index.m:=NULL]
+lwp.spr[,Month:=NULL]
+cover.climate = merge(cover.climate,lwp.spr, by=c("Year","TransectID"),all.x = T)
+setnames(cover.climate,"val.mth",'lwp.spr')
+
+#lwp.sum
+lwp.sum = indices.monthly.mod[Index.m=="lwp" & Year>2008 & (Month =="Jul" | Month == "Aug"  ), .SD[which.max(val.mth)],by=.(Year,TransectID)]
+
+lwp.sum[order(Year),lwp.sum.lag:= shift(val.mth), by =.(TransectID)]
+lwp.sum[,Index.m:=NULL]
+lwp.sum[,Month:=NULL]
+cover.climate = merge(cover.climate,lwp.sum, by=c("Year","TransectID"),all.x = T)
+setnames(cover.climate,"val.mth",'lwp.sum')
+
+
+
+######Drought indices - these are calculated on a rolling window basis, so a 6 month value looks at the current month and the prior 5 months
+
+#No real argument for making 1 month predictions...except for April, which is the beginning of Spring...typically and could be an important precip indicator for invasives
+
+# 1-month on April = early Spring drought (April) - Use regular
+# 3-month on June = Spring drought (April, May, June) - Use regular
+# 4-month on March = Winter drought (December, Jan, Feb, Mar) - Use Modified
+# 3-month on November = Fall drought (Sep, Oct, Nov) - Use Modified
+# 2-month on August = Summer drought (July - August) - Use Modified
+# 12-month is the past year....maybe less useful than just including seasons individually - Use Modified
+# 36-month  is past three years, gives drought overview from the past 3 years since last observation ideally
+
+
+#HUGH - confirm I am using the correct SPEI value
+
+###SPI...right now I have not calculated SPI at the correct month intervals ^ but the assumption is SPEI might better capture true drought effects 
+
+###SPEI
+
+#1 month april
+spei.april = indices.monthly[Index.m=="spei_1_1" & Year>2008 & Month == "Apr",val.mth,by=.(Year,TransectID)]
+spei.april[order(Year),spei.april.lag:= shift(val.mth), by =.(TransectID)]
+cover.climate = merge(cover.climate,spei.april, by=c("Year","TransectID"),all.x = T)
+setnames(cover.climate,"val.mth",'spei.april')
+
+#2 month August - use modified
+spei.sum = indices.monthly.mod[Index.m=="spei_2_1" & Year>2008 & Month == "Aug",val.mth,by=.(Year,TransectID)]
+spei.sum[order(Year),spei.sum.lag:= shift(val.mth), by =.(TransectID)]
+cover.climate = merge(cover.climate,spei.sum, by=c("Year","TransectID"),all.x = T)
+setnames(cover.climate,"val.mth",'spei.sum')
+
+#3 month spring on Jun - use regular
+spei.spr = indices.monthly[Index.m=="spei_3_1" & Year>2008 & Month == "Jun",val.mth,by=.(Year,TransectID)]
+spei.spr[order(Year),spei.spr.lag:= shift(val.mth), by =.(TransectID)]
+cover.climate = merge(cover.climate,spei.spr, by=c("Year","TransectID"),all.x = T)
+setnames(cover.climate,"val.mth",'spei.spr')
+
+#3 month Fall on Nov - use modified
+spei.fall = indices.monthly.mod[Index.m=="spei_3_1" & Year>2008 & Month == "Nov",val.mth,by=.(Year,TransectID)]
+spei.fall[order(Year),spei.fall.lag:= shift(val.mth), by =.(TransectID)]
+cover.climate = merge(cover.climate,spei.fall, by=c("Year","TransectID"),all.x = T)
+setnames(cover.climate,"val.mth",'spei.fall')
+
+#4 month Winter on March - use Modified
+spei.win = indices.monthly.mod[Index.m=="spei_4_1" & Year>2008 & Month == "Nov",val.mth,by=.(Year,TransectID)]
+spei.win[order(Year),spei.win.lag:= shift(val.mth), by =.(TransectID)]
+cover.climate = merge(cover.climate,spei.win, by=c("Year","TransectID"),all.x = T)
+setnames(cover.climate,"val.mth",'spei.win')
+
+#12 month - use modified
+spei.12 = indices.monthly.mod[Index.m=="spei_12_1" & Year>2008 & Month == "Jun",val.mth,by=.(Year,TransectID)]
+spei.12[order(Year),spei.12.lag:= shift(val.mth), by =.(TransectID)]
+cover.climate = merge(cover.climate,spei.12, by=c("Year","TransectID"),all.x = T)
+setnames(cover.climate,"val.mth",'spei.12')
+
+#36 month - use modified
+spei.36 = indices.monthly.mod[Index.m=="spei_36_1" & Year>2008 & Month == "Jun",val.mth,by=.(Year,TransectID)]
+spei.36[order(Year),spei.36.lag:= shift(val.mth), by =.(TransectID)]
+cover.climate = merge(cover.climate,spei.36, by=c("Year","TransectID"),all.x = T)
+setnames(cover.climate,"val.mth",'spei.36')
+
+
+########The rest of the indices are yearly
+
+#Annual indices should be the modified versions to avoid considering weather data that occurs post monitoring
 
 ###FD
-fd = indices.yearly[Index.y=='fd' & Year>2008,.(Year,TransectID,val.yr)]
-fd[order(Year),fd.lag:= shift(val.yr), by =.(TransectID)]
-cover.climate = merge(cover.climate,fd, by=c("Year","TransectID"),all.x = T)
-setnames(cover.climate,"val.yr",'fd')
+#fd = indices.yearly[Index.y=='fd' & Year>2008,.(Year,TransectID,val.yr)]
+#fd[order(Year),fd.lag:= shift(val.yr), by =.(TransectID)]
+#cover.climate = merge(cover.climate,fd, by=c("Year","TransectID"),all.x = T)
+#setnames(cover.climate,"val.yr",'fd')
 
-###GSL
-gsl = indices.yearly[Index.y=='gsl' & Year>2008,.(Year,TransectID,val.yr)]
+###GSL - use modified
+gsl = indices.yearly[Index.y=='gsl.mod' & Year>2008,.(Year,TransectID,val.yr)]
 gsl[order(Year),gsl.lag:= shift(val.yr), by =.(TransectID)]
 cover.climate = merge(cover.climate,gsl, by=c("Year","TransectID"),all.x = T)
 setnames(cover.climate,"val.yr",'gsl')
 
-### WSDI
-wsdi = indices.yearly[Index.y=='wsdi' & Year>2008,.(Year,TransectID,val.yr)]
+###GSL-start
+gsl.start = indices.yearly[Index.y=='ogs6' & Year>2008,.(Year,TransectID,val.yr)]
+gsl.start[order(Year),gsl.start.lag:= shift(val.yr), by =.(TransectID)]
+cover.climate = merge(cover.climate,gsl.start, by=c("Year","TransectID"),all.x = T)
+setnames(cover.climate,"val.yr",'gsl.start')
+
+### WSDI - use modified
+wsdi = indices.yearly[Index.y=='wsdi.mod' & Year>2008,.(Year,TransectID,val.yr)]
 wsdi[order(Year),wsdi.lag:= shift(val.yr), by =.(TransectID)]
 cover.climate = merge(cover.climate,wsdi, by=c("Year","TransectID"),all.x = T)
 setnames(cover.climate,"val.yr",'wsdi')
 
-### CSDI
-csdi = indices.yearly[Index.y=='csdi' & Year>2008,.(Year,TransectID,val.yr)]
-csdi[order(Year),csdi.lag:= shift(val.yr), by =.(TransectID)]
-cover.climate = merge(cover.climate,csdi, by=c("Year","TransectID"),all.x = T)
-setnames(cover.climate,"val.yr",'csdi')
+### CSDI - use modified
+#csdi = indices.yearly[Index.y=='csdi.mod' & Year>2008,.(Year,TransectID,val.yr)]
+#csdi[order(Year),csdi.lag:= shift(val.yr), by =.(TransectID)]
+#cover.climate = merge(cover.climate,csdi, by=c("Year","TransectID"),all.x = T)
+#setnames(cover.climate,"val.yr",'csdi')
 
-### SDII
-sdii = indices.yearly[Index.y=='sdii' & Year>2008,.(Year,TransectID,val.yr)]
+### SDII - use modified
+sdii = indices.yearly[Index.y=='sdii.mod' & Year>2008,.(Year,TransectID,val.yr)]
 sdii[order(Year),sdii.lag:= shift(val.yr), by =.(TransectID)]
 cover.climate = merge(cover.climate,sdii, by=c("Year","TransectID"),all.x = T)
 setnames(cover.climate,"val.yr",'sdii')
 
-### CDD
-cdd = indices.yearly[Index.y=='cdd' & Year>2008,.(Year,TransectID,val.yr)]
+### CDD - use modified
+cdd = indices.yearly[Index.y=='cdd.mod' & Year>2008,.(Year,TransectID,val.yr)]
 cdd[order(Year),cdd.lag:= shift(val.yr), by =.(TransectID)]
 cover.climate = merge(cover.climate,cdd, by=c("Year","TransectID"),all.x = T)
 setnames(cover.climate,"val.yr",'cdd')
 
-### CWD
-cwd = indices.yearly[Index.y=='cwd' & Year>2008,.(Year,TransectID,val.yr)]
+### CWD - use modified
+cwd = indices.yearly[Index.y=='cwd.mod' & Year>2008,.(Year,TransectID,val.yr)]
 cwd[order(Year),cwd.lag:= shift(val.yr), by =.(TransectID)]
 cover.climate = merge(cover.climate,cwd, by=c("Year","TransectID"),all.x = T)
 setnames(cover.climate,"val.yr",'cwd')
 
-#prcptot
-prcpt = indices.yearly[Index.y=='prcptot' & Year>2008,.(Year,TransectID,val.yr)]
-prcpt[order(Year),prcpt.lag:= shift(val.yr), by =.(TransectID)]
-cover.climate = merge(cover.climate,prcpt, by=c("Year","TransectID"),all.x = T)
-setnames(cover.climate,"val.yr",'prcpt')
+### PCI - use modified
+pci = indices.yearly[Index.y=='pci.mod' & Year>2008,.(Year,TransectID,val.yr)]
+pci[order(Year),pci.lag:= shift(val.yr), by =.(TransectID)]
+cover.climate = merge(cover.climate,pci, by=c("Year","TransectID"),all.x = T)
+setnames(cover.climate,"val.yr",'pci')
 
 ```
 
+#Averages and Totals
 
+In addition to these indices we may want to consider total rainfall, and average temps. 
+
+Precipitation totals:
+pcpt.yr 
+pcpt.spr 
+pcpt.win 
+pcpt.sum
+pcpt.fall
+
+Temperature averages:
+temp.yr 
+temp.spr 
+temp.win 
+temp.sum 
+temp.fall
+
+
+
+``` {r averages-totals}
+#Temperature and precip totals/average are already in the correct format, just merge them in. Easiest to convert to wide format
+
+selection = indices.yearly[Year>2008 & (Index.y =="pcpt.yr" |Index.y =="pcpt.spr" |Index.y =="pcpt.win" |Index.y =="pcpt.sum" |Index.y =="pcpt.fall" |Index.y =="temp.yr" |Index.y =="temp.spr" |Index.y =="temp.win" |Index.y =="temp.sum" |Index.y =="temp.fall"),]
+
+selection.wide = dcast(selection,formula =  TransectID + Year ~ Index.y, value.var = 'val.yr')
+
+cover.climate = merge(cover.climate,selection.wide, by = c("TransectID", "Year"))
+
+
+
+```
 
 ```{r Export}
 setwd("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/Prairie Analysis/Prairie-Analysis")

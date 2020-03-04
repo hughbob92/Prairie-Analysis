@@ -6,6 +6,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,warning = FALSE,error = FALSE,results = "hold")
 library(knitr)
+
 ```
 
 ##Overview 
@@ -36,7 +37,9 @@ library(stringr)
 
 #Two data dumps: 2008 - 2018 and 2019, merge them together after checking formatting
 data.raw.1 = data.table(read.csv("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data/Original Data/Plot_protC_Species_50plots_20190313.csv",header = T))
-data.raw.2 = data.table(read.csv("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data/Original Data/2019_plot_species_crosstab.csv",header = T))
+
+#The formatting is fucked here, read in as excel
+data.raw.2 = data.table(readxl::read_xlsx(path = "/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data/Original Data/2019_plot_species_crosstab.xlsx",col_names = T,na = ""))
 
 data.extra.2019 = data.table(read.csv("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data/Original Data/2019_VOR_Litter.csv",header = T))
 
@@ -54,18 +57,86 @@ data.extra.2019 = data.extra.2019[,.(transect_ID,vor_east,vor_north,vor_south,vo
 data.2019 = merge(data.raw.2, data.extra.2019, by = "transect_ID")
 
 #2019 data is missing a lot of transect identifying columns, because these are all repeat transects (double check) we can pull this from prior data, except management transects have shifted some. So that data needs to be pulled from the management import
+tran.matching = unique(data.raw.1[,.(TransectName,SiteName, SiteID, TransectID,ManUnitID,ManUnitName)])
 
-tran.matching = unique(data.raw.1[,.(TransectName,SiteName, SiteID, TransectID)])
-mgmt.matching = unique(mgmt.2019.raw[,.(SITE,SITE_ID,tblMGMTUNIT_MGMTUNIT, tbl_Mgmtactions_transect_MGMTUNIT, MgmYr)])
-
+#Merge in transect identifying info and mgmt unit id
 data.2019 = merge(tran.matching, data.2019, by.x = "TransectName", by.y = "transect_ID", all.y = T)
 
-###HUGH - turns out this is fucked. Revisit with new data
+# Missing transects between matching
+(data.2019[is.na(TransectID),unique(TransectName)])
+
+###HUGH - turns out this is fucked.
+
+#"1LI1-42" 
+data.2019 = data.2019[!TransectName=="1LI1-42",] #only one line for this, remove
+
+#"4LE4-03" & "4LE4-18" are both Shchellburg, which was messy beforehand. According to Daren this was only Protocol A, so drop
+data.2019 = data.2019[!TransectName=="4LE4-03",] 
+data.2019 = data.2019[!TransectName=="4LE4-18",]
+
+
+#"3SI5-07" "3SI5-08" "3SI5-09" "3SI5-10" are all Selix_NPB. These were all added in 2019, go ahead and add in and code new TransectIDs for them
+data.2019[TransectName=="3SI5-07",":="(TransectID = 8000, SiteName = 'Selix NPB', SiteID = 21, ManUnitID = 79  , ManUnitName = "Selix_South" )] 
+data.2019[TransectName=="3SI5-09",":="(TransectID = 8001, SiteName = 'Selix NPB', SiteID = 21, ManUnitID = 79  , ManUnitName = "Selix_South")]
+data.2019[TransectName=="3SI5-10",":="(TransectID = 8002, SiteName = 'Selix NPB', SiteID = 21, ManUnitID = 78  , ManUnitName = "Selix_North")]
+data.2019[TransectName=="3SI5-08",":="(TransectID = 8003, SiteName = 'Selix NPB', SiteID = 21, ManUnitID = 78  , ManUnitName = "Selix_North")]
+
+#Check if any NAs remain
+(data.2019[is.na(TransectID),]) #none
+
+#2019 Data does not use the same species ID info. Match to species ID from prior data and merge in
+species.ids = unique(data.raw.1[,.(Scientific, SpeciesID)])
+species.ids[,.N, by = Scientific][N>1,] #some scientific names have multiple id's, fixing this in coordination with Plant Reference List
+species.ids[SpeciesID==1601,SpeciesID:=330] #Bromus Tectorum
+species.ids[SpeciesID==883,SpeciesID:=1597] #Juniperus virginia
+species.ids[SpeciesID==1380,SpeciesID:=1602] #Viola pedata
+species.ids[SpeciesID==1600,SpeciesID:=100] #Crepis tectorum
+species.ids = unique(species.ids)
+species.ids[,.N, by = Scientific][N>1,] #fixed
+
+#merge in Species IDs
+data.2019 = merge(data.2019, species.ids, by = "Scientific", all.x = T)
+unique(data.2019[is.na(SpeciesID),.(Scientific, Common)]) #not all matched - NA, "Aster spp.", "Delphinium carolinianum subsp. virescens", "Elaeagnus angustifolia", "Euphorbia spp.", "juncusspp" 
+
+#fix errors and assign species IDs
+data.2019[Scientific=="Aster spp.", SpeciesID:= 3000] #This is tricky because Aster species have been reclassified. - Update species ref list
+data.2019[Scientific=="Delphinium carolinianum subsp. virescens", SpeciesID:= 731] #already classified as 731
+data.2019[Scientific=="Elaeagnus angustifolia", SpeciesID:= 3001] #new species, invasive and noxious - Update species ref list
+data.2019[Scientific=="Euphorbia spp.", SpeciesID:= 3002] #Unknown spurge species - Update species ref list
+data.2019[Scientific=="juncusspp" , SpeciesID:= 1616] #already classified as 1616
+
+data.2019[SppCode =="unkncarex1" | SppCode =="unkncarex2", ':=' (SpeciesID = 586, Common = "Sedge species", Scientific = "Carex spp.")] #relabel carex sp appropriately
+#The other unknown species never appear consistently at the same transect between monitoring years....HUGH later lump them all together
+
+#Reorder 2019 to be able to merge with prior data
+colnames(data.raw.1)
+
+data.cover19 = data.2019[,14:63]
+data.cover19[, names(data.cover19):= lapply(.SD, function(x) {x[is.na(x)] <- "" ; x})] #replace NAs with blanks
+
+data.2019 = cbind(data.2019[,.(SiteName,SiteID, ManUnitName, ManUnitID, TransectName, TransectID, primary_observer, secondary_observer, survey_date, Scientific, Common, SpeciesID)],
+                  data.cover19,
+                  data.2019[,.(vor_north, vor_east, vor_south, vor_west, Litter5, Litter10, Litter15, Litter20, Litter25)])
+
+#Size down original data structure to merge with 2019 data
+data.old = data.raw.1[,1:71]
+
+#Correct column names
+colnames(data.2019) = colnames(data.old)
+
+#Some columns are in a shitty formmat for 2019, fix - observers, MonDate
+data.2019[,PrimObs:= str_replace(PrimObs, "_", " ")]
+data.2019[,SecObs:= str_replace(SecObs, "_", " ")]
+data.2019[,MonDate:= noquote(format(MonDate,"%m/%d/%y"))]
 
 #Merge two data dumps after subsetting relevant data....HUGH correct when Daren sends VOR and Litter Data
-data.raw = rbind(data.raw.1, data.raw.2)
+data.raw = rbind(data.old, data.2019)
 
+data.raw[is.na(PrimObs),] #some primary observer data is missing
+data.raw[is.na(PrimObs) & is.na(SecObs),] #but nowhere are both missing
+data.raw[is.na(PrimObs),PrimObs:=SecObs] #make secondary observer the primary in the absence of primary data 
 
+data.raw[is.na(SecObs),SecObs:=""] #replace NAs with blanks for secondary observer missing data
 
 #First create a single identifier for the observer combinations
 data.raw[,unique(PrimObs)] #Checking primary observers for spelling errors, none
@@ -77,29 +148,43 @@ obs.code = data.frame(UniqueObs = data.raw[,unique(PrimObs)], ObsCode = 1:length
 
 #I don't need all of these columns. I can match transects with management actions by year using the Master Transect file
 cover.data = data.raw
-cover.data = cover.data[,obs.com := paste(PrimObs)]
-cover.data = merge(cover.data,obs.code,by.x = "obs.com",by.y = "UniqueObs")
-cover.data = cover.data[,!(73:123)] 
-cover.data =cover.data[,!(c(1:6,8,9,11,12))]
+cover.data = merge(cover.data,obs.code,by.x = "PrimObs",by.y = "UniqueObs")
 cover.data[,Year:=as.numeric(str_sub(MonDate,-2,-1))+2000]
 cover.data[,VOR:=rowMeans(.SD,na.rm = T),.SDcols =c('VOR_E','VOR_N','VOR_S','VOR_W')]
 cover.data[,Litter:=rowMeans(.SD,na.rm = T),.SDcols =c('Litter5','Litter10','Litter15','Litter20','Litter25')]
       
-cover.data.long= data.table(melt(cover.data,id=c("TransectID","MonDate","Year","ObsCode","SpeciesID","VOR","Litter"),measure=4:(ncol(cover.data)-13),variable.name="Plot",value.name="Cover"))
-#print(cover.data.long)
+
+##Necessary subsetting
+
+#Reordering this task
+#For some reason two transects were monitored twice in the same year
+(unique(cover.data[,length(unique(MonDate)), by = .(TransectID, Year)])[V1>1,]) #Some transects are showing up twice in the same year
+cover.data[TransectID==666 & Year==2016,] #Remove the 8/18/16 data
+cover.data[TransectID==657 & Year==2018,] #Remove 8/18/18
+
+cover.data = cover.data[!(TransectID==666 & MonDate=="8/18/16"),] 
+cover.data = cover.data[!(TransectID==657 & MonDate=="8/18/18"),] 
+
 
 #Plots here are redundant because there are two types of Protocol measurements included. Make this into two distinct id variables
 
-all.plots =data.frame(Plot = unique(cover.data.long[,Plot]),PlotID = c(0,rep(1:24,each=2),25),Protocol=rep(c("A","C"),times=25))
+cover.data.long= data.table(melt(cover.data,id=c("TransectID","MonDate","Year","ObsCode","SpeciesID","VOR","Litter"),measure=13:62,variable.name="Plot",value.name="Cover"))
+
+all.plots = data.frame(Plot = unique(cover.data.long[,Plot]),PlotID = c(0,rep(1:24,each=2),25),Protocol=rep(c("A","C"),times=25))
 cover.data.long= merge(cover.data.long,all.plots,by="Plot", all=FALSE)
 cover.data.long=cover.data.long[,.(TransectID,MonDate,Year,PlotID,Protocol,ObsCode,VOR,Litter,SpeciesID,Cover)]
+
 
 #In the following section I noticed a few errors in the binning - fixing there
 ##RUN FOLLOWING CODE CHUNK TOO
 
 ## If a species does not occur in any plots in a transect for a year it will not show up in the data. When I am calculating changes in frequency or cover between years I need these values to be included as zeros. The following code creates a list of all species found in a transect per year and then isolates species which are not found in particular years but are found in others...Because I am not doing plot level analysis, I will add one plots worth of each species for each transect and year with a blank cover value, which will translate to a 0
 
-#HUGH...revisit this based on discussion with Laura
+#HUGH...revisit this based on discussion with Laura. Important that I do this after subsetting
+
+
+
+#Now find species differences
 
 library(plyr)
 
@@ -192,7 +277,7 @@ Method 4 - Compare 2013 and 2014 (13 bins - 1-3, 4-5, 6-10, 11-20, 21-30, etc...
 #table(cover.data.long[Year=="2018"&Protocol=="C",Cover])
 
 #2019 - HUGH run to see what I need to correct
-table(cover.data.long[Year=="2019"&Protocol=="C",Cover])
+table(cover.data.long[Year=="2019"&Protocol=="C",Cover]) #nothing too zany
 
 ##Fixing these binning errors
 #2008 1-50% should be... see below for how 2008 data is handled
@@ -209,7 +294,7 @@ cover.data.long[Year=="2017"&Protocol=="C"&Cover=="io",Cover :=""]
 cover.data.long[Year=="2017"&Protocol=="C"&Cover=="pat",Cover :=""]
 cover.data.long[Year=="2017"&Protocol=="C"&Cover=="rr",Cover :=""]
 cover.data.long[Year=="2018"&Protocol=="C"&Cover=="q",Cover :=""]
-#HUGH add in cleaning for 2019
+#No cleaning needed for 2019
 
 ###Now creating a binning reference
 dat.year = c("2008","2009", "2010", '2011',"2012","2013","2014","2015","2016","2017","2018",'2019')
@@ -223,7 +308,7 @@ for (i in dat.year){
 
 ##Import binning key file
 setwd("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data")
-key.dat = as.data.table(readxl::read_xlsx("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data/Bin visualization.xlsx",sheet = "Bin Key"))
+key.dat = as.data.table(readxl::read_xlsx("/Volumes/GoogleDrive/My Drive/Thesis/Prairies/Data And Analysis/GMT Data/Bin visualization2.xlsx",sheet = "Bin Key"))
 
 key.dat
 
@@ -283,21 +368,28 @@ GMT.transects.merge = GMT.transects.data[,.(Transect_I,TransectNa,SITE_ID,MGMTUN
 #MGMT
 management.data.1 = management.data.raw.1[,.(SiteID,SiteName,ManUnitID,StartDate,EndDate,MgmYr,Action)]
 management.data.2 = management.data.raw.2[,.(SITE_ID,SITE, tbl_Mgmtactions_transect_MGMTUNIT,StartDate,EndDate,MgmYr,action)]
-setnames(management.data.2, old = c('SITE_ID','SITE', 'tbl_Mgmtactions_transect_MGMTUNIT','action'), 
-         new = c('SiteID','SiteName','ManUnitID','Action'))
+
+colnames(management.data.2) = colnames(management.data.1)
 
 management.data = rbind(management.data.1, management.data.2)
 
 acres = unique(management.data.raw.1[,.(ManUnitID,ManUnitAcres)])
 
-management.data = merge(management.data, acres, by = "ManUnitID")
+management.data = merge(management.data, acres, by = "ManUnitID",  all = T)
 
-#System Type                
+#System Type ---- THIS IS NO LONGER RELEVANT DUE TO FIXED EFFECTS               
 C.transects.merge = C.transects.data[,.(Transect,tblSITE_Site,ManUnit,PrimObs,SecObs,MonDate,Year,SysCode)]
 C.transects.merge[,Transect := as.numeric(Transect)]
+
 #This file needs to be in wide format. Originally there are duplicate rows for transect ID because of observation years...HUGH add in 2019 
 C.transects.merge.1 = dcast(C.transects.merge,Transect ~ Year, drop = FALSE )
 colnames(C.transects.merge.1) = c("Transects","Obs.2008","Obs.2009","Obs.2010","Obs.2011","Obs.2012","Obs.2013","Obs.2014","Obs.2015","Obs.2016","Obs.2017","Obs.2018")
+
+#Since I don't have site info for 2019 I need to bring this in from elsewhere...will use the cover data
+Obs.2019 = data.table(Transects = cover.data[Year==2019,unique(TransectID)], Obs.2019 = rep(c(1), times = length(cover.data[Year==2019,unique(TransectID)])))
+
+C.transects.merge.1 = merge(C.transects.merge.1,Obs.2019, by = c("Transects"), all = T)
+C.transects.merge.1[, names(C.transects.merge.1):= lapply(.SD, function(x) {x[is.na(x)] <- "0" ; x})] #replace NAs with blanks
 
 #Cross-tab system type by year
 systems = c()
@@ -311,8 +403,8 @@ for (i in C.transects.merge[,unique(Transect)]) {
 }
 }
 
-C.transects.merge.2 = matrix(systems,ncol = 11,byrow = T)
-     colnames(C.transects.merge.2)=c("Sys.2008","Sys.2009","Sys.2010","Sys.2011","Sys.2012","Sys.2013","Sys.2014","Sys.2015","Sys.2016","Sys.2017","Sys.2018")
+C.transects.merge.2 = matrix(systems,ncol = 12,byrow = T)
+colnames(C.transects.merge.2)=c("Sys.2008","Sys.2009","Sys.2010","Sys.2011","Sys.2012","Sys.2013","Sys.2014","Sys.2015","Sys.2016","Sys.2017","Sys.2018")
 C.transects.merge.2 = as.data.table(cbind(Transects,C.transects.merge.2))
 
 #System type is not filled in for each year, ASSUME that system type remains the same until marked otherwise
@@ -320,6 +412,11 @@ C.transects.merge.2 = as.data.table(cbind(Transects,C.transects.merge.2))
 #system.yrs = colnames(C.transects.merge.2)[2:length(colnames(C.transects.merge.2))]
 #for (z in length(system.yrs):1) {
   
+
+#2019 system type info is not available......
+
+
+
 C.transects.merge.2[,Sys.2018:=
                               ifelse(C.transects.merge.2[,Sys.2018]=="",
                                 ifelse(C.transects.merge.2[,Sys.2017]=="",
@@ -510,14 +607,14 @@ a <- character(0)
 UnitIds = c()
 for (i in management.data[,unique(ManUnitID)]) {
    UnitIds = c(UnitIds,i)
-  for(t in 2008:2018){
+  for(t in 2008:2019){
   transect.action = ifelse(identical(management.data[ManUnitID==i & MgmYr==t ,Action],a),"",management.data[ManUnitID==i & MgmYr==t ,Action])
   actions = c(actions,transect.action)
 }
 }
 
-manage.merge.long.2 = matrix(actions,ncol = 11,byrow = T)
-     colnames(manage.merge.long.2)=c("Mgmt.2008","Mgmt.2009","Mgmt.2010","Mgmt.2011","Mgmt.2012","Mgmt.2013","Mgmt.2014","Mgmt.2015","Mgmt.2016","Mgmt.2017","Mgmt.2018")
+manage.merge.long.2 = matrix(actions,ncol = length(2008:2019),byrow = T)
+colnames(manage.merge.long.2)=c("Mgmt.2008","Mgmt.2009","Mgmt.2010","Mgmt.2011","Mgmt.2012","Mgmt.2013","Mgmt.2014","Mgmt.2015","Mgmt.2016","Mgmt.2017","Mgmt.2018", "Mgmt.2019")
 manage.merge.long.2 = as.data.table(cbind(UnitIds,manage.merge.long.2))
 manage.merge.long.2 = merge(manage.merge.long.2,manage.acre,by.x = "UnitIds",by.y = "ManUnitID")
 
@@ -525,17 +622,23 @@ manage.merge.long.2 = merge(manage.merge.long.2,manage.acre,by.x = "UnitIds",by.
 
 ###Make sure I'm not losing transects in earlier merging
 transect.master.1 = merge(merge.1,C.transects.merge.1,by.x = "Transect_I",by.y = "Transects",all = TRUE)
-C.transects.merge.2$Transects=as.numeric(C.transects.merge.2$Transects) #make same class to match
-transect.master.2 = merge(transect.master.1,C.transects.merge.2,by.x = "Transect_I",by.y = "Transects",all = TRUE)
+
+#I'm leaving out system type to make this less complex
+#C.transects.merge.2$Transects=as.numeric(C.transects.merge.2$Transects) #make same class to match
+#transect.master.2 = merge(transect.master.1,C.transects.merge.2,by.x = "Transect_I",by.y = "Transects",all = TRUE)
 manage.merge.long.2$UnitIds=as.numeric(manage.merge.long.2$UnitIds) #make same class to match
-transect.master.2$MGMTUNIT_I=as.numeric(transect.master.2$MGMTUNIT_I) #make same class to match
-transect.master.3 = merge(transect.master.2,manage.merge.long.2,by.x = "MGMTUNIT_I",by.y = "UnitIds",all = TRUE)
+
+transect.master.1$MGMTUNIT_I=as.numeric(transect.master.1$MGMTUNIT_I) #make same class to match
+transect.master.3 = merge(transect.master.1,manage.merge.long.2,by.x = "MGMTUNIT_I",by.y = "UnitIds",all = TRUE)
 
 transect.master.3[duplicated(transect.master.3[,.(Transect_I)]),] # some of the management units are not associated with a transect (mostly chippewa prairie issue)
 
-transect.master=transect.master.3[,.(Transect_I,TransectNa,StartLat,StartLong,SITE_ID,tblSITE_Site,MGMTUNIT_I,ManUnitAcres,Obs.2008, Obs.2009, Obs.2010, Obs.2011, Obs.2012, Obs.2013, Obs.2014, Obs.2015, Obs.2016, Obs.2017,Obs.2018, Sys.2008, Sys.2009, Sys.2010, Sys.2011, Sys.2012, Sys.2013, Sys.2014, Sys.2015, Sys.2016, Sys.2017, Sys.2018, Mgmt.2008, Mgmt.2009, Mgmt.2010, Mgmt.2011, Mgmt.2012, Mgmt.2013,Mgmt.2014, Mgmt.2015, Mgmt.2016, Mgmt.2017, Mgmt.2018)]
+transect.master=transect.master.3[,.(Transect_I,TransectNa,StartLat,StartLong,SITE_ID,tblSITE_Site,MGMTUNIT_I,ManUnitAcres,Obs.2008, Obs.2009, Obs.2010, Obs.2011, Obs.2012, Obs.2013, Obs.2014, Obs.2015, Obs.2016, Obs.2017,Obs.2018, Obs.2019, Mgmt.2008, Mgmt.2009, Mgmt.2010, Mgmt.2011, Mgmt.2012, Mgmt.2013,Mgmt.2014, Mgmt.2015, Mgmt.2016, Mgmt.2017, Mgmt.2018, Mgmt.2019)]
 
 transect.master
+
+
+#HUGH - get the new transects in here better, but this work for now
 ```
 
 ##Data Cleaning / Modification
